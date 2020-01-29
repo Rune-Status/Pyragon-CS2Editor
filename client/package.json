@@ -1,0 +1,25 @@
+{
+  "name": "cs2editor",
+  "version": "1.0.0",
+  "description": "AIO CS2 Decompiler, Editor, and Compiler",
+  "main": "src/Main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Pyragon/CS2Editor.git"
+  },
+  "author": "Pyragon, Devin DuBose",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Pyragon/CS2Editor/issues"
+  },
+  "homepage": "https://github.com/Pyragon/CS2Editor#readme",
+  "devDependencies": {
+    "electron": "^7.1.10"
+  },
+  "dependencies": {
+    "app-root-path": "^3.0.0"
+  }
+}
