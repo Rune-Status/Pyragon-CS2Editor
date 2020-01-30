@@ -1,0 +1,43 @@
+#context-menu {
+    position: absolute;
+    display: none;
+    border: 1px solid #000;
+    border-radius: 2px;
+    background: #444;
+    min-width: 145px;
+    z-index: 100;
+    -webkit-box-shadow: 0 0 20px 0 #000000;
+    box-shadow: 0 0 20px 0 #000000;
+    -webkit-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.75);
+}
+
+.context-item {
+    height: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: auto;
+}
+
+.context-item:hover {
+    background-color: #4f4f4f;
+}
+
+.context-item i,
+.context-item svg {
+    min-width: 16px;
+    min-height: 16px;
+    max-width: 16px;
+    max-height: 16px;
+}
+
+.context-item span {
+    min-height: 30px;
+    max-height: 30px;
+    margin-left: 10px;
+    padding-right: 10px;
+    display: inline-flex;
+    align-items: center;
+    color: #010101;
+}
