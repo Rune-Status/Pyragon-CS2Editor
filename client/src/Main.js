@@ -1,5 +1,5 @@
 const root = require('app-root-path');
-let config = require(root+'/config.json');
+const Store = require('electron-store');
 const { app, BrowserWindow, ipcMain } = require('electron');
 const windowState = require('electron-window-state');
 const request = require('request');
@@ -8,6 +8,7 @@ require('electron-debug')({
     enabled: true
 });
 
+let store = new Store();
 let cacheSelectWindow;
 let ideWindow;
 let cacheLocation;
@@ -15,12 +16,17 @@ let checkCacheLoadedTimer;
 
 function start() {
     createCacheSelectWindow();
+    ipcMain.on('cache:set-hard-location', () => {
+        if(!store.has('cacheLocation')) return false;
+        cacheSelectWindow.webContents.send('cache:set-hard-location', store.get('cacheLocation'));
+        cacheLocation = store.get('cacheLocation');
+    });
     ipcMain.on('cache:set-location', (event, data) => {
         cacheLocation = data;
     });
     ipcMain.on('cache:load', () => {
         request.post('http://localhost:8087/cache/load', { form: { path: cacheLocation }});
-        checkCacheLoadedTimer = setInterval(checkCacheLoaded, 50);
+        setTimeout(checkCacheLoaded, 200);
     });
 }
 
@@ -30,17 +36,26 @@ function checkCacheLoaded() {
       response,
       body
     ) {
-      let data = JSON.parse(body);
-      let loaded = data.loaded;
-      if (data.error) {
-          clearInterval(checkCacheLoadedTimer);
-          cacheSelectWindow.webContents.send('cache:error', 'Error loading that cache. Please try another.');
-      } else if (loaded === true) {
-          clearInterval(checkCacheLoadedTimer);
-          createIDEWindow();
-          cacheSelectWindow.close();
-          cacheSelectWindow = null;
-      }
+        if(err) {
+            console.error(err);
+            cacheSelectWindow.webContents.send(
+              'cache:error',
+              'Error loading that cache. Please try another.'
+            );
+            return;
+        }
+        let data = JSON.parse(body);
+        let loaded = data.loaded;
+        if (data.error)
+            cacheSelectWindow.webContents.send('cache:error', 'Error loading that cache. Please try another.');
+        else if (loaded === true) {
+            if(cacheSelectWindow) {
+                store.set('cacheLocation', cacheLocation);
+                createIDEWindow();
+                cacheSelectWindow.close();
+                cacheSelectWindow = null;
+            }
+        } else setTimeout(checkCacheLoaded, 200);
     });
 }
 

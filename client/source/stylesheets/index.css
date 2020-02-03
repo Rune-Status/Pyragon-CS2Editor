@@ -23,6 +23,10 @@ textarea,
     outline: none;
 }
 
+#main-content {
+    height: 100%;
+}
+
 #wrapper {
     margin: 0px;
     background-color: #333;
@@ -67,7 +71,7 @@ textarea,
     margin-top: 4px;
 }
 
-#reload-button {
+#maximize-button {
     background: #04B404;
     font-size: 9pt;
     line-height: 11px;
@@ -80,7 +84,7 @@ textarea,
     cursor: pointer;
 }
 
-#reload-button:hover {
+#maximize-button:hover {
     background: #088A08;
 }
 

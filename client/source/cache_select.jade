@@ -6,6 +6,13 @@ block head
         const renderer = electron.ipcRenderer;
         let cacheLocation;
 
+        renderer.send('cache:set-hard-location');
+
+        renderer.on('cache:set-hard-location', (event, data) => {
+            cacheLocation = data;
+            $('#cache-location').html('Location: '+cacheLocation);
+        });
+
         renderer.on('cache:error', (event, error) => {
             setError(error);
             $('#load-scripts-btn').attr('disabled', false);

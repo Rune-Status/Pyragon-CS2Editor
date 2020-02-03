@@ -1,6 +1,86 @@
 extend index
 
 block head
+    link(rel='stylesheet', href='stylesheets/ide.css')
+    link(rel="stylesheet", href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css")
+    script(src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js")
+    script(src='script/ace/ace.js')
+    script.
 
+        let tabs = [];
+
+        let unsaved = [];
+
+        let editor;
+
+        function addTab(scriptName, id, element) {
+            //save current contents to tabs
+            if(tabs[id]) {
+                let active = $('.script-tab.active');
+                if(active.data('id') == id) return false;
+                $('.script-tab.active').removeClass('active');
+                element.addClass('active');
+                setTab(id, tabs[id]);
+                return false;
+            }
+            $.post('/ide/load-script/'+id, {}, ret => {
+                let data = JSON.parse(ret);
+                if(data.error) {
+                    console.error(data.error);
+                    return false;
+                }
+                setTab(id, data.file);
+                $('.script-tab.active').removeClass('active');
+                let tab = $('<div data-id="'+id+'" class="script-tab active"></div>');
+                tab.html(scriptName);
+                tab.data('id', id);
+                $('#script-tabs').append(tab);
+                tabs[id] = data.file;
+                $('#editor').css('border-top-left-radius', '0px');
+            });
+        }
+
+        function setTab(id, contents) {
+            if(unsaved[id])
+                $('#title').html('CS2Editor - File has been changed. Ctrl+S to save and unfocus the textarea to apply highlighting.');
+            else
+                $('#title').html('CS2Editor');
+            editor.session.setValue(contents);
+            //- console.log('set value to length of '+contents.length);
+        }
+
+        $(document).ready(() => {
+            $('#title').html('CS2Editor');
+            //- $('#editor').html('function foo(items) {\n\tvar x = "All this is syntax highlighted";\n\treturn x;\n}');
+            editor = ace.edit('editor');
+            editor.session.setMode('ace/mode/java');
+            editor.setTheme('ace/theme/tomorrow');
+        });
+
+        $(document).on('click', '.script-tab', function() {
+            let scriptName = $(this).html();
+            let id = $(this).data('id');
+            addTab(scriptName, id, $(this));
+        });
+
+        $(document).on('click', '.script', function() {
+            let name = $(this).find('.script-title').html();
+            let id = $(this).data('id');
+            $('.script.selected').removeClass('selected');
+            $(this).addClass('selected');
+            let element = $('.script-tab[data-id="'+id+'"]');
+            addTab(name, id, element);
+        });
+    
 block main_content
-    p= 'Cache loaded from: '+location
+    div#file-buttons
+        p.file-button File
+        p.file-button Edit
+        p.file-button About
+    div#script-tabs
+    div(style='clear: both;')
+    div#script-container
+        for script in scripts
+            div.script(data-id=script.get('id'))
+                p.script-title= script.getProperty('name')
+    pre#editor
