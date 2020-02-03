@@ -1,0 +1,104 @@
+#script-container {
+    margin: 1px 0px 1px 6px;
+    width: 20%;
+    height: 90%;
+    border: 2px solid #222;
+    border-radius: 5px;
+    background: #444;
+    float: left;
+    overflow-y: auto;
+}
+
+#editor-container {
+    margin: 1px 0px 1px 6px;
+    width: calc(100% - 20% - 30px);
+    height: 90%;
+    border: 2px solid #222;
+    border-radius: 5px;
+    background: #444;
+    float: left;
+    overflow: auto;
+    color: #ddd;
+    cursor: text;
+}
+
+#editor {
+    border: 2px solid #222;
+    border-radius: 5px;
+    float: left;
+    margin: 1px 0px 1px 6px;
+    width: calc(100% - 20% - 30px);
+    height: 90%
+}
+
+.java {
+    cursor: text;
+}
+
+.script {
+    height: 20px;
+}
+
+.script:hover, .script.selected {
+    background: #555;
+}
+
+.script-title {
+    text-align: center;
+    color: white;
+    font-size: 12px;
+    margin: auto;
+    line-height: 20px;
+}
+
+#script-tabs {
+    width: 100%;
+    margin-left: calc(20% + 16px);
+}
+
+.script-tab {
+    color: #999;
+    line-height: 17px;
+    float: left;
+    font-size: 12px;
+    padding: 3px;
+    float: left;
+    position: relative;
+    bottom: -3px;
+    left: 1px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    border-bottom: none;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    z-index: 100;
+}
+
+.script-tab:not(:first-of-type) {
+    margin-left: 2px;
+}
+
+.script-tab.active {
+    color: #444;
+    background: #F0F0F0;
+}
+
+.file-button {
+    float: left;
+    color: #999;
+    margin: 0px;
+    font-size: 11px;
+    width: 29px;
+    line-height: 17px;
+    text-align: center;
+}
+
+.file-button:hover {
+    background: #444;
+}
+
+.hljs-keyword, .hljs-title, .hljs-number, 
+.hljs-params, .hljs-function, .hljs-comment, .hljs-string,
+.hljs-class {
+    cursor: text;
+}

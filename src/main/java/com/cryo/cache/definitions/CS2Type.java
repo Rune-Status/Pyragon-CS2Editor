@@ -26,7 +26,7 @@ public class CS2Type {
     public static CS2Type CHAR = new CS2Type(1, 0, 0, "char", 'z');
     public static CS2Type CONTAINER = new CS2Type(1, 0, 0, "Container", 'v');
     public static CS2Type STRING = new CS2Type(0, 1, 0, "string", 's');
-    public static CS2Type LONG = new CS2Type(0, 0, 1, "long", 'Â§');
+    public static CS2Type LONG = new CS2Type(0, 0, 1, "long", '§');
     public static CS2Type ICOMPONENT = new CS2Type(1, 0, 0, "IComponent", 'I');
     public static CS2Type LOCATION = new CS2Type(1, 0, 0, "Location", 'c');
     public static CS2Type ITEM = new CS2Type(1, 0, 0, "Item", 'o');
@@ -41,10 +41,10 @@ public class CS2Type {
     public static CS2Type QCPHRASE = new CS2Type(1, 0, 0, "QcPhrase", 'e');
     public static CS2Type CHATCAT = new CS2Type(1, 0, 0, "QcCat", 'k');
     public static CS2Type TEXTURE = new CS2Type(1, 0, 0, "Texture", 'x');
-    public static CS2Type STANCE = new CS2Type(1, 0, 0, "Stance", 'â‚¬');
+    public static CS2Type STANCE = new CS2Type(1, 0, 0, "Stance", '€');
     public static CS2Type SPELL = new CS2Type(1, 0, 0, "Spell", '@'); //target cursor?
     public static CS2Type CATEGORY = new CS2Type(1, 0, 0, "Category", 'y');
-    public static CS2Type SOUNDEFFECT = new CS2Type(1, 0, 0, "SoundEff", 'Â«');
+    public static CS2Type SOUNDEFFECT = new CS2Type(1, 0, 0, "SoundEff", '«');
 
 
     //    public static CS2Type VARINT = new CS2Type(0, 0, 0, "int...", 'Y'); //'Trigger/varargs'
@@ -169,7 +169,7 @@ public class CS2Type {
         switch (desc) {
             case '\0':
                 return VOID;
-            case 'Â§':
+            case '§':
                 return LONG;
             case 'i':
                 return INT;
@@ -215,7 +215,7 @@ public class CS2Type {
                 return QCPHRASE;
             case 'k':
                 return CHATCAT;
-            case 'â‚¬':
+            case '€':
                 return STANCE;
             case 'x':
                 return TEXTURE;
@@ -225,7 +225,7 @@ public class CS2Type {
                 return MAPID;
             case 'y':
                 return CATEGORY;
-            case 'Â«':
+            case '«':
                 return SOUNDEFFECT;
 //            case 'P':
 //                return SYNTH;

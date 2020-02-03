@@ -1,20 +1,30 @@
 package com.cryo.cache.definitions;
 
+import com.cryo.CS2Editor;
 import com.cryo.cache.IndexType;
 import com.cryo.cache.Store;
+import com.cryo.cache.definitions.instructions.*;
 import com.cryo.cache.io.InputStream;
 import com.cryo.cache.io.OutputStream;
+import static com.cryo.cache.definitions.CS2Instruction.*;
 import com.cryo.utils.Utilities;
+import lombok.Data;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
+@Data
 public class CS2Script {
 	public String[] stringOpValues;
 	public String name;
 	public CS2Instruction[] operations;
+	public Instruction[] instructions;
 	public CS2Type[] arguments;
 	public int[] operationOpcodes;
 	public int[] intOpValues;
@@ -37,6 +47,7 @@ public class CS2Script {
 			opCount++;
 		}
 		postDecode();
+		loadInstructions();
 	}
 
 	CS2Instruction getOpcode(InputStream buffer) {
@@ -86,9 +97,18 @@ public class CS2Script {
 				}
 			}
 		}
-		
+        System.out.println(ArrayUtils.toString(new Object[] {
+                intLocalsCount,
+                stringLocalsCount,
+                longLocalsCount,
+                intArgsCount,
+                stringArgsCount,
+                longArgsCount,
+                switchesCount
+        }));
 		buffer.setOffset(0);
 		name = buffer.readNullString();
+		instructions = new Instruction[codeSize*2];
 		operations = new CS2Instruction[codeSize];
 		operationOpcodes = new int[codeSize];
 		return instructionLength;
@@ -126,6 +146,49 @@ public class CS2Script {
 		for (int i = 0; i < longArgsCount; i++)
 			arguments[write++] = CS2Type.LONG;
 	}
+
+	public void loadInstructions() {
+        for(int i = 0; i < operations.length; i++) {
+            CS2Instruction instruction = operations[i];
+            if(instruction == CS2Instruction.PUSH_STRING || instruction == CS2Instruction.PUSH_LONG) {
+                Object value = instruction == CS2Instruction.PUSH_STRING ? stringOpValues[i] : longOpValues[i];
+                instructions[(i * 2) + 1] = new PrimitiveInstruction(instruction.opcode, instruction.name(), value);
+                System.out.println("Pushing value: "+value);
+            } else if(instruction == CS2Instruction.SWITCH) {
+                Map block = switchMaps[intOpValues[i]];
+                int[] cases = new int[block.size()];
+                LabelInstruction[] targets = new LabelInstruction[block.size()];
+                int w = 0;
+                for(Object key : block.keySet()) {
+                    cases[w] = (Integer) key;
+                    Object addr = block.get(key);
+                    int full = i + ((Integer) addr).intValue() + 1;
+                    if(instructions[full*2] == null)
+                        instructions[full*2] = new LabelInstruction();
+                    targets[w++] = (LabelInstruction) instructions[full*2];
+                    System.out.println("Loaded switch block");
+                }
+                instructions[(i*2)+1] = new SwitchInstruction(instruction.getOpcode(), instruction.name(), cases, targets);
+            } else if(isJump(instruction)) {
+                int full = i + intOpValues[i] + 1;
+                if(instructions[full*2] == null)
+                    instructions[full*2] = new LabelInstruction();
+                instructions[(i*2)+1] = new JumpInstruction(instruction.opcode, instruction.name(), (LabelInstruction) instructions[full*2]);
+            }
+        }
+    }
+
+    public static CS2Instruction[] JUMP_INSTRUCTIONS = {
+	        GOTO, INT_EQ, INT_NE, INT_LT, INT_GT,
+            INT_LE, INT_GE, /*INT_T, INT_F, */LONG_EQ,
+            LONG_NE, LONG_LT, LONG_GT, LONG_LE, LONG_GE };
+
+	public static boolean isJump(CS2Instruction instruction) {
+	    Optional<CS2Instruction> optional = Stream.of(JUMP_INSTRUCTIONS)
+                .filter(instr -> instr.opcode == instruction.opcode)
+                .findFirst();
+	    return optional.isPresent();
+    }
 	
 	public void write(Store store) {
 		store.getIndex(IndexType.CS2_SCRIPTS).putArchive(id, encode());
@@ -255,6 +318,19 @@ public class CS2Script {
 			}
 		}
 		return true;
+	}
+
+	public String getName() {
+		String name = this.name;
+		if(name == null || name.equals("")) {
+			if(CS2Editor.getLoaders().get("script-names").containsKey(id)) {
+				name = CS2Editor.getLoaders().get("script-names").get(id);
+				if(name != null && !name.equals(""))
+					return name;
+			}
+			return "script"+id;
+		}
+		return name;
 	}
 	
 	@Override
