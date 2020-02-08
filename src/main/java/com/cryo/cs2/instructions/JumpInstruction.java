@@ -1,4 +1,4 @@
-package com.cryo.cache.definitions.instructions;
+package com.cryo.cs2.instructions;
 
 import lombok.Data;
 

@@ -17,6 +17,7 @@
 package com.cryo.decompiler;
 
 import com.cryo.decompiler.util.TextUtils;
+import lombok.Data;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.util.function.Function;
 
 import static com.cryo.decompiler.util.GenericsUtils.*;
 
+@Data
 public class CS2Type {
 
 	private String name;

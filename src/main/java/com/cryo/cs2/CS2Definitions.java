@@ -1,11 +1,9 @@
-package com.cryo.cache.definitions;
+package com.cryo.cs2;
 
 import com.cryo.cache.Cache;
 import com.cryo.cache.IndexType;
 import com.cryo.cache.io.InputStream;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class CS2Definitions {

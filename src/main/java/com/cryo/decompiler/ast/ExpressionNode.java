@@ -33,7 +33,7 @@ public abstract class ExpressionNode extends AbstractCodeNode {
 	public static final int PRIORITY_NEWOPERATOR = 2;
 	public static final int PRIORITY_MULDIVREM = 3;
 	public static final int PRIORITY_ADDSUB = 4;
-	public static final int PRIORITY_CONTACTSTRING = 4;
+	public static final int PRIORITY_CONCATSTRING = 4;
 	public static final int PRIORITY_BITSHIFTS = 5;
 	public static final int PRIORITY_LELTGEGTINSTANCEOF = 6;
 	public static final int PRIORITY_EQNE = 7;

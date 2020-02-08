@@ -5,10 +5,7 @@ import com.cryo.decompiler.CS2Decoder;
 import com.cryo.decompiler.CS2Decompiler;
 import com.cryo.decompiler.ICS2Provider;
 import com.cryo.decompiler.ast.FunctionNode;
-import com.cryo.decompiler.util.ConfigsDatabase;
-import com.cryo.decompiler.util.FunctionDatabase;
-import com.cryo.decompiler.util.InstructionsDatabase;
-import com.cryo.decompiler.util.UnsafeSerializer;
+import com.cryo.decompiler.util.*;
 import com.cryo.modules.WebModule;
 import com.cryo.utils.Utilities;
 import com.google.gson.FieldNamingPolicy;
@@ -101,7 +98,15 @@ public class CS2Editor {
                 }
             }
         });
+        printUnder150();
+    }
 
+    public void printUnder150() {
+        for(int i = 0; i < 150; i++) {
+            InstructionInfo info = instructionsDB.getByUnscrampled(i);
+            if(info != null)
+                System.out.println(i+" - "+info.getName());
+        }
     }
 
     public FunctionNode loadScript(int scriptID) {

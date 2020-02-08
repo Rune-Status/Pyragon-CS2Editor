@@ -1,4 +1,4 @@
-package com.cryo.cache.definitions;
+package com.cryo.cs2;
 
 import java.util.HashMap;
 
@@ -16,7 +16,7 @@ public enum CS2Instruction {
 	GET_VARPBIT_OLD(827, true),
 	GET_VARN_OLD(229, true),
 	GET_VARNBIT_OLD(526, true),
-	RETURN(184),
+	RETURN(184, true),
 	LOAD_VARPBIT(408, true),
 	STORE_VARPBIT(371, true),
 	INT_LE(670, true),
@@ -26,8 +26,8 @@ public enum CS2Instruction {
 	LOAD_STRING(799, true),
 	STORE_STRING(356, true),
 	MERGE_STRINGS(531, true),
-	POP_INT(492),
-	POP_STRING(354),
+	POP_INT(492, true),
+	POP_STRING(354, true),
 	CALL_CS2(902, true),
 	LOAD_VARC(311, true),
 	STORE_VARC(510, true),

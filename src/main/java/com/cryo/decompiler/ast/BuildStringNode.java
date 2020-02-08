@@ -34,7 +34,7 @@ public class BuildStringNode extends ExpressionNode  {
     
     @Override
     public int getPriority() {
-    	return ExpressionNode.PRIORITY_CONTACTSTRING;
+    	return ExpressionNode.PRIORITY_CONCATSTRING;
     }
     
     @Override

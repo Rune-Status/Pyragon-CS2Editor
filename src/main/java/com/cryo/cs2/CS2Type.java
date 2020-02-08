@@ -1,4 +1,4 @@
-package com.cryo.cache.definitions;
+package com.cryo.cs2;
 
 import java.util.*;
 

@@ -37,6 +37,7 @@
 
 .script {
     height: 20px;
+    cursor: select;
 }
 
 .script:hover, .script.selected {

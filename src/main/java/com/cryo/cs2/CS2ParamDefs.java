@@ -1,4 +1,4 @@
-package com.cryo.cache.definitions;
+package com.cryo.cs2;
 
 import com.cryo.cache.Cache;
 import com.cryo.cache.FileType;
@@ -6,10 +6,6 @@ import com.cryo.cache.IndexType;
 import com.cryo.cache.io.InputStream;
 import com.cryo.utils.Utilities;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.ConcurrentHashMap;
