@@ -77,22 +77,4 @@ public class IDEModule extends WebModule {
         }
         return error("404 Page Not Found");
     }
-
-    private static HashMap<String, ArrayList<String>> randomClasses = new HashMap<>();
-
-    static {
-        try {
-            File dir = new File("./placeholder_code/");
-            for (File file : dir.listFiles()) {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                String line;
-                String name = file.getName().replace(".java", "");
-                randomClasses.put(name, new ArrayList<>());
-                while ((line = reader.readLine()) != null)
-                    randomClasses.get(name).add(line);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
