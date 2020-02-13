@@ -203,6 +203,12 @@ public class CS2FlowGenerator {
                         if (operation != CC_FIND)
                             expressions[1] = cast(expressions[1], CS2Type.INT);
                         stack.push(new CS2BasicExpression(expressions, operation.name().toLowerCase()), 0);
+                    } else if(operation == CC_CREATE) {
+                        CS2Expression[] expressions = new CS2Expression[3];
+                        expressions[0] = cast(stack.pop(0), CS2Type.INT);
+                        expressions[1] = cast(stack.pop(0), CS2Type.INT);
+                        expressions[2] = stack.pop(0);
+                        block.write(new CS2BasicExpression(expressions, operation.name().toLowerCase()));
                     } else if(operation == STRING_LENGTH) {
                         CS2Expression expression = cast(stack.pop(1), CS2Type.STRING);
                         stack.push(new CS2BasicExpression(expression, operation.name().toLowerCase()), 0);

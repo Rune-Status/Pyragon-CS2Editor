@@ -32,7 +32,8 @@ public class CS2BasicExpression extends CS2Expression {
         for(int i = expressions.length-1; i >= 0; i--) {
             if((command.equals("if_getwidth") || command.equals("if_settext")
                 || command.equals("cc_find") || command.equals("cc_deleteall")
-                || command.equals("if_getheight")) && expressions[i] instanceof CS2PrimitiveExpression) {
+                || command.equals("if_getheight") || command.equals("cc_create"))
+                 && expressions[i] instanceof CS2PrimitiveExpression) {
                 int hash = ((CS2PrimitiveExpression) expressions[i]).asInt();
                 int[] interfaceIds = CS2Script.getInterfaceIds(hash);
                 printer.print("if_gethash(");
