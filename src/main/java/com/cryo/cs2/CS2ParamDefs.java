@@ -65,6 +65,10 @@ public final class CS2ParamDefs {
 		}
 	}
 
+    public boolean isString() {
+        return charVal == 's';
+    }
+
 	private void readValues(InputStream stream, int opcode) {
 		if (opcode == 1) {
 			charVal = Utilities.cp1252ToChar((byte) stream.readByte());

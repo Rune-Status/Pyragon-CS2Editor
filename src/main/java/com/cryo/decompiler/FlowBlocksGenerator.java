@@ -202,7 +202,7 @@ public class FlowBlocksGenerator {
 						int amount = intInstr.getConstant();
 						ExpressionNode[] exprs = new ExpressionNode[amount];
 						for (int i = amount - 1; i >= 0; i--)
-							exprs[i] = cast(stack.pop(1),CS2Type.STRING);
+							exprs[i] = cast(stack.pop(1), CS2Type.STRING);
 						stack.push(new BuildStringNode(exprs), 1);
 					}
 					else if (opcode == Opcodes.POP_INT || opcode == Opcodes.POP_STR || opcode == Opcodes.POP_LONG) {

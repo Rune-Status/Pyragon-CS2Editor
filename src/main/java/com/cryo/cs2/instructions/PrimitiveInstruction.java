@@ -27,4 +27,8 @@ public class PrimitiveInstruction extends Instruction {
         return (long) value;
     }
 
+    public String toString() {
+        return "PrimitiveInstruction(opcode="+opcode+", value="+value+", type="+type+")";
+    }
+
 }

@@ -817,7 +817,7 @@ ban:
       - block
       - cancel
       - delete
-      - hide
+      - hidden
       - prohibit
       - remove
       - stop
@@ -4049,7 +4049,7 @@ eye-slash:
   search:
     terms:
       - blind
-      - hide
+      - hidden
       - show
       - toggle
       - unseen
@@ -7746,8 +7746,8 @@ minus:
     terms:
       - collapse
       - delete
-      - hide
-      - hide
+      - hidden
+      - hidden
       - minify
       - remove
       - trash
@@ -7762,7 +7762,7 @@ minus-circle:
   search:
     terms:
       - delete
-      - hide
+      - hidden
       - remove
       - trash
   styles:
@@ -7777,8 +7777,8 @@ minus-square:
     terms:
       - collapse
       - delete
-      - hide
-      - hide
+      - hidden
+      - hidden
       - minify
       - remove
       - trash
@@ -11625,7 +11625,7 @@ trash:
     terms:
       - delete
       - garbage
-      - hide
+      - hidden
       - remove
   styles:
     - solid
@@ -11638,7 +11638,7 @@ trash-alt:
     terms:
       - delete
       - garbage
-      - hide
+      - hidden
       - remove
       - trash
       - trash-o

@@ -27,3 +27,10 @@ node_modules/
 *.iml
 target/
 props.json
+.settings/
+.vscode/
+.classpath
+.factorypath
+.project
+errors
+log

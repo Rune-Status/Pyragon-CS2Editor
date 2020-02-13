@@ -16,39 +16,44 @@
 
 package com.cryo.utils;
 
+import com.cryo.cs2.CS2Instruction;
+import static com.cryo.cs2.CS2Instruction.*;
 import com.cryo.decompiler.instructions.Opcodes;
 
 public class OpcodeUtils {
 
 	
 	public static int getTwoConditionsJumpStackType(int opcode) {
-		if (opcode >= Opcodes.INT_EQ && opcode <= Opcodes.INT_GE)
+		CS2Instruction instruction = CS2Instruction.getByOpcode(opcode);
+		if(instruction == INT_EQ || instruction == INT_NE || instruction == INT_LT
+				|| instruction == INT_GT || instruction == INT_LE || instruction == INT_GE)
 			return 0;
-		else if (opcode >= Opcodes.LONG_EQ && opcode <= Opcodes.LONG_GE)
+		else if(instruction == LONG_EQ || instruction == LONG_NE || instruction == LONG_LT
+				|| instruction == LONG_GT || instruction == LONG_LE || instruction == LONG_GE)
 			return 2;
-		else
-			return -1;
+		return -1;
 	}
 	
 	public static int getTwoConditionsJumpConditional(int opcode) {
-		switch (opcode) {
-			case Opcodes.INT_NE:
-			case Opcodes.LONG_NE:
+		CS2Instruction instruction = CS2Instruction.getByOpcode(opcode);
+		switch (instruction) {
+			case INT_NE:
+			case LONG_NE:
 				return 0; // !=
-			case Opcodes.INT_EQ:
-			case Opcodes.LONG_EQ:
+			case INT_EQ:
+			case LONG_EQ:
 				return 1; // ==
-			case Opcodes.INT_LT:
-			case Opcodes.LONG_LT:
+			case INT_LT:
+			case LONG_LT:
 				return 3; // <
-			case Opcodes.INT_GT:
-			case Opcodes.LONG_GT:
+			case INT_GT:
+			case LONG_GT:
 				return 2; // >
-			case Opcodes.INT_LE:
-			case Opcodes.LONG_LE:
+			case INT_LE:
+			case LONG_LE:
 				return 5; // <=
-			case Opcodes.INT_GE:
-			case Opcodes.LONG_GE:
+			case INT_GE:
+			case LONG_GE:
 				return 4; // >=
 			default:
 				return -1;
@@ -56,7 +61,7 @@ public class OpcodeUtils {
 	}
 	
 	public static int getOneConditionJumpStackType(int opcode) {
-		if (opcode == Opcodes.INT_T || opcode == Opcodes.INT_F)
+		if (opcode == BRANCH_EQ0.opcode || opcode == BRANCH_EQ1.opcode)
 			return 0;
 		else 
 			return -1;

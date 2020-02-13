@@ -26,6 +26,10 @@ public class CS2PrimitiveExpression extends CS2Expression implements CS2Constant
         printer.endPrinting(this);
     }
 
+    public boolean isInt() {
+        return value instanceof Integer;
+    }
+
     public int asInt() {
         return (int) value;
     }

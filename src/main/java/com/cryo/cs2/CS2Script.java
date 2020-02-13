@@ -15,9 +15,9 @@ import com.cryo.cs2.nodes.CS2Function;
 import com.cryo.cs2.nodes.LocalVariable;
 import com.cryo.decompiler.util.FunctionInfo;
 import com.cryo.decompiler.CS2Type;
+import com.cryo.utils.Beautifier;
 import com.cryo.utils.Utilities;
 import lombok.Data;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -108,26 +108,17 @@ public class CS2Script {
                 }
             }
         }
-        System.out.println(ArrayUtils.toString(new Object[]{
-                intLocalsCount,
-                stringLocalsCount,
-                longLocalsCount,
-                intArgsCount,
-                stringArgsCount,
-                longArgsCount,
-                switchesCount
-        }));
         buffer.setOffset(0);
         name = buffer.readNullString();
         instructions = new Instruction[codeSize * 2];
         operations = new CS2Instruction[codeSize];
         operationOpcodes = new int[codeSize];
+        System.out.println(codeSize+" "+operations.length);
         return instructionLength;
     }
 
     private void decodeInstruction(InputStream buffer, int opIndex, CS2Instruction operation) {
         int opLength = operations.length;
-        System.out.println("Instruction: " + operation.name());
         if (operation == CS2Instruction.PUSH_STRING) {
             if (stringOpValues == null)
                 stringOpValues = new String[opLength];
@@ -196,15 +187,10 @@ public class CS2Script {
     public void loadInstructions() {
         for (int i = 0; i < operations.length; i++) {
             CS2Instruction instruction = operations[i];
-            if(instruction == null) {
-                System.out.println("Instruction is null!");
-                continue;
-            }
             if (instruction == CS2Instruction.PUSH_STRING || instruction == CS2Instruction.PUSH_LONG) {
                 Object value = instruction == CS2Instruction.PUSH_STRING ? stringOpValues[i] : longOpValues[i];
                 CS2Type type = instruction == CS2Instruction.PUSH_STRING ? CS2Type.STRING : CS2Type.LONG;
                 instructions[(i * 2) + 1] = new PrimitiveInstruction(instruction.opcode, instruction.name(), value, type);
-                System.out.println("Pushing value: " + value);
             } else if (instruction == CS2Instruction.SWITCH) {
                 Map block = switchMaps[intOpValues[i]];
                 int[] cases = new int[block.size()];
@@ -224,18 +210,65 @@ public class CS2Script {
                 if (instructions[full * 2] == null)
                     instructions[full * 2] = new LabelInstruction();
                 instructions[(i * 2) + 1] = new JumpInstruction(instruction.opcode, instruction.name(), (LabelInstruction) instructions[full * 2]);
-            } else if(isIntInstruction(instruction) || instruction.hasIntConstant())
+            } else if(isBasicInstruction(instruction) || instruction.hasIntConstant())
                 instructions[(i * 2) + 1] = new PrimitiveInstruction(instruction.opcode, instruction.name(), intOpValues[i], CS2Type.INT);
             else
-                instructions[(i*2)+1] = new BooleanInstruction(instruction.getOpcode(), instruction.name(), intOpValues[i] == 1);
+                instructions[(i*2)+1] = new PrimitiveInstruction(instruction.getOpcode(), instruction.name(), intOpValues[i] == 1, CS2Type.BOOLEAN);
         }
         prepareInstructions();
     }
 
-    public static boolean isIntInstruction(CS2Instruction instruction) {
-        if(instruction == INV_GETITEM || instruction == instr6292) return true;
+    public static boolean isBasicInstruction(CS2Instruction instruction) {
+        int i = 0;
+        while(i < BASIC_INSTRUCTIONS.length) {
+            CS2Instruction instr = (CS2Instruction) BASIC_INSTRUCTIONS[i++];
+            if(instr.opcode == instruction.opcode) return true;
+            i += 2;
+        }
         return false;
     }
+
+    public static int getArgumentSize(CS2Instruction instruction) {
+        int i = 0;
+        while(i < BASIC_INSTRUCTIONS.length) {
+            CS2Instruction instr = (CS2Instruction) BASIC_INSTRUCTIONS[i++];
+            int argumentSize = (int) BASIC_INSTRUCTIONS[i++];
+            if(instr.opcode == instruction.opcode) return argumentSize;
+            i++;
+        }
+        return 0;
+    }
+
+    public static int getStackType(CS2Instruction instruction) {
+        if(!isBasicInstruction(instruction)) return -1;
+        int i = 0;
+        while(i < BASIC_INSTRUCTIONS.length) {
+            CS2Instruction instr = (CS2Instruction) BASIC_INSTRUCTIONS[i++];
+            i++;
+            int stackType = (int) BASIC_INSTRUCTIONS[i++];
+            if(instr.opcode == instruction.opcode) return stackType;
+        }
+        return -1;
+    }
+
+    //cs2instruction, numberOfArguments, stackType(0=int, 1=string, 2=long)
+    public static Object[] BASIC_INSTRUCTIONS = {
+            ADD, -1, -1, SUBTRACT, -1, -1, DIVIDE, -1, -1, MULTIPLY, -1, -1, MODULO, -1, -1,
+            INV_GETITEM, 2, 0, IF_GETWIDTH, -1, -1, INV_SIZE, 1, 0, CC_CREATE, 3, 0,
+            CC_SETSIZE, 4, 0, CC_SETPOSITION, 4, 0, IF_SETPOSITION, 5, 0,
+            INV_GETNUM, 2, 0, CC_SETITEM, 2, 0, CC_SETGRAPHICSHADOW, 1, 0,
+            ITEM_NAME, -1, -1, CC_SETOPBASE, 1, 1, CC_SETOUTLINE, 1, 0, CC_SETOP, -1, -1,
+            IF_SETHIDE, -1, -1, TO_STRING, -1, -1, IF_SETTEXT, -1, -1, SOUND_VORBIS_VOLUME, 4, 0,
+            ENUM, -1, -1, RANDOM, -1, -1, instr6342, -1, -1, STRUCT_PARAM, -1, -1, IF_SETGRAPHIC, 2, 0,
+            ITEM_PARAM, -1, -1, instr6135, -1, -1, INV_TOTAL, -1, -1, QUEST_STATREQ_LEVEL, -1, -1,
+            instr6185, 3, 0, instr6236, 0, 0, instr6150, -1, -1, GET_PLAYER_POS, -1, -1, instr6452, -1, -1,
+            instr6257, -1, -1, instr6237, -1, -1, CC_FIND, -1, -1, CC_SETTRANS, 1, 0, HOOK_MOUSE_PRESS, -1, -1,
+            HOOK_MOUSE_RELEASE, -1, -1, CC_DELETEALL, 1, 0, IF_GETNEXTSUBID, -1, -1, CC_SETGRAPHIC, 1, 0, 
+            CC_SETHFLIP, 1, 0, instr6212, -1, -1, GET_PLAYER_X, -1, -1, GET_PLAYER_Y, -1, -1, GET_PLAYER_PLANE, -1, -1,
+            IF_GETHEIGHT, -1, -1, MOVE_COORD, -1, -1, SCALE, 3, 0, MIN, 2, 0, MAX, 2, 0, STRING_LENGTH, -1, -1,
+            CC_DELETE, 0, 1, IF_SETSIZE, 5, 0, instr6519, -1, -1, instr6801, -1, -1, instr6152, -1, -1,
+            INVOTHER_GETITEM, -1, -1, INVOTHER_GETNUM, -1, -1
+    };
 
     public CS2Function decompile() {
         if(decompiling.contains(id))
@@ -268,16 +301,19 @@ public class CS2Script {
         CS2FlowGenerator generator = new CS2FlowGenerator(this, function);
         generator.generate();
 
-//        LocalVariablesAnalyzerT1 a1 = new LocalVariablesAnalyzerT1(function, generator.getBlocks());
-//        a1.analyze();
-//
-//        LocalVariablesAnalyzerT2 a2 = new LocalVariablesAnalyzerT2(function, generator.getBlocks());
-//        a2.analyze();
+    //    LocalVariablesAnalyzerT1 a1 = new LocalVariablesAnalyzerT1(function, generator.getBlocks());
+    //    a1.analyze();
 
+    //    LocalVariablesAnalyzerT2 a2 = new LocalVariablesAnalyzerT2(function, generator.getBlocks());
+    //    a2.analyze();
+               
         FlowBlocksSolver solver = new FlowBlocksSolver(function.getScope(), generator.getBlocks());
         solver.solve();
 
-        decompiling.remove(new Integer(id));
+        // Beautifier beautifier = new Beautifier(function);
+        // beautifier.beautify();
+ 
+        decompiling.remove(Integer.valueOf(id));
         return function;
     }
 
@@ -332,12 +368,12 @@ public class CS2Script {
 
     public static CS2Instruction[] JUMP_INSTRUCTIONS = {
             GOTO, INT_EQ, INT_NE, INT_LT, INT_GT,
-            INT_LE, INT_GE, /*INT_T, INT_F, */LONG_EQ,
+            INT_LE, INT_GE, BRANCH_EQ0, BRANCH_EQ1, LONG_EQ,
             LONG_NE, LONG_LT, LONG_GT, LONG_LE, LONG_GE};
 
     public static boolean isJump(CS2Instruction instruction) {
         if(instruction == null) {
-            System.out.println("Instruction is null.");
+            System.out.println("Instruction is null?");
             return false;
         }
         Optional<CS2Instruction> optional = Stream.of(JUMP_INSTRUCTIONS)
@@ -345,6 +381,12 @@ public class CS2Script {
                 .filter(instr -> instr.opcode == instruction.opcode)
                 .findFirst();
         return optional.isPresent();
+    }
+
+    public static int[] getInterfaceIds(int hash) {
+        int interfaceId = hash >> 16;
+        int componentId = hash >>> 16;
+        return new int[] { interfaceId, hash & 0xffff };
     }
 
     public void write(Store store) {

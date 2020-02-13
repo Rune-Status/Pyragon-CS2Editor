@@ -66,8 +66,9 @@ public class IDEModule extends WebModule {
 //                    System.out.println("------------------------");
 //                    node = CS2Editor.getInstance().loadScript(id);
 //                    if(node == null) return error("Error loading node.");
-                    System.out.println(script.decompile().toString());
-                    prop.put("file", "Workin' on it.");
+                    String file = script.decompile().toString();
+                    System.out.println("D: "+file);
+                    prop.put("file", file);
                 }   catch(Exception e) {
                     e.printStackTrace();
                 }

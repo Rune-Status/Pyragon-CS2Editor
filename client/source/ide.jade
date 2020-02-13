@@ -15,14 +15,14 @@ block head
 
         function addTab(scriptName, id, element) {
             //save current contents to tabs
-            if(tabs[id]) {
-                let active = $('.script-tab.active');
-                if(active.data('id') == id) return false;
-                $('.script-tab.active').removeClass('active');
-                element.addClass('active');
-                setTab(id, tabs[id]);
-                return false;
-            }
+            //- if(tabs[id]) {
+            //-     let active = $('.script-tab.active');
+            //-     if(active.data('id') == id) return false;
+            //-     $('.script-tab.active').removeClass('active');
+            //-     element.addClass('active');
+            //-     setTab(id, tabs[id]);
+            //-     return false;
+            //- }
             $.post('/ide/load-script/'+id, {}, ret => {
                 let data = JSON.parse(ret);
                 if(data.error) {
@@ -51,7 +51,6 @@ block head
 
         $(document).ready(() => {
             $('#title').html('CS2Editor');
-            //- $('#editor').html('function foo(items) {\n\tvar x = "All this is syntax highlighted";\n\treturn x;\n}');
             editor = ace.edit('editor');
             editor.session.setMode('ace/mode/java');
             editor.setTheme('ace/theme/tomorrow');

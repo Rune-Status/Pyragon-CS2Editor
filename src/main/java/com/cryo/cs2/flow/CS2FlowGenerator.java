@@ -3,9 +3,11 @@ package com.cryo.cs2.flow;
 import com.cryo.CS2Editor;
 import com.cryo.cs2.CS2Definitions;
 import com.cryo.cs2.CS2Instruction;
+import com.cryo.cs2.CS2ParamDefs;
 import com.cryo.cs2.CS2Script;
 import com.cryo.cs2.instructions.*;
 import com.cryo.cs2.nodes.*;
+import com.cryo.cs2.nodes.interfaces.CS2HideComponent;
 import com.cryo.decompiler.CS2Type;
 import com.cryo.decompiler.util.FunctionInfo;
 import com.cryo.utils.ArrayQueue;
@@ -13,6 +15,8 @@ import com.cryo.utils.DecompilerException;
 import com.cryo.utils.IOUtils;
 import com.cryo.utils.OpcodeUtils;
 import lombok.Data;
+
+import static com.cryo.cs2.CS2Instruction.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +72,8 @@ public class CS2FlowGenerator {
                 if (ptr >= script.getInstructions().length)
                     throw new DecompilerException("Error:Code out bounds.");
                 Instruction instruction = script.getInstructions()[ptr];
-                CS2Instruction operation = script.getOperations()[ptr];
+                CS2Instruction operation = CS2Instruction.getByOpcode(instruction.getOpcode());
+                System.out.println("Instruction: "+operation);
                 int opcode = instruction.getOpcode();
                 if (instruction instanceof LabelInstruction) {
                     // new flow block
@@ -93,8 +98,8 @@ public class CS2FlowGenerator {
                     }
                     else if (OpcodeUtils.getOneConditionJumpStackType(opcode) != -1) {
                         CS2Expression expr = this.cast(stack.pop(0), CS2Type.BOOLEAN);
-//                        if (opcode == Opcodes.INT_F)
-//                            expr = new CS2NotExpression(expr);
+                        if (operation == BRANCH_EQ0)
+                            expr = new CS2NotExpression(expr);
                         this.dumpStack(block, stack);
                         CS2FlowBlock target = generateFlowBlock(jmp.getTarget(),stack.copy());
                         target.getPredecessors().add(block);
@@ -151,8 +156,131 @@ public class CS2FlowGenerator {
 //                }
                 else if (instruction instanceof PrimitiveInstruction && ((PrimitiveInstruction) instruction).getType() == CS2Type.INT) {
                     PrimitiveInstruction intInstr = (PrimitiveInstruction)instruction;
-                    if(operation == CS2Instruction.PUSH_INT)
+                    if(operation == PUSH_INT)
                         stack.push(new CS2PrimitiveExpression(intInstr.getValue(), intInstr.getType()), 0);
+                    else if(operation == ADD || operation == SUBTRACT
+                        || operation == DIVIDE || operation == MULTIPLY
+                        || operation == MODULO) {
+                        CS2Expression[] expressions = new CS2Expression[2];
+                        expressions[0] = cast(stack.pop(0), CS2Type.INT);
+                        expressions[1] = cast(stack.pop(0), CS2Type.INT);
+                        stack.push(new CS2DMAS(expressions, operation), 0);
+                    } else if(operation == ENUM) {
+                        CS2Expression index = cast(stack.pop(0), CS2Type.INT);
+                        CS2Expression id = cast(stack.pop(0), CS2Type.INT);
+                        CS2PrimitiveExpression returnType = (CS2PrimitiveExpression) stack.pop(0);
+                        CS2Expression keyType = cast(stack.pop(0), CS2Type.INT);
+                        stack.push(new CS2Enum(index, id, cast(returnType, CS2Type.INT), keyType), ((int) returnType.getValue()) == 's' ? 1 : 0);
+                    } else if(operation == ITEM_NAME) {
+                        CS2Expression expression = cast(stack.pop(0), CS2Type.INT);
+                        stack.push(new CS2BasicExpression(expression, operation.name().toLowerCase()), 1);
+                    } else if(operation == SCALE || operation == MIN || operation == MAX) {
+                        int expressionSize = CS2Script.getArgumentSize(operation);
+                        CS2Expression[] expressions = new CS2Expression[expressionSize];
+                        for(int i = 0; i < expressionSize; i++)
+                            expressions[i] = cast(stack.pop(0), CS2Type.INT);
+                        stack.push(new CS2BasicExpression(expressions, operation.name().toLowerCase()), CS2Script.getStackType(operation));
+                    } else if(operation == IF_GETWIDTH || operation == INV_SIZE || operation == RANDOM
+                        || operation == IF_GETNEXTSUBID || operation == GET_PLAYER_X || operation == GET_PLAYER_Y 
+                        || operation == GET_PLAYER_PLANE || operation == IF_GETHEIGHT) {
+                        CS2Expression expression = stack.pop(0);
+                        stack.push(new CS2BasicExpression(expression, operation.name().toLowerCase()), 0);
+                    } else if(operation == instr6801 || operation == instr6152) {
+                        CS2Expression[] expressions = new CS2Expression[3];
+                        expressions[0] = cast(stack.pop(1), CS2Type.STRING);
+                        expressions[1] = cast(stack.pop(0), CS2Type.INT);
+                        expressions[2] = cast(stack.pop(0), CS2Type.INT);
+                        stack.push(new CS2BasicExpression(expressions, operation.name().toLowerCase()), 0);
+                    } else if(operation == instr6519) {
+                        CS2Expression expression = cast(stack.pop(1), CS2Type.STRING);
+                        stack.push(new CS2BasicExpression(expression, operation.name().toLowerCase()), 1);
+                    } else if(operation == INV_GETITEM || operation == INV_GETNUM || operation == INV_TOTAL
+                        || operation == QUEST_STATREQ_LEVEL || operation == CC_FIND || operation == INVOTHER_GETITEM
+                        || operation == INVOTHER_GETNUM) {
+                        CS2Expression[] expressions = new CS2Expression[2];
+                        expressions[0] = cast(stack.pop(0), CS2Type.INT);
+                        expressions[1] = stack.pop(0);
+                        if (operation != CC_FIND)
+                            expressions[1] = cast(expressions[0], CS2Type.INT);
+                        stack.push(new CS2BasicExpression(expressions, operation.name().toLowerCase()), 0);
+                    } else if(operation == STRING_LENGTH) {
+                        CS2Expression expression = cast(stack.pop(1), CS2Type.STRING);
+                        stack.push(new CS2BasicExpression(expression, operation.name().toLowerCase()), 0);
+                    } else if(operation == IF_SETHIDE) {
+                        CS2Expression expression = stack.pop(0);
+                        if(!(expression instanceof CS2PrimitiveExpression))
+                            expression = cast(expression, CS2Type.COMPONENT);
+                        CS2Expression hidden = cast(stack.pop(0), CS2Type.BOOLEAN);
+                        block.write(new CS2HideComponent(expression, hidden));
+                    } else if(operation == TO_STRING) {
+                        CS2Expression expression = cast(stack.pop(0), CS2Type.INT);
+                        stack.push(new CS2ToString(expression), 1);
+                    } else if(operation == CC_SETOP || operation == IF_SETTEXT) {
+                        CS2Expression op = stack.pop(0);
+                        if(operation != IF_SETTEXT || !(op instanceof CS2PrimitiveExpression))
+                            op = cast(op, CS2Type.INT);
+                        CS2Expression str = cast(stack.pop(1), CS2Type.STRING);
+                        block.write(new CS2BasicExpression(new CS2Expression[] { str, op }, operation.name().toLowerCase()));
+                    } else if(operation == STRUCT_PARAM || operation == ITEM_PARAM) {
+                        CS2PrimitiveExpression expression = (CS2PrimitiveExpression) stack.pop(0);
+                        CS2Expression expression2 = cast(stack.pop(0), CS2Type.INT);
+                        int paramId = (int) expression.getValue();
+                        CS2ParamDefs defs = CS2ParamDefs.getParams(paramId);
+                        stack.push(new CS2StructParam(paramId, expression2), defs.isString() ? 1 : 0);
+                    } else if(operation == instr6135 || operation == instr6150 || operation == GET_PLAYER_POS) {
+                        stack.push(new CS2BasicExpression(new CS2Expression[] { }, operation.name().toLowerCase()), 0);
+                    } else if(operation == MOVE_COORD) {
+                        CS2Expression plane = cast(stack.pop(0), CS2Type.INT);
+                        CS2Expression x = cast(stack.pop(0), CS2Type.INT);
+                        CS2Expression y = cast(stack.pop(0), CS2Type.INT);
+                        CS2Expression startPos = cast(stack.pop(0), CS2Type.INT);
+                        stack.push(new CS2MoveCoord(startPos, x, y, plane), 0);
+                    } else if(operation == instr6342 || operation == instr6452 || operation == instr6257
+                        || operation == instr6237 || operation == HOOK_MOUSE_PRESS || operation == HOOK_MOUSE_RELEASE) {
+                        System.out.println("Testing unknown instruction.");
+                        CS2Expression component = null;
+                        if(operation == instr6342 || operation == instr6257 || operation == instr6237
+                            || operation == HOOK_MOUSE_PRESS || operation == HOOK_MOUSE_RELEASE)
+                            component = cast(stack.pop(0), CS2Type.INT);
+                        CS2PrimitiveExpression paramTypesE = (CS2PrimitiveExpression) stack.pop(1);
+                        String paramTypes = (String) paramTypesE.getValue();
+                        CS2Expression[] intArr = null;
+                        if(paramTypes.length() > 0 && paramTypes.charAt(paramTypes.length()-1) == 'Y') {
+                            int size = (int) ((CS2PrimitiveExpression) stack.pop(0)).getValue();
+                            if(size > 0) {
+                                intArr = new CS2Expression[size];
+                                while(size-- > 0)
+                                    intArr[size] = cast(stack.pop(0), CS2Type.INT);
+                            }
+                        }
+                        CS2Expression[] params = new CS2Expression[paramTypes.length() + 1];
+                        for(int i = params.length - 1; i >= 1; --i) {
+                            if(paramTypes.charAt(i - 1) == 's')
+                                params[i] = cast(stack.pop(1), CS2Type.STRING);
+                            else if(paramTypes.charAt(i-1) == 'I')
+                                params[i] = cast(stack.pop(0), CS2Type.INT);
+                            else
+                                System.out.println("paramTypes.charAt: "+paramTypes.charAt(i - 1));
+                        }
+                        CS2Expression scriptId = cast(stack.pop(0), CS2Type.INT);
+                        block.write(new CS2UnknownExpression(new Object[] { scriptId, params, intArr, cast(paramTypesE, CS2Type.STRING), component }, operation));
+                    } else if(operation == CC_DELETEALL) {
+                        CS2Expression expression = stack.pop(0);
+                        block.write(new CS2BasicExpression(expression, operation.name().toLowerCase()));
+                    } else if(operation == instr6212) {
+                        CS2Expression expression = cast(stack.pop(0), CS2Type.INT);
+                        stack.push(new CS2BasicExpression(expression, "test_ex_1"), 0);
+                        stack.push(new CS2BasicExpression(expression, "test_ex_2"), 0);
+                    } else if(CS2Script.isBasicInstruction(operation)) {
+                        int size = CS2Script.getArgumentSize(operation);
+                        int stackType = CS2Script.getStackType(operation);
+                        if(size == -1 || stackType == -1)
+                            throw new DecompilerException("Unknown opcode: " + opcode + " " + operation);
+                        CS2Expression[] expressions = new CS2Expression[size];
+                        for(int i = 0; i < size; i++)
+                            expressions[i] = cast(stack.pop(stackType), stackType == 0 ? CS2Type.INT : stackType == 1 ? CS2Type.STRING : CS2Type.LONG);
+                        block.write(new CS2BasicExpression(expressions, operation.name().toLowerCase()));
+                    }
                     else if (operation == CS2Instruction.RETURN) {
                         if (stack.getSize() <= 0) {
                             this.function.setReturnType(CS2Type.merge(this.function.getReturnType(), CS2Type.VOID));
@@ -187,6 +315,17 @@ public class CS2FlowGenerator {
                         CS2Expression expr = cast(stack.pop(stackType),var.getType());
                         this.dumpStack(block, stack);
                         block.write(new CS2Poppable(new CS2VariableAssign(var,expr)));
+                    }
+                    else if(operation == STORE_VARC || operation == STORE_VARC_STRING) {
+                        int id = intInstr.asInt();
+                        boolean isString = operation == STORE_VARC_STRING;
+                        CS2Expression expression = cast(stack.pop(isString ? 1 : 0), isString ? CS2Type.STRING : CS2Type.INT);
+                        block.write(new CS2StoreVarc(id, expression));
+                    }
+                    else if(operation == LOAD_VARPBIT || operation == LOAD_VARC || operation == LOAD_VARC_STRING) {
+                        int id = intInstr.asInt();
+                        boolean isString = operation == LOAD_VARC_STRING;
+                        stack.push(new CS2LoadConfig(id, operation.name().toLowerCase()), isString ? 1 : 0);
                     }
                     else if (operation == CS2Instruction.MERGE_STRINGS) {
                         int amount = intInstr.asInt();
@@ -227,10 +366,10 @@ public class CS2FlowGenerator {
                         block.write(new CS2Poppable(new CS2StoreArray(new CS2LoadNamedData("globalarray_" + arrayID,CS2Type.INT.getArrayType()),index,value)));
                     }
                     else {
-                        throw new DecompilerException("Unknown opcode:" + opcode);
+                        throw new DecompilerException("Unknown opcode: " + opcode+" "+operation);
                     }
                 }
-                else if (instruction instanceof BooleanInstruction) {
+                else if (instruction instanceof PrimitiveInstruction && ((PrimitiveInstruction) instruction).getType() == CS2Type.BOOLEAN) {
                     FunctionInfo info = CS2Editor.getInstance().getOpcodesDB().getInfo(instruction.getOpcode());
                     if (info == null)
                         throw new DecompilerException("No documentation for:" + instruction);
@@ -608,21 +747,29 @@ public class CS2FlowGenerator {
      * to same local variables.
      */
     private boolean checkMerging(CS2Stack v0, CS2Stack v1) {
-        if (v0.getSize() != v1.getSize())
+        if (v0.getSize() != v1.getSize()) {
+            System.out.println("Invalid size1");
             return false;
+        }
         for (int i = 0; i < 3; i++)
-            if (v0.getSize(i) != v1.getSize(i))
+            if (v0.getSize(i) != v1.getSize(i)) {
+                System.out.println("Invalid size2");
                 return false;
+            }
         CS2Stack c0 = v0.copy();
         CS2Stack c1 = v1.copy();
         for (int i = 0; i < 3; i++) {
             while (c0.getSize(i) > 0) {
                 CS2Expression e0 = c0.pop(i);
                 CS2Expression e1 = c1.pop(i);
-                if (!(e0 instanceof CS2VariableLoad) || !(e1 instanceof CS2VariableLoad))
+                if (!(e0 instanceof CS2VariableLoad) || !(e1 instanceof CS2VariableLoad)) {
+                    System.out.println("Invalid CS2VariableLoad");
                     return false;
-                if (((CS2VariableLoad)e0).getVariable() != ((CS2VariableLoad)e1).getVariable())
+                }
+                if (((CS2VariableLoad)e0).getVariable() != ((CS2VariableLoad)e1).getVariable()) {
+                    System.out.println("Invalid variable matching");
                     return false;
+                }
             }
         }
         return true;
