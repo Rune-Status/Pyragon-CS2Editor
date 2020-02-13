@@ -201,7 +201,7 @@ public class CS2FlowGenerator {
                         expressions[0] = cast(stack.pop(0), CS2Type.INT);
                         expressions[1] = stack.pop(0);
                         if (operation != CC_FIND)
-                            expressions[1] = cast(expressions[0], CS2Type.INT);
+                            expressions[1] = cast(expressions[1], CS2Type.INT);
                         stack.push(new CS2BasicExpression(expressions, operation.name().toLowerCase()), 0);
                     } else if(operation == STRING_LENGTH) {
                         CS2Expression expression = cast(stack.pop(1), CS2Type.STRING);
