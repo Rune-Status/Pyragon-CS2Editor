@@ -1,6 +1,6 @@
 package com.cryo.utils;
 
-import com.cryo.cache.definitions.CS2Instruction;
+import com.cryo.cs2.CS2Instruction;
 
 import java.io.File;
 import java.io.IOException;

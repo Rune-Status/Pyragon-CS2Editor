@@ -3,8 +3,8 @@ package com.cryo.modules;
 import com.cryo.CS2Editor;
 import com.cryo.cache.Cache;
 import com.cryo.cache.IndexType;
-import com.cryo.cache.definitions.CS2Definitions;
-import com.cryo.cache.definitions.CS2Script;
+import com.cryo.cs2.CS2Definitions;
+import com.cryo.cs2.CS2Script;
 import com.cryo.decompiler.ast.FunctionNode;
 import com.cryo.decompiler.util.FunctionInfo;
 import spark.Request;
@@ -16,7 +16,6 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.Random;
 
 public class IDEModule extends WebModule {
 
@@ -36,13 +35,11 @@ public class IDEModule extends WebModule {
                 try {
                     ArrayList<Properties> scripts = new ArrayList<>();
                     for (int i = 0; i < Cache.STORE.getIndex(IndexType.CS2_SCRIPTS).getLastArchiveId(); i++) {
-                        FunctionInfo info = CS2Editor.getInstance().getScriptsDB().getInfo(i);
                         Properties prop = new Properties();
                         prop.put("id", i);
-                        String name = info.getName();
-//                        if(CS2Editor.getLoaders().get("script-names").containsKey(i))
-//                            name = CS2Editor.getLoaders().get("script-names").get(i);
-//                        else name = info.getName();
+                        String name = "script"+i;
+                        if(CS2Editor.getLoaders().get("script-names").containsKey(i))
+                            name = CS2Editor.getLoaders().get("script-names").get(i);
                         prop.put("name", name);
                         scripts.add(prop);
                     }
@@ -69,7 +66,9 @@ public class IDEModule extends WebModule {
 //                    System.out.println("------------------------");
 //                    node = CS2Editor.getInstance().loadScript(id);
 //                    if(node == null) return error("Error loading node.");
-                    prop.put("file", "Workin' on it.");
+                    String file = script.decompile().toString();
+                    System.out.println("D: "+file);
+                    prop.put("file", file);
                 }   catch(Exception e) {
                     e.printStackTrace();
                 }

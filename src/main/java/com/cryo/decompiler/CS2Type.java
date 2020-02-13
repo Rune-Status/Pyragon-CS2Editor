@@ -17,6 +17,7 @@
 package com.cryo.decompiler;
 
 import com.cryo.decompiler.util.TextUtils;
+import lombok.Data;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.util.function.Function;
 
 import static com.cryo.decompiler.util.GenericsUtils.*;
 
+@Data
 public class CS2Type {
 
 	private String name;
@@ -564,7 +566,7 @@ public class CS2Type {
 			return t1;
 		
 		if (t1.iss != t2.iss || t1.sss != t2.sss || t1.lss != t2.lss || t1.array != t2.array)
-			throw new RuntimeException("can't merge: diff stack sizes/types");
+			throw new RuntimeException("can't merge: diff stack sizes/types, "+(t1.iss-t2.iss)+", "+(t1.sss-t2.sss)+", "+(t1.lss-t2.lss)+", "+(t1.array==t2.array));
 		else if (t1.array)
 			return merge(t1.getElementType(), t2.getElementType()).getArrayType();
 		else if (!t1.structure || !t2.structure)

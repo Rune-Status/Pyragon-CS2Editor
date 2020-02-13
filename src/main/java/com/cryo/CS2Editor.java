@@ -1,14 +1,14 @@
 package com.cryo;
 
+import com.cryo.cache.Cache;
+import com.cryo.cs2.CS2Definitions;
+import com.cryo.cs2.CS2Script;
 import com.cryo.decompiler.CS2;
 import com.cryo.decompiler.CS2Decoder;
 import com.cryo.decompiler.CS2Decompiler;
 import com.cryo.decompiler.ICS2Provider;
 import com.cryo.decompiler.ast.FunctionNode;
-import com.cryo.decompiler.util.ConfigsDatabase;
-import com.cryo.decompiler.util.FunctionDatabase;
-import com.cryo.decompiler.util.InstructionsDatabase;
-import com.cryo.decompiler.util.UnsafeSerializer;
+import com.cryo.decompiler.util.*;
 import com.cryo.modules.WebModule;
 import com.cryo.utils.Utilities;
 import com.google.gson.FieldNamingPolicy;
@@ -22,6 +22,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -57,28 +59,37 @@ public class CS2Editor {
         serializer = new UnsafeSerializer();
         reloadDatabases();
         try {
+            Cache.init("F:\\workspace\\github\\darkan-server\\data\\cache\\");
             port(8087);
             staticFiles.externalLocation("client/source/");
             staticFiles.expireTime(0);
             staticFiles.header("Access-Control-Allow-Origin", "*");
-            for(Class<?> c : Utilities.getClasses("com.cryo.modules")) {
-                if(!WebModule.class.isAssignableFrom(c)) continue;
-                if(c.getName().equals("com.cryo.modules.WebModule")) continue;
-                Object o = c.newInstance();
-                if(!(o instanceof WebModule)) continue;
+            for (Class<?> c : Utilities.getClasses("com.cryo.modules")) {
+                if (!WebModule.class.isAssignableFrom(c))
+                    continue;
+                if (c.getName().equals("com.cryo.modules.WebModule"))
+                    continue;
+                Object o = c.getConstructor().newInstance();
+                if (!(o instanceof WebModule))
+                    continue;
                 WebModule module = (WebModule) o;
                 int i = 0;
-                while(i < module.getEndpoints().length) {
+                while (i < module.getEndpoints().length) {
                     String method = module.getEndpoints()[i++];
                     String path = module.getEndpoints()[i++];
-                    if (method.equals("GET")) get(path, (req, res) -> module.decodeRequest(path, req, res));
-                    else post(path, (req, res) -> module.decodeRequest(path, req, res));
+                    if (method.equals("GET"))
+                        get(path, (req, res) -> module.decodeRequest(path, req, res));
+                    else
+                        post(path, (req, res) -> module.decodeRequest(path, req, res));
                 }
             }
             System.out.println("Server started on " + java.net.InetAddress.getLocalHost() + ":" + Spark.port());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            CS2Script script = CS2Definitions.getScript(99);
+            if (script == null)
+                System.out.println("Error getting.");
+            else
+                System.out.println(script.decompile().toString());
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -101,7 +112,15 @@ public class CS2Editor {
                 }
             }
         });
+        printUnder150();
+    }
 
+    public void printUnder150() {
+        for(int i = 0; i < 150; i++) {
+            InstructionInfo info = instructionsDB.getByUnscrampled(i);
+            if(info != null)
+                System.out.println(i+" - "+info.getName());
+        }
     }
 
     public FunctionNode loadScript(int scriptID) {
@@ -145,13 +164,15 @@ public class CS2Editor {
 
     public static void loadLoader(String name) {
         loaders.put(name, new HashMap<>());
+        BufferedReader reader;
         try  {
-            BufferedReader reader = new BufferedReader(new FileReader("./data/"+name+".tsv"));
+            reader = new BufferedReader(new FileReader("./data/"+name+".tsv"));
             String line;
             while((line = reader.readLine()) != null) {
                 String[] split = line.split("\t");
                 loaders.get(name).put(Integer.parseInt(split[0]), split[1]);
             }
+            reader.close();
         } catch(Exception e) {
             e.printStackTrace();
         }
