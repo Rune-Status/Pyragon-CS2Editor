@@ -159,6 +159,7 @@ public class CS2Type {
 		return new CS2Type(name, format, jagexId, jagexChar < 0 ? (jagexChar & 0xFF) : jagexChar, false, true, 1, 0, 0);
 	}
 	
+    @SuppressWarnings("unused")
 	private static CS2Type createStringJagexType(String name, int jagexId, int jagexChar) {
 		return new CS2Type(name, null, jagexId, jagexChar < 0 ? (jagexChar & 0xFF) : jagexChar, false, true, 0, 1, 0);
 	}
@@ -176,7 +177,7 @@ public class CS2Type {
 	}
 	
 	private static CS2Type createCoordJagexType(String name, int jagexId, int jagexChar) {
-		return createIntJagexType(name, jagexId, jagexChar < 0 ? (jagexChar & 0xFF) : jagexChar); // TODO
+		return createIntJagexType(name, jagexId, jagexChar < 0 ? (jagexChar & 0xFF) : jagexChar);
 	}
 
 	
@@ -315,10 +316,14 @@ public class CS2Type {
 			jagexChar == other.jagexChar;*/
 		return this == other;
 	}
-	
 
-	
-	
+    public String toString2() {
+        boolean structure = this.structure;
+        this.structure = false;
+        String s = toString();
+        this.structure = structure;
+        return s;
+    }
 	
 	private String _string1;
 	@Override

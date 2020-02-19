@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class CS2Switch extends CS2Node implements IBreakableNode {
 
     private CS2Expression expression;

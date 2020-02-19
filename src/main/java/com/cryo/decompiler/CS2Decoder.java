@@ -22,9 +22,6 @@ import com.cryo.decompiler.instructions.*;
 import com.cryo.decompiler.util.*;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

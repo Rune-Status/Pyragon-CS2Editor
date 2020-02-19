@@ -4,11 +4,12 @@ import com.cryo.cs2.CS2Script;
 import com.cryo.cs2.nodes.CS2Expression;
 import com.cryo.cs2.nodes.CS2Node;
 import com.cryo.cs2.nodes.CS2PrimitiveExpression;
-import com.cryo.decompiler.CS2Type;
 import com.cryo.utils.CodePrinter;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class CS2HideComponent extends CS2Node {
 
     private CS2Expression expression;

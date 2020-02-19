@@ -10,8 +10,6 @@ import java.util.Properties;
 
 public class CacheSelectModule extends WebModule {
 
-    private boolean cacheLoaded;
-
     @Override
     public String[] getEndpoints() {
         return new String[] { "GET", "/", "POST", "/cache/load",

@@ -5,8 +5,6 @@ import com.cryo.cache.IndexType;
 import com.cryo.cache.Store;
 import com.cryo.cs2.flow.CS2FlowGenerator;
 import com.cryo.cs2.flow.FlowBlocksSolver;
-import com.cryo.cs2.flow.LocalVariablesAnalyzerT1;
-import com.cryo.cs2.flow.LocalVariablesAnalyzerT2;
 import com.cryo.cs2.instructions.*;
 import com.cryo.cache.io.InputStream;
 import com.cryo.cache.io.OutputStream;
@@ -15,7 +13,8 @@ import com.cryo.cs2.nodes.CS2Function;
 import com.cryo.cs2.nodes.LocalVariable;
 import com.cryo.decompiler.util.FunctionInfo;
 import com.cryo.decompiler.CS2Type;
-import com.cryo.utils.Beautifier;
+import com.cryo.utils.ScriptDAO;
+import com.cryo.utils.ScriptDBBuilder;
 import com.cryo.utils.Utilities;
 import lombok.Data;
 
@@ -45,15 +44,25 @@ public class CS2Script {
     public int longLocalsCount;
     public HashMap<Integer, Integer>[] switchMaps;
     public int id;
-    public CS2Type returnType;
+    private ScriptDAO DAO;
 
     private static ArrayList<Integer> decompiling = new ArrayList<>();
 
-    public CS2Script(InputStream buffer) {
+    public CS2Script(int id, InputStream buffer) {
         int instructionLength = decodeHeader(buffer);
         int opCount = 0;
+        this.id = id;
+        DAO = ScriptDBBuilder.getScript(id);
         while (buffer.getOffset() < instructionLength) {
-            CS2Instruction op = getOpcode(buffer);
+            int opcode = buffer.readUnsignedShort();
+            if (opcode < 0 || opcode >= CS2Instruction.values().length) {
+                throw new RuntimeException("Invalid operation code: " + opcode);
+            }
+            CS2Instruction op = CS2Instruction.getByOpcode(opcode);
+            if(op == null) {
+                System.out.println("Null operation: "+opcode+" "+opCount);
+                continue;
+            }
             decodeInstruction(buffer, opCount, op);
             opCount++;
         }
@@ -61,11 +70,7 @@ public class CS2Script {
         loadInstructions();
     }
 
-    CS2Instruction getOpcode(InputStream buffer) {
-        int opcode = buffer.readUnsignedShort();
-        if (opcode < 0 || opcode >= CS2Instruction.values().length) {
-            throw new RuntimeException("Invalid operation code: " + opcode);
-        }
+    CS2Instruction getInstruction(int opcode) {
         CS2Instruction op = CS2Instruction.getByOpcode(opcode);
         return op;
     }
@@ -113,7 +118,6 @@ public class CS2Script {
         instructions = new Instruction[codeSize * 2];
         operations = new CS2Instruction[codeSize];
         operationOpcodes = new int[codeSize];
-        System.out.println(codeSize+" "+operations.length);
         return instructionLength;
     }
 
@@ -182,17 +186,19 @@ public class CS2Script {
             arguments[write++] = CS2Type.STRING;
         for (int i = 0; i < longArgsCount; i++)
             arguments[write++] = CS2Type.LONG;
+
     }
 
     public void loadInstructions() {
         for (int i = 0; i < operations.length; i++) {
             CS2Instruction instruction = operations[i];
+            if(instruction == null) continue; //no idea why some scripts have differing codeSizes and instruction lengths
             if (instruction == CS2Instruction.PUSH_STRING || instruction == CS2Instruction.PUSH_LONG) {
                 Object value = instruction == CS2Instruction.PUSH_STRING ? stringOpValues[i] : longOpValues[i];
                 CS2Type type = instruction == CS2Instruction.PUSH_STRING ? CS2Type.STRING : CS2Type.LONG;
                 instructions[(i * 2) + 1] = new PrimitiveInstruction(instruction.opcode, instruction.name(), value, type);
             } else if (instruction == CS2Instruction.SWITCH) {
-                Map block = switchMaps[intOpValues[i]];
+                Map<Integer, Integer> block = switchMaps[intOpValues[i]];
                 int[] cases = new int[block.size()];
                 LabelInstruction[] targets = new LabelInstruction[block.size()];
                 int w = 0;
@@ -267,30 +273,35 @@ public class CS2Script {
             CC_SETHFLIP, 1, 0, instr6212, -1, -1, GET_PLAYER_X, -1, -1, GET_PLAYER_Y, -1, -1, GET_PLAYER_PLANE, -1, -1,
             IF_GETHEIGHT, -1, -1, MOVE_COORD, -1, -1, SCALE, 3, 0, MIN, 2, 0, MAX, 2, 0, STRING_LENGTH, -1, -1,
             CC_DELETE, 0, 1, IF_SETSIZE, 5, 0, instr6519, -1, -1, instr6801, -1, -1, instr6152, -1, -1,
-            INVOTHER_GETITEM, -1, -1, INVOTHER_GETNUM, -1, -1
+            INVOTHER_GETITEM, -1, -1, INVOTHER_GETNUM, -1, -1, IF_SETONMOUSELEAVE, -1, -1, IF_SETONMOUSEOVER, -1, -1,
+            HOOK_MOUSE_EXIT, -1, -1, instr6376, -1, -1, instr6527, -1, -1, instr6393, -1, -1, HOOK_MOUSE_ENTER, -1, -1,
+            instr6239, -1, -1, instr6687, -1, -1, instr6091, -1, -1, instr6092, -1, -1, instr6088, -1, -1,
+            instr6224, -1, -1, instr6499, -1, -1, instr5957, -1, -1, instr6246, -1, -1
     };
 
     public CS2Function decompile() {
         if(decompiling.contains(id))
             throw new RuntimeException("Stuck in decompiling loop.");
         decompiling.add(id);
+
+        ScriptDAO dao = ScriptDBBuilder.getScript(id);
+
         FunctionInfo info = CS2Editor.getInstance().getScriptsDB().getInfo(id);
-        if(info != null) {
-            returnType = info.getReturnType();
-            CS2Type[] arguments = new CS2Type[info.getArgumentTypes().length];
-            String[] argNames = new String[info.getArgumentNames().length];
-            System.arraycopy(info.getArgumentTypes(), 0, arguments, 0, arguments.length);
-            System.arraycopy(info.getArgumentNames(), 0, argNames, 0, argNames.length);
-            this.arguments = arguments;
-            this.argumentNames = argNames;
+
+        CS2Type returnType = info.getReturnType();
+
+        if(dao != null) {
+            argumentNames = dao.getArgumentNames();
+            returnType = dao.getReturnType();
         }
+
         if(argumentNames == null) {
             argumentNames = new String[arguments.length];
             for(int i = 0; i < argumentNames.length; i++)
                 argumentNames[i] = "arg"+i;
         }
 
-        CS2Function function = new CS2Function(id, name, arguments, argumentNames, returnType);
+        CS2Function function = new CS2Function(id, getName(), arguments, argumentNames, returnType, this);
 
         //add script id as comment
         function.setCodeAddress(0);
@@ -349,18 +360,37 @@ public class CS2Script {
         if (ic != getIntArgsCount() || oc != getStringArgsCount() || lc != getLongArgsCount())
             throw new RuntimeException("badargs");
 
+        ScriptDAO dao = ScriptDBBuilder.getScript(id);
+        int index = 0;
         for (int i = getIntArgsCount(); i < getIntLocalsCount(); i++) {
-            LocalVariable var = new LocalVariable("ivar" + i,CS2Type.INT);
+            String name = "ivar"+i;
+            if(dao != null && dao.getVariableNames() != null && dao.getVariableNames().length > 0) {
+                String rName = dao.getVariableNames()[index++];
+                if(rName != null) name = rName;
+            }
+            LocalVariable var = new LocalVariable(name,CS2Type.INT);
             var.setIdentifier(LocalVariable.makeIdentifier(i, 0));
             function.getScope().declare(var);
         }
         for (int i = getStringArgsCount(); i < getStringLocalsCount(); i++) {
-            LocalVariable var = new LocalVariable("svar" + i,CS2Type.STRING);
+            String name = "svar" + i;
+            if (dao != null && dao.getVariableNames() != null && dao.getVariableNames().length > 0) {
+                String rName = dao.getVariableNames()[index++];
+                if (rName != null)
+                    name = rName;
+            }
+            LocalVariable var = new LocalVariable(name,CS2Type.STRING);
             var.setIdentifier(LocalVariable.makeIdentifier(i, 1));
             function.getScope().declare(var);
         }
         for (int i = getLongArgsCount(); i < getLongLocalsCount(); i++) {
-            LocalVariable var = new LocalVariable("lvar" + i,CS2Type.LONG);
+            String name = "lvar" + i;
+            if (dao != null && dao.getVariableNames() != null && dao.getVariableNames().length > 0) {
+                String rName = dao.getVariableNames()[index++];
+                if (rName != null)
+                    name = rName;
+            }
+            LocalVariable var = new LocalVariable(name,CS2Type.LONG);
             var.setIdentifier(LocalVariable.makeIdentifier(i, 2));
             function.getScope().declare(var);
         }
@@ -372,10 +402,6 @@ public class CS2Script {
             LONG_NE, LONG_LT, LONG_GT, LONG_LE, LONG_GE};
 
     public static boolean isJump(CS2Instruction instruction) {
-        if(instruction == null) {
-            System.out.println("Instruction is null?");
-            return false;
-        }
         Optional<CS2Instruction> optional = Stream.of(JUMP_INSTRUCTIONS)
                 .filter(instr -> instr != null)
                 .filter(instr -> instr.opcode == instruction.opcode)
@@ -385,8 +411,14 @@ public class CS2Script {
 
     public static int[] getInterfaceIds(int hash) {
         int interfaceId = hash >> 16;
-        int componentId = hash >>> 16;
         return new int[] { interfaceId, hash & 0xffff };
+    }
+
+    public static int[] getColours(int hash) {
+        int r = hash >> 16 & 0xff;
+        int g = hash >> 8 & 0xff;
+        int b = hash & 0xff;
+        return new int[] { r, g, b };
     }
 
     public void write(Store store) {
@@ -522,11 +554,9 @@ public class CS2Script {
     public String getName() {
         String name = this.name;
         if (name == null || name.equals("")) {
-            if (CS2Editor.getLoaders().get("script-names").containsKey(id)) {
-                name = CS2Editor.getLoaders().get("script-names").get(id);
-                if (name != null && !name.equals(""))
-                    return name;
-            }
+            ScriptDAO dao = ScriptDBBuilder.getScript(id);
+            if(dao != null)
+                return dao.getName();
             return "script" + id;
         }
         return name;
@@ -538,6 +568,11 @@ public class CS2Script {
             if (instructions[i].getClass() == type)
                 total++;
         return total;
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
     }
 
     @Override

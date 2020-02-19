@@ -2,9 +2,10 @@ package com.cryo.cs2.nodes;
 
 import com.cryo.decompiler.CS2Type;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class LocalVariable {
 
     private String name;

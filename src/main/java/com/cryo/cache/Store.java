@@ -1,9 +1,6 @@
 package com.cryo.cache;
 
 import com.cryo.cache.io.OutputStream;
-import com.cryo.cache.utils.CacheUtil;
-import com.cryo.cache.utils.Whirlpool;
-import com.sun.scenario.Settings;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

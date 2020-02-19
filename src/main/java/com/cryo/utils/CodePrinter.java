@@ -54,6 +54,10 @@ public class CodePrinter {
 		if (c == '\n')
 			writer.append(getTabs());
 	}
+
+    public void newLine() {
+        print('\n');
+    }
 	
 	protected String getTabs() {
 		StringBuilder tabs = new StringBuilder();

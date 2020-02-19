@@ -1,0 +1,388 @@
+{
+  "385": {
+    "opcode": 385,
+    "name": "item_name",
+    "popOrder": "i",
+    "argNames": "itemId",
+    "pushType": "s"
+  },
+  "130": {
+    "opcode": 130,
+    "name": "subtract",
+    "popOrder": "i,i",
+    "argNames": "a,b",
+    "pushType": "i",
+    "customPrint": "calc(%0 - %1)"
+  },
+  "259": {
+    "opcode": 259,
+    "name": "cc_dragpickup",
+    "popOrder": "i,i",
+    "argNames": "a0,a1",
+    "pushType": "v"
+  },
+  "263": {
+    "opcode": 263,
+    "name": "if_getwidth",
+    "popOrder": "ic",
+    "argNames": "component",
+    "pushType": "i"
+  },
+  "904": {
+    "opcode": 904,
+    "name": "enum_getreverseindex",
+    "popOrder": "i,i,i,i,i",
+    "argNames": "a4,a3,a2,a1,a0",
+    "pushType": "i"
+  },
+  "138": {
+    "opcode": 138,
+    "name": "inv_getnum",
+    "popOrder": "i,i",
+    "argNames": "invId,slot",
+    "pushType": "i"
+  },
+  "523": {
+    "opcode": 523,
+    "name": "cc_gety",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "140": {
+    "opcode": 140,
+    "name": "cc_setsize",
+    "popOrder": "i,i,i,i",
+    "argNames": "x,y,a,b",
+    "pushType": "v"
+  },
+  "13": {
+    "opcode": 13,
+    "name": "cc_setitem",
+    "popOrder": "i,i",
+    "argNames": "itemId,amount",
+    "pushType": "v"
+  },
+  "402": {
+    "opcode": 402,
+    "name": "cc_setfill",
+    "popOrder": "ib",
+    "argNames": "filled",
+    "pushType": "v"
+  },
+  "274": {
+    "opcode": 274,
+    "name": "cc_setcolor",
+    "popOrder": "ico",
+    "argNames": "colour",
+    "pushType": "v"
+  },
+  "275": {
+    "opcode": 275,
+    "name": "cc_setopbase",
+    "popOrder": "s",
+    "argNames": "text",
+    "pushType": "v"
+  },
+  "149": {
+    "opcode": 149,
+    "name": "enum_getreversecount",
+    "popOrder": "i,i,i",
+    "argNames": "a2,a1,a0",
+    "pushType": "i"
+  },
+  "22": {
+    "opcode": 22,
+    "name": "item_wearpos",
+    "popOrder": "i",
+    "argNames": "itemId",
+    "pushType": "i"
+  },
+  "278": {
+    "opcode": 278,
+    "name": "bit_flagged",
+    "popOrder": "i,i",
+    "argNames": "a,b",
+    "pushType": "i",
+    "customPrint": "calc(%0 & 1 << %1)"
+  },
+  "406": {
+    "opcode": 406,
+    "name": "cc_settiling",
+    "popOrder": "ib",
+    "argNames": "tiling",
+    "pushType": "v"
+  },
+  "279": {
+    "opcode": 279,
+    "name": "add",
+    "popOrder": "i,i",
+    "argNames": "a,b",
+    "pushType": "i",
+    "customPrint": "calc(%1 + %0)"
+  },
+  "796": {
+    "opcode": 796,
+    "name": "cc_getheight",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
+  },
+  "286": {
+    "opcode": 286,
+    "name": "append",
+    "popOrder": "s,s",
+    "argNames": "s1,s0",
+    "pushType": "s"
+  },
+  "671": {
+    "opcode": 671,
+    "name": "cc_setop",
+    "popOrder": "s,i",
+    "argNames": "text,index",
+    "pushType": "v"
+  },
+  "289": {
+    "opcode": 289,
+    "name": "item_useonname",
+    "popOrder": "i,s",
+    "argNames": "componentId,name",
+    "pushType": "v"
+  },
+  "546": {
+    "opcode": 546,
+    "name": "cc_settextalign",
+    "popOrder": "i,i,i",
+    "argNames": "unknown,verticalAlign,horizontalAlign",
+    "pushType": "v"
+  },
+  "293": {
+    "opcode": 293,
+    "name": "fc_joinchat",
+    "popOrder": "s",
+    "argNames": "channel",
+    "pushType": "v"
+  },
+  "677": {
+    "opcode": 677,
+    "name": "cc_find",
+    "popOrder": "i,ic",
+    "argNames": "a0,hash",
+    "pushType": "i"
+  },
+  "170": {
+    "opcode": 170,
+    "name": "if_gety",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "428": {
+    "opcode": 428,
+    "name": "if_getscrolly",
+    "popOrder": "i",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "301": {
+    "opcode": 301,
+    "name": "stat",
+    "popOrder": "i",
+    "argNames": "skillId",
+    "pushType": "i"
+  },
+  "816": {
+    "opcode": 816,
+    "name": "if_setcolor",
+    "popOrder": "ico",
+    "argNames": "colour",
+    "pushType": "v"
+  },
+  "178": {
+    "opcode": 178,
+    "name": "modulo",
+    "popOrder": "i,i",
+    "argNames": "a,b",
+    "pushType": "i",
+    "customPrint": "calc(%0 % %1)"
+  },
+  "180": {
+    "opcode": 180,
+    "name": "inv_getitem",
+    "popOrder": "i,i",
+    "argNames": "invId,slot",
+    "pushType": "i"
+  },
+  "822": {
+    "opcode": 822,
+    "name": "item_members",
+    "popOrder": "i",
+    "argNames": "itemId",
+    "pushType": "i"
+  },
+  "56": {
+    "opcode": 56,
+    "name": "divide",
+    "popOrder": "i,i",
+    "argNames": "a,b",
+    "pushType": "i",
+    "customPrint": "calc(%0 / %1)"
+  },
+  "825": {
+    "opcode": 825,
+    "name": "if_setscrollpos",
+    "popOrder": "ic,i,i",
+    "argNames": "hash,scrollX,scrollY",
+    "pushType": "v"
+  },
+  "317": {
+    "opcode": 317,
+    "name": "cc_setoutline",
+    "popOrder": "i",
+    "argNames": "unknown0",
+    "pushType": "v"
+  },
+  "704": {
+    "opcode": 704,
+    "name": "instr6296",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "68": {
+    "opcode": 68,
+    "name": "instr6676",
+    "popOrder": "i,ic",
+    "argNames": "unknown,hash",
+    "pushType": "v"
+  },
+  "199": {
+    "opcode": 199,
+    "name": "bit_and",
+    "popOrder": "i,i",
+    "argNames": "a,b",
+    "pushType": "i",
+    "customPrint": "calc(%0 & %1)"
+  },
+  "972": {
+    "opcode": 972,
+    "name": "cc_settext",
+    "popOrder": "s",
+    "argNames": "text",
+    "pushType": "v"
+  },
+  "847": {
+    "opcode": 847,
+    "name": "cc_setposition",
+    "popOrder": "i,i,i,i",
+    "argNames": "x,y,a,b",
+    "pushType": "v"
+  },
+  "720": {
+    "opcode": 720,
+    "name": "invother_getnum",
+    "popOrder": "i,i",
+    "argNames": "invId,slot",
+    "pushType": "i"
+  },
+  "336": {
+    "opcode": 336,
+    "name": "world_members",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
+  },
+  "978": {
+    "opcode": 978,
+    "name": "if_getscrollheight",
+    "popOrder": "i",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "340": {
+    "opcode": 340,
+    "name": "stat_base",
+    "popOrder": "i",
+    "argNames": "skillId",
+    "pushType": "i"
+  },
+  "344": {
+    "opcode": 344,
+    "name": "if_setborderthickness",
+    "popOrder": "i,i",
+    "argNames": "hash,borderThickness",
+    "pushType": "v"
+  },
+  "345": {
+    "opcode": 345,
+    "name": "instr6073",
+    "popOrder": "i",
+    "argNames": "unknown",
+    "pushType": "v"
+  },
+  "351": {
+    "opcode": 351,
+    "name": "cc_settextfont",
+    "popOrder": "i",
+    "argNames": "fontId",
+    "pushType": "v"
+  },
+  "224": {
+    "opcode": 224,
+    "name": "if_setclickmask",
+    "popOrder": "i,i",
+    "argNames": "componentId,mask",
+    "pushType": "v"
+  },
+  "612": {
+    "opcode": 612,
+    "name": "invother_getitem",
+    "popOrder": "i,i",
+    "argNames": "invId,slot",
+    "pushType": "i"
+  },
+  "103": {
+    "opcode": 103,
+    "name": "cc_settextshadow",
+    "popOrder": "i",
+    "argNames": "shadow",
+    "pushType": "v"
+  },
+  "748": {
+    "opcode": 748,
+    "name": "if_gettext",
+    "popOrder": "s,i",
+    "argNames": "text,component",
+    "pushType": "i"
+  },
+  "751": {
+    "opcode": 751,
+    "name": "cc_setgraphicshadow",
+    "popOrder": "ihsv",
+    "argNames": "hsvHash",
+    "pushType": "v"
+  },
+  "367": {
+    "opcode": 367,
+    "name": "multiply",
+    "popOrder": "i,i",
+    "argNames": "a,b",
+    "pushType": "i",
+    "customPrint": "calc(%0 * %1)"
+  },
+  "113": {
+    "opcode": 113,
+    "name": "cc_create",
+    "popOrder": "i,i,ic",
+    "argNames": "component, unknown0, slot",
+    "pushType": "v"
+  },
+  "119": {
+    "opcode": 119,
+    "name": "set_bit",
+    "popOrder": "i,i",
+    "argNames": "a,b",
+    "pushType": "i",
+    "customPrint": "calc(%0 | 1 << %1)"
+  }
+}
