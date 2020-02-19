@@ -74,8 +74,7 @@ public class CS2FlowGenerator {
 
         try {
             for (;;ptr++) {
-                if (ptr >= script.getInstructions().length)
-                    throw new DecompilerException("Error:Code out bounds.");
+                if (ptr >= script.getInstructions().length) break;
                 Instruction instruction = script.getInstructions()[ptr];
                 CS2Instruction operation = CS2Instruction.getByOpcode(instruction.getOpcode());
                 InstructionDAO dao = InstructionDBBuilder.getInstruction(instruction.getOpcode());
@@ -252,12 +251,15 @@ public class CS2FlowGenerator {
                             op = cast(op, CS2Type.INT);
                         CS2Expression str = cast(stack.pop(1), CS2Type.STRING);
                         block.write(new CS2BasicExpression(new CS2Expression[] { str, op }, operation.name().toLowerCase()));
-                    } else if(operation == STRUCT_PARAM || operation == ITEM_PARAM) {
+                    } else if(operation == STRUCT_PARAM || operation == ITEM_PARAM || operation == instr6771) {
+                        CS2Expression[] expressions = new CS2Expression[operation == instr6771 ? 1 : 2];
                         CS2PrimitiveExpression expression = (CS2PrimitiveExpression) stack.pop(0);
-                        CS2Expression expression2 = cast(stack.pop(0), CS2Type.INT);
                         int paramId = (int) expression.getValue();
+                        expressions[0] = expression;
+                        if(operation != instr6771)
+                            expressions[1] = cast(stack.pop(0), CS2Type.INT);
                         CS2ParamDefs defs = CS2ParamDefs.getParams(paramId);
-                        stack.push(new CS2StructParam(paramId, expression2), defs.isString() ? 1 : 0);
+                        stack.push(new CS2BasicExpression(expressions, operation.name().toLowerCase()), defs.isString() ? 1 : 0);
                     } else if(operation == instr6135 || operation == instr6150 || operation == GET_PLAYER_POS) {
                         stack.push(new CS2BasicExpression(new CS2Expression[] { }, operation.name().toLowerCase()), 0);
                     } else if(operation == MOVE_COORD) {
@@ -479,7 +481,7 @@ public class CS2FlowGenerator {
 
         if (returnType.totalSS() <= 1) {
             CS2Expression[] args = new CS2Expression[info.getArgumentTypes().length];
-            System.out.println("Calling CS21 " + args.length);
+            System.out.println("Calling CS21 " + args.length+" "+info.getId());
             for (int i = args.length - 1; i >= 0; i--) {
                 CS2Type type = info.getArgumentTypes()[i];
                 args[i] = cast(stack.pop(type.intSS() == 0 ? (type.longSS() != 0 ? 2 : 1) : 0), type);

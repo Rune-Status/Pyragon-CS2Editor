@@ -84,6 +84,11 @@
     background: #F0F0F0;
 }
 
+.close-tab {
+    margin-left: 2px;
+    cursor: pointer;
+}
+
 .file-button {
     float: left;
     color: #999;

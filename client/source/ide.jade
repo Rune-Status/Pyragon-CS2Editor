@@ -14,16 +14,29 @@ block head
 
         let editor;
 
+        let lastTabs = [];
+
         function addTab(scriptName, id, element) {
             //save current contents to tabs
-            //- if(tabs[id]) {
-            //-     let active = $('.script-tab.active');
-            //-     if(active.data('id') == id) return false;
-            //-     $('.script-tab.active').removeClass('active');
-            //-     element.addClass('active');
-            //-     setTab(id, tabs[id]);
-            //-     return false;
-            //- }
+            if(tabs[id]) {
+                let active = $('.script-tab.active');
+                if(active.data('id') == id) return false;
+                $('.script-tab.active').removeClass('active');
+                $('.script.selected').removeClass('selected');
+                let script = $('.script[data-id="'+id+'"]');
+                script.addClass('selected');
+                if(!isScriptVisible(script))
+                    scrollToScript(id);
+                element.addClass('active');
+                setTab(id, tabs[id]);
+                if(scriptName != null)
+                    lastTabs.push(id);
+                return false;
+            }
+            if(size(tabs) >= 8) {
+                sendAlert('Maximum of 8 tabs allowed. Please close a tab first.');
+                return false;
+            }
             $.post('/ide/load-script/'+id, {}, ret => {
                 let data = JSON.parse(ret);
                 if(data.error) {
@@ -33,21 +46,76 @@ block head
                 setTab(id, data.file);
                 $('.script-tab.active').removeClass('active');
                 let tab = $('<div data-id="'+id+'" class="script-tab active"></div>');
-                tab.html(scriptName);
+                let span = $('<span></span>');
+                let x = $('<i class="fa fa-times-circle close-tab"/>');
+                span.html(scriptName);
+                tab.append(span);
+                tab.append(x);
                 tab.data('id', id);
                 $('#script-tabs').append(tab);
                 tabs[id] = data.file;
                 $('#editor').css('border-top-left-radius', '0px');
+                lastTabs.push(id);
             });
+        }
+
+        function closeTab(id, element) {
+            if(unsaved[id]) {
+                n = noty({
+                    text: 'Would you like to save first?',
+                    type: 'confirm',
+                    layout: 'center',
+                    dismissQueue: false,
+                    theme: 'cryogen',
+                    buttons: [{
+                        addClass: 'btn btn-success', text: 'Save', onClick: function($noty) {
+                            $noty.close();
+                        }
+                    }, {
+                        addClass: 'btn btn-primary', text: 'Close Without Saving', onClick: function($noty) {
+                            $noty.close();
+                        }
+                    }, {
+                        addClass: 'btn btn-danger', text: 'Cancel', onClick: $noty => {
+                            $noty.close();
+                        }
+                    }]
+                });
+                return false;
+            }
+            delete tabs[id];
+            let tabE = $('.script-tab[data-id="'+id+'"]');
+            let active = tabE.hasClass('active');
+            tabE.remove();
+            if(active) {
+                console.log(lastTabs);
+                lastTabs.splice(-1, 1);
+                console.log(lastTabs);
+                if(size(lastTabs) == 0) {
+                    editor.session.setValue('');
+                    return false;
+                }
+                let tab = lastTabs[lastTabs.length-1];
+                if(tab !== undefined) {
+                    let element = $('.script-tab[data-id="'+tab+'"]');
+                    addTab(null, tab, element);
+                    return false;
+                }
+                editor.session.setValue('');
+            } else {
+                let index;
+                while((index = lastTabs.indexOf(id)) != -1)
+                    lastTabs.splice(index, 1);
+            }
+            return false;
         }
 
         function setTab(id, contents) {
             if(unsaved[id])
-                $('#title').html('CS2Editor - File has been changed. Ctrl+S to save and unfocus the textarea to apply highlighting.');
+                $('#title').html('CS2Editor - File has been changed. Ctrl+S to save.');
             else
                 $('#title').html('CS2Editor');
             editor.session.setValue(contents);
-            //- console.log('set value to length of '+contents.length);
         }
 
         $(document).ready(() => {
@@ -59,6 +127,23 @@ block head
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableLiveAutocompletion: true
+            });
+            editor.commands.addCommand({
+                name: "recompile",
+                exec: function() {
+                    let contents = editor.session.getValue();
+                    let script = $('.script-tab.active');
+                    let id = script.data('id');
+                    $.post('/ide/recompile', { id, contents }, ret => {
+                        let data = JSON.parse(ret);
+                        if(data.error) {
+                            sendAlert(data.error);
+                            return false;
+                        }
+                        sendAlert('Successfully compiled. Fingers crossed this works, brotha.');
+                    });
+                },
+                bindKey: {mac: "cmd-b", win: "ctrl-b"}
             });
             let cs2Completer = {
                 getCompletions: (editor, session, pos, prefix, callback) => {
@@ -87,10 +172,18 @@ block head
             languageTools.addCompleter(cs2Completer);
         });
 
+        $(document).on('click', '.close-tab', function() {
+            let tab = $(this).closest('.script-tab');
+            let id = tab.data('id');
+            closeTab(id, tab);
+            return false;
+        });
+
         $(document).on('click', '.script-tab', function() {
             let scriptName = $(this).html();
             let id = $(this).data('id');
             addTab(scriptName, id, $(this));
+            return false;
         });
 
         $(document).on('click', '.script', function() {
@@ -101,6 +194,28 @@ block head
             let element = $('.script-tab[data-id="'+id+'"]');
             addTab(name, id, element);
         });
+
+        function scrollToScript(id) {
+            console.log($('.script[data-id="'+id+'"]').offset().top);
+            $('#script-container').scrollTo('.script[data-id="'+id+'"]', 1000);
+        }
+
+        function size(array) {
+            let results = 0;
+            for(let i = 0; i < array.length; i++)
+                if(array[i] !== undefined) results++;
+            return results;
+        }
+
+        function isScriptVisible(elem) {
+            var docViewTop = $('#script-container').scrollTop();
+            var docViewBottom = docViewTop + $('#script-container').height();
+
+            var elemTop = elem.offset().top;
+            var elemBottom = elemTop + elem.height();
+
+            return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+        }
     
 block main_content
     div#file-buttons

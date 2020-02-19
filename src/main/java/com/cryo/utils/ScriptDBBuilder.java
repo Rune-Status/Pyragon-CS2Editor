@@ -63,12 +63,12 @@ public class ScriptDBBuilder {
     public static void main(String[] args) {
         CS2Editor.setGson(CS2Editor.buildGson());
         load();
-        int id = 26;
-        String name = "script_26";
-        CS2Type[] argTypes = {  };
-        String[] argNames = {  };
-        String[] vNames = { "slot", "ivar1", "ivar2", "ivar3", "ivar4", "ivar5", "ivar6", "ivar7" };
-        CS2Type returnType = CS2Type.VOID;
+        int id = 6185;
+        String name = "script_6185";
+        CS2Type[] argTypes = { CS2Type.INT, CS2Type.INT };
+        String[] argNames = { "arg0", "arg1" };
+        String[] vNames = {  };
+        CS2Type returnType = CS2Type.INT;
         ScriptDAO dao = new ScriptDAO(id, name, argTypes, argNames, vNames, returnType);
         saveScript(dao);
     }

@@ -9,10 +9,12 @@ import com.cryo.cs2.instructions.*;
 import com.cryo.cache.io.InputStream;
 import com.cryo.cache.io.OutputStream;
 import com.cryo.cs2.nodes.CS2Comment;
+import com.cryo.cs2.nodes.CS2Expression;
 import com.cryo.cs2.nodes.CS2Function;
 import com.cryo.cs2.nodes.LocalVariable;
 import com.cryo.decompiler.util.FunctionInfo;
 import com.cryo.decompiler.CS2Type;
+import com.cryo.utils.CompilerException;
 import com.cryo.utils.ScriptDAO;
 import com.cryo.utils.ScriptDBBuilder;
 import com.cryo.utils.Utilities;
@@ -56,7 +58,8 @@ public class CS2Script {
         while (buffer.getOffset() < instructionLength) {
             int opcode = buffer.readUnsignedShort();
             if (opcode < 0 || opcode >= CS2Instruction.values().length) {
-                throw new RuntimeException("Invalid operation code: " + opcode);
+                System.out.println("Invalid operation code: " + opcode);
+                break;
             }
             CS2Instruction op = CS2Instruction.getByOpcode(opcode);
             if(op == null) {
@@ -193,6 +196,7 @@ public class CS2Script {
         for (int i = 0; i < operations.length; i++) {
             CS2Instruction instruction = operations[i];
             if(instruction == null) continue; //no idea why some scripts have differing codeSizes and instruction lengths
+            System.out.println(instruction);
             if (instruction == CS2Instruction.PUSH_STRING || instruction == CS2Instruction.PUSH_LONG) {
                 Object value = instruction == CS2Instruction.PUSH_STRING ? stringOpValues[i] : longOpValues[i];
                 CS2Type type = instruction == CS2Instruction.PUSH_STRING ? CS2Type.STRING : CS2Type.LONG;
@@ -276,7 +280,7 @@ public class CS2Script {
             INVOTHER_GETITEM, -1, -1, INVOTHER_GETNUM, -1, -1, IF_SETONMOUSELEAVE, -1, -1, IF_SETONMOUSEOVER, -1, -1,
             HOOK_MOUSE_EXIT, -1, -1, instr6376, -1, -1, instr6527, -1, -1, instr6393, -1, -1, HOOK_MOUSE_ENTER, -1, -1,
             instr6239, -1, -1, instr6687, -1, -1, instr6091, -1, -1, instr6092, -1, -1, instr6088, -1, -1,
-            instr6224, -1, -1, instr6499, -1, -1, instr5957, -1, -1, instr6246, -1, -1
+            instr6224, -1, -1, instr6499, -1, -1, instr5957, -1, -1, instr6246, -1, -1, instr6771, -1, -1
     };
 
     public CS2Function decompile() {
@@ -414,6 +418,10 @@ public class CS2Script {
         return new int[] { interfaceId, hash & 0xffff };
     }
 
+    public static int getHash(int interfaceId, int componentId) {
+        return interfaceId << 16 | componentId;
+    }
+
     public static int[] getColours(int hash) {
         int r = hash >> 16 & 0xff;
         int g = hash >> 8 & 0xff;
@@ -423,6 +431,108 @@ public class CS2Script {
 
     public void write(Store store) {
         store.getIndex(IndexType.CS2_SCRIPTS).putArchive(id, encode());
+    }
+
+    public void recompile(String content) {
+        ArrayList<CS2Instruction> instructions = new ArrayList<>();
+        int[] intOpValues = new int[10000];
+        String[] stringOpValues = new String[10000];
+        long[] longOpValues = new long[10000];
+        int opCount = 0;
+        for(String line : content.split("\n")) {
+            if(line.contains("//")) {
+                String name = line.substring(0, line.indexOf("("));
+                String[] parameters = line.substring(line.indexOf("(")+1, line.indexOf(")")).split(", ?");
+                line = line.substring(line.indexOf(")")+1);
+                String returnType = line.substring(line.indexOf("(")+1, line.indexOf(")"));
+                System.out.println(name+" "+Arrays.toString(parameters)+" "+returnType);
+            } else if(line.contains("return")) {
+                instructions.add(CS2Instruction.RETURN);
+            } else {
+                try {
+                    line = line.replaceAll("\\s", "");
+                    Object[] values = evaluateExpression(line, opCount, intOpValues, stringOpValues, longOpValues);
+                    instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                    opCount = (int) values[1];
+                    intOpValues = (int[]) values[2];
+                    stringOpValues = (String[]) values[3];
+                    longOpValues = (long[]) values[4];
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        for(int i = 0; i < instructions.size(); i++) {
+            CS2Instruction instruction = instructions.get(i);
+            System.out.println(instruction+" "+(instruction.hasIntConstant() ? Integer.toString(intOpValues[i]) : ""));
+        }
+    }
+
+    public Object[] evaluateExpression(String expression, int opCount, int[] iValues, String[] sValues, long[] lValues) {
+        ArrayList<CS2Instruction> instructions = new ArrayList<>();
+        // if line startsWith variable
+        // if line startsWith loop/if
+        // else
+        System.out.println("Evaluating: "+expression);
+        String instructionName = expression.substring(0, expression.indexOf("("));
+        if(instructionName.equals("if_gethash")) {
+            String[] parameters = expression.substring(expression.indexOf("(") + 1, expression.lastIndexOf(")"))
+                    .split(", ?");
+            int interfaceId = Integer.parseInt(parameters[0]);
+            int componentId = Integer.parseInt(parameters[1]);
+            instructions.add(CS2Instruction.PUSH_INT);
+            intOpValues[opCount++] = getHash(interfaceId, componentId);
+            return new Object[] { instructions, opCount, iValues, sValues, lValues };
+        }
+        CS2Instruction instruction = CS2Instruction.getByName(instructionName);
+        if(instruction == null) throw new CompilerException("Invalid instruction: "+instructionName);
+        String[] parameters = expression.substring(expression.indexOf("(") + 1, expression.lastIndexOf(")")).split(",(?![^()]*\\))");
+        System.out.println("Params: "+Arrays.toString(parameters));
+        for(int i = parameters.length-1; i >= 0; i--) {
+            String parameter = parameters[i];
+            System.out.println(parameter);
+            if(isInt(parameter)) {
+                instructions.add(CS2Instruction.PUSH_INT);
+                intOpValues[opCount++] = Integer.parseInt(parameter);
+                System.out.println("Push Int: "+Integer.parseInt(parameter));
+            } else if(isString(parameter)) {
+                instructions.add(CS2Instruction.PUSH_STRING);
+                stringOpValues[opCount++] = parameter;
+            } else if(isLong(parameter)) {
+                instructions.add(CS2Instruction.PUSH_LONG);
+                longOpValues[opCount++] = Long.parseLong(parameter);
+            } else {
+                Object[] values = evaluateExpression(parameter, opCount, iValues, sValues, lValues);
+                instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                opCount = (int) values[1];
+                intOpValues = (int[]) values[2];
+                stringOpValues = (String[]) values[3];
+                longOpValues = (long[]) values[4];
+            }
+        }
+        instructions.add(instruction);
+        intOpValues[opCount++] = -1;
+        return new Object[] { instructions, opCount, iValues, sValues, lValues };
+    }
+
+    public boolean isString(String expression) {
+        return expression.contains("\"") && !expression.contains("(");
+    }
+
+    public boolean isInt(String expression) {
+        try {
+            Integer.parseInt(expression);
+            return true;
+        } catch(Exception e) { return false; }
+    }
+
+    public boolean isLong(String expression) {
+        try {
+            Long.parseLong(expression);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public byte[] encode() {

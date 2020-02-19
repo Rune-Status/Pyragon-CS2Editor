@@ -11,6 +11,7 @@ block head
         renderer.on('cache:set-hard-location', (event, data) => {
             cacheLocation = data;
             $('#cache-location').html('Location: '+cacheLocation);
+            $('#load-scripts-btn').click();
         });
 
         renderer.on('cache:error', (event, error) => {
