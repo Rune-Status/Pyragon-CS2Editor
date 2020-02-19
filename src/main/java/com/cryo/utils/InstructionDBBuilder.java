@@ -68,11 +68,11 @@ public class InstructionDBBuilder {
     public static void main(String[] args) {
         CS2Editor.setGson(CS2Editor.buildGson());
         load();
-        CS2Instruction instruction = CS2Instruction.IF_GETWIDTH;
+        CS2Instruction instruction = CS2Instruction.IF_ISOPEN;
         int opcode = instruction.getOpcode();
         String name = instruction.name().toLowerCase();
         String[] popOrder = { "ic" };
-        String[] argumentNames = { "component" };
+        String[] argumentNames = { "hash" };
         CS2Type pushType = CS2Type.INT;
         InstructionDAO dao = new InstructionDAO(opcode, name, popOrder, argumentNames, pushType);
         // dao.setCustomPrint("calc(%0 | 1 << %1)");

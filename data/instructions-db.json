@@ -21,11 +21,25 @@
     "argNames": "a0,a1",
     "pushType": "v"
   },
+  "6": {
+    "opcode": 6,
+    "name": "instr6657",
+    "popOrder": "i,i,i,i,i,i,i,i,i,i,i,i",
+    "argNames": "arg0,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12",
+    "pushType": "v"
+  },
   "263": {
     "opcode": 263,
     "name": "if_getwidth",
     "popOrder": "ic",
     "argNames": "component",
+    "pushType": "i"
+  },
+  "135": {
+    "opcode": 135,
+    "name": "if_getlayer",
+    "popOrder": "ic",
+    "argNames": "hash",
     "pushType": "i"
   },
   "904": {
@@ -45,8 +59,8 @@
   "523": {
     "opcode": 523,
     "name": "cc_gety",
-    "popOrder": "ic",
-    "argNames": "hash",
+    "popOrder": "",
+    "argNames": "",
     "pushType": "i"
   },
   "140": {
@@ -83,6 +97,13 @@
     "popOrder": "s",
     "argNames": "text",
     "pushType": "v"
+  },
+  "20": {
+    "opcode": 20,
+    "name": "container_free_space",
+    "popOrder": "i",
+    "argNames": "containerId",
+    "pushType": "i"
   },
   "149": {
     "opcode": 149,
@@ -170,6 +191,13 @@
     "argNames": "a0,hash",
     "pushType": "i"
   },
+  "297": {
+    "opcode": 297,
+    "name": "instr6644",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
+  },
   "170": {
     "opcode": 170,
     "name": "if_gety",
@@ -249,6 +277,13 @@
     "argNames": "hash",
     "pushType": "i"
   },
+  "578": {
+    "opcode": 578,
+    "name": "if_gethide",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
   "68": {
     "opcode": 68,
     "name": "instr6676",
@@ -271,6 +306,20 @@
     "argNames": "text",
     "pushType": "v"
   },
+  "204": {
+    "opcode": 204,
+    "name": "cc_getparent",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
+  },
+  "333": {
+    "opcode": 333,
+    "name": "instr6004",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
   "847": {
     "opcode": 847,
     "name": "cc_setposition",
@@ -288,6 +337,13 @@
   "336": {
     "opcode": 336,
     "name": "world_members",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
+  },
+  "80": {
+    "opcode": 80,
+    "name": "clientclock",
     "popOrder": "",
     "argNames": "",
     "pushType": "i"
@@ -384,5 +440,12 @@
     "argNames": "a,b",
     "pushType": "i",
     "customPrint": "calc(%0 | 1 << %1)"
+  },
+  "888": {
+    "opcode": 888,
+    "name": "if_isopen",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
   }
 }

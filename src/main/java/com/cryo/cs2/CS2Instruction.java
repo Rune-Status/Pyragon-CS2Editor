@@ -184,7 +184,7 @@ public enum CS2Instruction {
 	instr6124(545),
 	CC_GETHEIGHT(796),
 	instr6344(747),
-	instr6462(204),
+	CC_GETPARENT(204),
 	instr6128(626),
 	instr6762(451),
 	instr6130(494),
@@ -349,7 +349,7 @@ public enum CS2Instruction {
 	instr6289(543),
 	instr6290(808),
 	instr6875(373),
-	instr6805(888),
+	IF_ISOPEN(888),
 	IF_GETNEXTSUBID(1000),
 	instr6294(448),
 	instr6295(331),
@@ -1011,12 +1011,18 @@ public enum CS2Instruction {
 	QUEST_PARAM(62);
 
 	private static HashMap<Integer, CS2Instruction> OPCODES = new HashMap<>();
+    private static HashMap<String, CS2Instruction> NAMES = new HashMap<>();
 	
 	static {
 		for (CS2Instruction op : CS2Instruction.values()) {
 			OPCODES.put(op.opcode, op);
+            NAMES.put(op.name().toLowerCase(), op);
 		}
 	}
+
+    public static CS2Instruction getByName(String name) {
+        return NAMES.get(name);
+    }
 	
 	public static CS2Instruction getByOpcode(int id) {
 		return OPCODES.get(id);

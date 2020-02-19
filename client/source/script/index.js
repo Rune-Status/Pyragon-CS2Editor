@@ -15,3 +15,12 @@ $(document).on('click', '#maximize-button', () => {
 $(document).on('click', '#exit-button', () => {
     remote.getCurrentWindow().close();
 });
+
+function sendAlert(text) {
+    noty({
+        text,
+        layout: 'topRight',
+        timeout: 5000,
+        theme: 'cryogen'
+    });
+}

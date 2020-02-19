@@ -25,7 +25,9 @@ public class IDEModule extends WebModule {
                 "GET", "/ide",
                 "POST", "/ide/load-script/:id",
                 "GET", "/ide/load-script/:id",
-                "POST", "/ide/auto-completion/get-instr"};
+                "POST", "/ide/auto-completion/get-instr",
+                "POST", "/ide/recompile"
+                };
     }
 
     @Override
@@ -78,6 +80,31 @@ public class IDEModule extends WebModule {
                     results.add(dao.getName());
                 }
                 prop.put("results", results);
+                break;
+            case "/ide/recompile":
+                String contents = request.queryParams("contents");
+                idString = request.queryParams("id");
+                System.out.println("here");
+                try {
+                    id = Integer.parseInt(idString);
+                } catch(Exception e) {
+                    return error("Error parsing script ID");
+                }
+                if(contents == null || contents.equals(""))
+                    return error("Invalid contents");
+                System.out.println("herew");
+                CS2Script script = CS2Definitions.getScript(id);
+                if (script == null)
+                    return error("Script is null.");
+                try {
+                    System.out.println("here3");
+                    script.recompile(contents);
+                    System.out.println("here4");
+                } catch(Exception e) {
+                    e.printStackTrace();
+                    return error("Error compiling script. Check console.");
+                }
+                prop.put("success", true);
                 break;
             default: return error("404 Page Not Found");
         }

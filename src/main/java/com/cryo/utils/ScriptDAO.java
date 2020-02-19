@@ -43,7 +43,7 @@ public class ScriptDAO {
             return "l";
         else if(returnType == CS2Type.VOID)
             return "v";
-        return null;
+        return "i";
     }
 
     public static CS2Type getRTFromString(String rt) {
@@ -59,10 +59,15 @@ public class ScriptDAO {
     public static ScriptDAO fromProperties(LinkedTreeMap<String, Object> map) {
         int id = (int) ((double) map.get("id"));
         String name = (String) map.get("name");
-        String[] argTypesS = ((String) map.get("argTypes")).split(",");
-        CS2Type[] argTypes = new CS2Type[argTypesS.length];
-        for(int i = 0; i < argTypes.length; i++)
-            argTypes[i] = getRTFromString(argTypesS[i]);
+        String argTypesE = (String) map.get("argTypes");
+        CS2Type[] argTypes;
+        if(argTypesE.equals("")) argTypes = new CS2Type[0];
+        else {
+            String[] argTypesS = argTypesE.split(",");
+            argTypes = new CS2Type[argTypesS.length];
+            for(int i = 0; i < argTypes.length; i++)
+                argTypes[i] = getRTFromString(argTypesS[i]);
+        }
         String[] argNames = ((String) map.get("argNames")).split(",");
         String vNamesS = map.containsKey("vNames") ? (String) map.get("vNames") : null;
         String[] vNames = (vNamesS == null || vNamesS.equals("")) ? null : vNamesS.split(",");
