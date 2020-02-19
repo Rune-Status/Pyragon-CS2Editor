@@ -1,6 +1,7 @@
 package com.cryo.cs2.nodes;
 
 import com.cryo.cs2.flow.CS2FlowBlock;
+import com.cryo.decompiler.CS2Type;
 import com.cryo.utils.CodePrinter;
 import com.cryo.utils.DecompilerException;
 
@@ -24,6 +25,8 @@ public class CS2Scope extends CS2Node {
      * Contains list of declared local variables.
      */
     private List<LocalVariable> declaredLocalVariables;
+
+    private boolean noFirstBrace;
 
 
     public CS2Scope() {
@@ -247,13 +250,41 @@ public class CS2Scope extends CS2Node {
         return cElements > 1;
     }
 
+    public String printNoBrace() {
+        noFirstBrace = true;
+        CS2Function function = (CS2Function) getParent();
+        CodePrinter printer = new CodePrinter();
+        printer.print("//"+function.getName()+"(");
+        for(int i = 0; i < function.getScript().getArguments().length; i++) {
+            CS2Type type = function.getScript().getArguments()[i];
+            printer.print(type.toString()+" ");
+            printer.print(function.getScript().getArgumentNames()[i]);
+            if(i != function.getScript().getArguments().length-1)
+                printer.print(", ");
+        }
+        printer.print(")(");
+        if(function.getReturnType() == null)
+            printer.print("unknown");
+        else
+            printer.print(function.getReturnType().toString2());
+        printer.print(")");
+        print(printer);
+        return printer.toString();
+    }
+
+    public void printInner(CodePrinter printer) {
+        noFirstBrace = true;
+        print(printer);
+    }
+
 
     @Override
     public void print(CodePrinter printer) {
-        boolean braces = needsBraces();
+        boolean braces = !noFirstBrace && needsBraces();
 
         printer.beginPrinting(this);
-        printer.tab();
+        if(!noFirstBrace)
+            printer.tab();
         if (braces)
             printer.print('{');
         for (LocalVariable var : this.declaredLocalVariables) {
@@ -283,7 +314,8 @@ public class CS2Scope extends CS2Node {
         }
         if (caseAnnotationTabbed)
             printer.untab();
-        printer.untab();
+        if(!noFirstBrace)
+            printer.untab();
         if (braces)
             printer.print("\n}");
         printer.endPrinting(this);

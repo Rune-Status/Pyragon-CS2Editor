@@ -18,7 +18,6 @@ package com.cryo.utils;
 
 import com.cryo.cs2.CS2Instruction;
 import static com.cryo.cs2.CS2Instruction.*;
-import com.cryo.decompiler.instructions.Opcodes;
 
 public class OpcodeUtils {
 

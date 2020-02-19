@@ -3,9 +3,10 @@ package com.cryo.cs2.nodes;
 import com.cryo.decompiler.CS2Type;
 import com.cryo.utils.CodePrinter;
 import lombok.Data;
-import lombok.Getter;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class CS2PrimitiveExpression extends CS2Expression implements CS2Constant {
 
     private final Object value;

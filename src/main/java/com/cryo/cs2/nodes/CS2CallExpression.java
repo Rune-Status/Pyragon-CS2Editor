@@ -3,15 +3,17 @@ package com.cryo.cs2.nodes;
 import com.cryo.decompiler.CS2Type;
 import com.cryo.decompiler.util.FunctionInfo;
 import com.cryo.utils.CodePrinter;
+import com.cryo.utils.ScriptDAO;
+
 import lombok.Data;
 
 @Data
 public class CS2CallExpression extends CS2Expression {
 
-    private FunctionInfo info;
+    private ScriptDAO info;
     private CS2Expression[] expressions;
 
-    public CS2CallExpression(FunctionInfo info, CS2Expression[] expressions) {
+    public CS2CallExpression(ScriptDAO info, CS2Expression[] expressions) {
         this.info = info;
         this.expressions = expressions;
         for(int i = 0; i < expressions.length; i++) {

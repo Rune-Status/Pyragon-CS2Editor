@@ -1,0 +1,133 @@
+{
+  "2048": {
+    "id": 2048,
+    "name": "script2048",
+    "argTypes": "i,i,i,i,i,i,i,i,i,i,i,i,i,s,s",
+    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14",
+    "returnType": "v"
+  },
+  "2049": {
+    "id": 2049,
+    "name": "script2049",
+    "argTypes": "i,i,i,i,i,i,i,i,i,i,i,s,s",
+    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12",
+    "returnType": "v"
+  },
+  "1": {
+    "id": 1,
+    "name": "script1",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "i"
+  },
+  "705": {
+    "id": 705,
+    "name": "script705",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "vNames": "",
+    "returnType": "v"
+  },
+  "2050": {
+    "id": 2050,
+    "name": "script2050",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "675": {
+    "id": 675,
+    "name": "script675",
+    "argTypes": "",
+    "argNames": "",
+    "vNames": "",
+    "returnType": "v"
+  },
+  "3365": {
+    "id": 3365,
+    "name": "script3365",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "vNames": "",
+    "returnType": "i"
+  },
+  "37": {
+    "id": 37,
+    "name": "script37",
+    "argTypes": "i,i,i,i",
+    "argNames": "arg0,arg1,arg2,arg3",
+    "vNames": "",
+    "returnType": "v"
+  },
+  "3366": {
+    "id": 3366,
+    "name": "script3366",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "vNames": "",
+    "returnType": "i"
+  },
+  "48": {
+    "id": 48,
+    "name": "script48",
+    "argTypes": "",
+    "argNames": "",
+    "vNames": "",
+    "returnType": "v"
+  },
+  "4754": {
+    "id": 4754,
+    "name": "script4754",
+    "argTypes": "i,i,i",
+    "argNames": "arg0,arg1,arg2",
+    "vNames": "",
+    "returnType": "i"
+  },
+  "4405": {
+    "id": 4405,
+    "name": "script4405",
+    "argTypes": "",
+    "argNames": "",
+    "vNames": "",
+    "returnType": "i"
+  },
+  "1815": {
+    "id": 1815,
+    "name": "script1815",
+    "argTypes": "",
+    "argNames": "",
+    "vNames": "",
+    "returnType": "i"
+  },
+  "26": {
+    "id": 26,
+    "name": "script_26",
+    "argTypes": "i",
+    "argNames": "",
+    "vNames": "slot,ivar1,ivar2,ivar3,ivar4,ivar5,ivar6,ivar7",
+    "returnType": "v"
+  },
+  "5082": {
+    "id": 5082,
+    "name": "script5082",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "vNames": "",
+    "returnType": "v"
+  },
+  "1566": {
+    "id": 1566,
+    "name": "script1566",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "i"
+  },
+  "31": {
+    "id": 31,
+    "name": "script31",
+    "argTypes": "i,i,i,i,i,i,i,i",
+    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7",
+    "vNames": "",
+    "returnType": "v"
+  }
+}

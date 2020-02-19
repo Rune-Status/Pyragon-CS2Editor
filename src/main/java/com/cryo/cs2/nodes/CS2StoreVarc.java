@@ -1,6 +1,5 @@
 package com.cryo.cs2.nodes;
 
-import com.cryo.decompiler.CS2Type;
 import com.cryo.utils.CodePrinter;
 
 public class CS2StoreVarc extends CS2Node {

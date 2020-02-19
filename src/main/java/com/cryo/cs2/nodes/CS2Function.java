@@ -1,5 +1,6 @@
 package com.cryo.cs2.nodes;
 
+import com.cryo.cs2.CS2Script;
 import com.cryo.decompiler.CS2Type;
 import com.cryo.utils.CodePrinter;
 import lombok.Data;
@@ -14,8 +15,9 @@ public class CS2Function extends CS2Node {
     private LocalVariable[] localArguments;
     private CS2Type returnType;
     private CS2Scope scope;
+    private CS2Script script;
 
-    public CS2Function(int id, String name, CS2Type[] args, String[] argNames, CS2Type returnType) {
+    public CS2Function(int id, String name, CS2Type[] args, String[] argNames, CS2Type returnType, CS2Script script) {
         this.id = id;
         this.name = name;
         this.argumentTypes = args;
@@ -23,6 +25,7 @@ public class CS2Function extends CS2Node {
         this.returnType = returnType;
         this.localArguments = new LocalVariable[args.length];
         this.scope = new CS2Scope();
+        this.script = script;
         this.write(scope);
         scope.setParent(this);
     }

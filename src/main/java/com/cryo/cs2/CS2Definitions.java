@@ -61,7 +61,7 @@ public class CS2Definitions {
 		int scriptCount = 0;
 		for (int i = 0; i < Cache.STORE.getIndex(IndexType.CS2_SCRIPTS).getLastArchiveId(); i++) {
 			CS2Script script = getScript(i);
-			CS2Script reCoded = new CS2Script(new InputStream(script.encode()));
+			CS2Script reCoded = new CS2Script(i, new InputStream(script.encode()));
 			if (script.equals(reCoded))
 				correct++;
 			scriptCount++;
@@ -70,12 +70,10 @@ public class CS2Definitions {
 	}
 	
 	public static CS2Script getScript(int scriptId) {
-		if (scripts.containsKey(scriptId)) {
+		if (scripts.containsKey(scriptId))
 			return scripts.get(scriptId);
-		}
 		if (Cache.STORE.getIndex(IndexType.CS2_SCRIPTS).archiveExists(scriptId)) {
-			CS2Script script = new CS2Script(new InputStream(Cache.STORE.getIndex(IndexType.CS2_SCRIPTS).getArchive(scriptId).getData()));
-			script.id = scriptId;
+			CS2Script script = new CS2Script(scriptId, new InputStream(Cache.STORE.getIndex(IndexType.CS2_SCRIPTS).getArchive(scriptId).getData()));
 			scripts.put(scriptId, script);
 			return script;
 		}

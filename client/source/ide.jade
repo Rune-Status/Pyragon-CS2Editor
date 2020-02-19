@@ -5,6 +5,7 @@ block head
     link(rel="stylesheet", href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css")
     script(src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js")
     script(src='script/ace/ace.js')
+    script(src='script/ace/ext-language_tools.js')
     script.
 
         let tabs = [];
@@ -51,9 +52,39 @@ block head
 
         $(document).ready(() => {
             $('#title').html('CS2Editor');
+            let languageTools = ace.require('ace/ext/language_tools');
             editor = ace.edit('editor');
             editor.session.setMode('ace/mode/java');
             editor.setTheme('ace/theme/tomorrow');
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableLiveAutocompletion: true
+            });
+            let cs2Completer = {
+                getCompletions: (editor, session, pos, prefix, callback) => {
+                    if(prefix.length === 0) {
+                        callback(null, []);
+                        return false;
+                    }
+                    $.post('/ide/auto-completion/get-instr', { prefix }, ret => {
+                        let data = JSON.parse(ret);
+                        if(data == null || data.error) {
+                            callback(null, []);
+                            if(data != null && data.error)
+                                console.error(data.error);
+                            return false;
+                        }
+                        callback(null, data.results.map(result => {
+                            return {
+                                name: result,
+                                value: result,
+                                meta: 'cs2instr'
+                            }
+                        }));
+                    });
+                }
+            };
+            languageTools.addCompleter(cs2Completer);
         });
 
         $(document).on('click', '.script-tab', function() {

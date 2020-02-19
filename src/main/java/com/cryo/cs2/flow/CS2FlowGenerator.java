@@ -13,7 +13,12 @@ import com.cryo.decompiler.util.FunctionInfo;
 import com.cryo.utils.ArrayQueue;
 import com.cryo.utils.DecompilerException;
 import com.cryo.utils.IOUtils;
+import com.cryo.utils.InstructionDAO;
+import com.cryo.utils.InstructionDBBuilder;
 import com.cryo.utils.OpcodeUtils;
+import com.cryo.utils.ScriptDAO;
+import com.cryo.utils.ScriptDBBuilder;
+
 import lombok.Data;
 
 import static com.cryo.cs2.CS2Instruction.*;
@@ -73,8 +78,28 @@ public class CS2FlowGenerator {
                     throw new DecompilerException("Error:Code out bounds.");
                 Instruction instruction = script.getInstructions()[ptr];
                 CS2Instruction operation = CS2Instruction.getByOpcode(instruction.getOpcode());
-                System.out.println("Instruction: "+operation);
+                InstructionDAO dao = InstructionDBBuilder.getInstruction(instruction.getOpcode());
                 int opcode = instruction.getOpcode();
+                if(dao != null) {
+                    System.out.println(dao);
+                    CS2Expression[] expressions = new CS2Expression[dao.getPopOrder().length];
+                    System.out.println("Instruction: " + operation + " " + opcode);
+                    for(int i = 0; i < dao.getPopOrder().length; i++) {
+                        System.out.println(operation+" "+i);
+                        String popType = dao.getPopOrder()[i];
+                        int stackType = popType.startsWith("i") ? 0 : popType.startsWith("s") ? 1 : 2;
+                        CS2Type type = popType.startsWith("i") ? CS2Type.INT : popType.startsWith("s") ? CS2Type.STRING : CS2Type.LONG;
+                        if(popType.length() > 1)
+                            expressions[i] = stack.pop(stackType);
+                        else
+                            expressions[i] = cast(stack.pop(stackType), type);
+                    }
+                    if(dao.getPushType() != CS2Type.VOID)
+                        stack.push(new CS2BasicExpression(opcode, expressions, operation.name().toLowerCase()), dao.getPushType() == CS2Type.STRING ? 1 : dao.getPushType() == CS2Type.LONG ? 2 : 0);
+                    else
+                        block.write(new CS2BasicExpression(opcode, expressions, operation.name().toLowerCase()));
+                    continue;
+                }
                 if (instruction instanceof LabelInstruction) {
                     // new flow block
                     this.dumpStack(block, stack);
@@ -242,11 +267,21 @@ public class CS2FlowGenerator {
                         CS2Expression startPos = cast(stack.pop(0), CS2Type.INT);
                         stack.push(new CS2MoveCoord(startPos, x, y, plane), 0);
                     } else if(operation == instr6342 || operation == instr6452 || operation == instr6257
-                        || operation == instr6237 || operation == HOOK_MOUSE_PRESS || operation == HOOK_MOUSE_RELEASE) {
+                        || operation == instr6237 || operation == HOOK_MOUSE_PRESS || operation == HOOK_MOUSE_RELEASE
+                        || operation == IF_SETONMOUSEOVER || operation == IF_SETONMOUSELEAVE || operation == HOOK_MOUSE_EXIT
+                        || operation == instr6376 || operation == instr6527 || operation == instr6393
+                        || operation == HOOK_MOUSE_ENTER || operation == instr6239 || operation == instr6687
+                        || operation == instr6091 || operation == instr6092 || operation == instr6088
+                        || operation == instr6224 || operation == instr6499 || operation == instr5957
+                        || operation == instr6246) {
                         System.out.println("Testing unknown instruction.");
                         CS2Expression component = null;
                         if(operation == instr6342 || operation == instr6257 || operation == instr6237
-                            || operation == HOOK_MOUSE_PRESS || operation == HOOK_MOUSE_RELEASE)
+                            || operation == HOOK_MOUSE_PRESS || operation == HOOK_MOUSE_RELEASE
+                            || operation == IF_SETONMOUSEOVER || operation == IF_SETONMOUSELEAVE
+                            || operation == HOOK_MOUSE_EXIT || operation == instr6376 || operation == instr6527
+                            || operation == instr6393 || operation == HOOK_MOUSE_ENTER || operation == instr6239
+                            || operation == instr6246)
                             component = cast(stack.pop(0), CS2Type.INT);
                         CS2PrimitiveExpression paramTypesE = (CS2PrimitiveExpression) stack.pop(1);
                         String paramTypes = (String) paramTypesE.getValue();
@@ -259,17 +294,19 @@ public class CS2FlowGenerator {
                                     intArr[size] = cast(stack.pop(0), CS2Type.INT);
                             }
                         }
+                        if(intArr != null)
+                            paramTypes = paramTypes.substring(0, paramTypes.length()-1);
                         CS2Expression[] params = new CS2Expression[paramTypes.length() + 1];
                         for(int i = params.length - 1; i >= 1; --i) {
                             if(paramTypes.charAt(i - 1) == 's')
                                 params[i] = cast(stack.pop(1), CS2Type.STRING);
-                            else if(paramTypes.charAt(i-1) == 'I')
-                                params[i] = cast(stack.pop(0), CS2Type.INT);
+                            else if(paramTypes.charAt(i-1) == '\u00a7')
+                                params[i] = cast(stack.pop(2), CS2Type.LONG);
                             else
-                                System.out.println("paramTypes.charAt: "+paramTypes.charAt(i - 1));
+                                params[i] = cast(stack.pop(0), CS2Type.INT);
                         }
-                        CS2Expression scriptId = cast(stack.pop(0), CS2Type.INT);
-                        block.write(new CS2UnknownExpression(new Object[] { scriptId, params, intArr, cast(paramTypesE, CS2Type.STRING), component }, operation));
+                        params[0] = stack.pop(0);
+                        block.write(new CS2AnonymousClassExpression(new Object[] { params, intArr, cast(paramTypesE, CS2Type.STRING), component }, operation));
                     } else if(operation == CC_DELETEALL) {
                         CS2Expression expression = stack.pop(0);
                         block.write(new CS2BasicExpression(expression, operation.name().toLowerCase()));
@@ -292,6 +329,8 @@ public class CS2FlowGenerator {
                             this.function.setReturnType(CS2Type.merge(this.function.getReturnType(), CS2Type.VOID));
                             block.write(new CS2Return());
                         } else if (stack.getSize() == 1) {
+                            System.out.println("Attempting to merge "+this.function.getReturnType()+" with "+stack.peek().getType());
+                            //print result. find out why these aren't merging. or if this is even supposed to return an int
                             this.function.setReturnType(CS2Type.merge(this.function.getReturnType(), stack.peek().getType()));
                             block.write(new CS2Return(stack.pop()));
                         }
@@ -328,7 +367,7 @@ public class CS2FlowGenerator {
                         CS2Expression expression = cast(stack.pop(isString ? 1 : 0), isString ? CS2Type.STRING : CS2Type.INT);
                         block.write(new CS2StoreVarc(id, expression));
                     }
-                    else if(operation == LOAD_VARPBIT || operation == LOAD_VARC || operation == LOAD_VARC_STRING) {
+                    else if(operation == LOAD_VARP || operation == LOAD_VARPBIT || operation == LOAD_VARC || operation == LOAD_VARC_STRING) {
                         int id = intInstr.asInt();
                         boolean isString = operation == LOAD_VARC_STRING;
                         stack.push(new CS2LoadConfig(id, operation.name().toLowerCase()), isString ? 1 : 0);
@@ -349,7 +388,8 @@ public class CS2FlowGenerator {
                         FunctionInfo info = CS2Editor.getInstance().getScriptsDB().getInfo(intInstr.asInt());
                         if (info == null)
                             throw new DecompilerException("No documentation for:" + instruction);
-                        int ret = this.analyzeCall(info, block, stack, ptr);
+                        System.out.println(info);
+                        int ret = this.analyzeCall(intInstr.asInt(), block, stack, ptr);
                         if (ret != -1)
                             ptr = ret;
                     }
@@ -385,7 +425,7 @@ public class CS2FlowGenerator {
                         info = this.analyzeSpecialCall(instruction, info, block, stack.copy());
                     else if (instruction.getOpcode() >= 40000)
                         throw new DecompilerException("A call to disabled function: " + info);
-                    int ret = this.analyzeCall(info, block, stack, ptr);
+                    int ret = this.analyzeCall(instruction.getOpcode(), block, stack, ptr);
                     if (ret != -1)
                         ptr = ret;
                 }
@@ -418,11 +458,20 @@ public class CS2FlowGenerator {
         }
     }
 
-
-    private int analyzeCall(FunctionInfo info, CS2FlowBlock block, CS2Stack stack, int ptr) {
+    private int analyzeCall(int id, CS2FlowBlock block, CS2Stack stack, int ptr) {
+        ScriptDAO info = ScriptDBBuilder.getScript(id);
+        if(info == null) {
+            CS2Script script = CS2Definitions.getScript(id);
+            if(script == null) throw new DecompilerException("Error calling script: "+id);
+            info = ScriptDAO.fromScript(script);
+            if(info == null) 
+                throw new DecompilerException("Error calling script: " + id);
+            ScriptDBBuilder.saveScript(info);
+        }
         CS2Type returnType = info.getReturnType();
         for (int i = 0; i < info.getArgumentTypes().length; i++)
-            if (!info.getArgumentTypes()[i].usable() || info.getArgumentTypes()[i].structure() || info.getArgumentTypes()[i].totalSS() > 1)
+            if (!info.getArgumentTypes()[i].usable() || info.getArgumentTypes()[i].structure()
+                    || info.getArgumentTypes()[i].totalSS() > 1)
                 throw new DecompilerException(returnType + " is not supported in function arguments");
 
         if (!returnType.usable())
@@ -430,33 +479,33 @@ public class CS2FlowGenerator {
 
         if (returnType.totalSS() <= 1) {
             CS2Expression[] args = new CS2Expression[info.getArgumentTypes().length];
+            System.out.println("Calling CS21 " + args.length);
             for (int i = args.length - 1; i >= 0; i--) {
                 CS2Type type = info.getArgumentTypes()[i];
-                args[i] = cast(stack.pop(type.intSS() == 0 ? (type.longSS() != 0 ? 2 : 1) : 0),type);
+                args[i] = cast(stack.pop(type.intSS() == 0 ? (type.longSS() != 0 ? 2 : 1) : 0), type);
             }
 
             if (returnType.totalSS() <= 0) { // void
                 this.dumpStack(block, stack);
-                block.write(new CS2Poppable(new CS2CallExpression(info,args)));
-            }
-            else { // standart
+                block.write(new CS2Poppable(new CS2CallExpression(info, args)));
+            } else { // standart
                 int stackType = returnType.intSS() == 0 ? (returnType.longSS() != 0 ? 2 : 1) : 0;
-                stack.push(new CS2CallExpression(info,args), stackType);
+                stack.push(new CS2CallExpression(info, args), stackType);
             }
             return -1;
-        }
-        else {
+        } else {
+            System.out.println("Calling CS2");
             this.dumpStack(block, stack);
             CS2Expression[] args = new CS2Expression[info.getArgumentTypes().length];
             for (int i = args.length - 1; i >= 0; i--) {
                 CS2Type type = info.getArgumentTypes()[i];
-                args[i] = cast(stack.pop(type.intSS() == 0 ? (type.longSS() != 0 ? 2 : 1) : 0),type);
+                args[i] = cast(stack.pop(type.intSS() == 0 ? (type.longSS() != 0 ? 2 : 1) : 0), type);
             }
 
-            CS2Expression expr = new CS2CallExpression(info,args);
-            LocalVariable dump = new LocalVariable("dmp_" + counter++,expr.getType());
+            CS2Expression expr = new CS2CallExpression(info, args);
+            LocalVariable dump = new LocalVariable("dmp_" + counter++, expr.getType());
             function.getScope().declare(dump);
-            block.write(new CS2Poppable(new CS2VariableAssign(dump,expr)));
+            block.write(new CS2Poppable(new CS2VariableAssign(dump, expr)));
 
             CS2VariableAssign[] assignations = new CS2VariableAssign[returnType.totalSS()];
             int intsLeft = returnType.intSS();
@@ -466,26 +515,29 @@ public class CS2FlowGenerator {
             int readptr;
             int write;
             for (write = 0, readptr = ptr + 1; (intsLeft + stringsLeft + longsLeft) > 0; readptr++) {
-                if (readptr >= script.getInstructions().length || !(script.getInstructions()[readptr] instanceof PrimitiveInstruction) || ((PrimitiveInstruction) script.getInstructions()[readptr]).getType() != CS2Type.INT)
+                if (readptr >= script.getInstructions().length
+                        || !(script.getInstructions()[readptr] instanceof PrimitiveInstruction)
+                        || ((PrimitiveInstruction) script.getInstructions()[readptr]).getType() != CS2Type.INT)
                     break;
-                PrimitiveInstruction intInstr = (PrimitiveInstruction)script.getInstructions()[readptr];
+                PrimitiveInstruction intInstr = (PrimitiveInstruction) script.getInstructions()[readptr];
                 if (script.getOperations()[readptr] == CS2Instruction.STORE_INT) {
                     if (intsLeft <= 0)
                         break;
-                    assignations[write++] = new CS2VariableAssign(function.getScope().getLocalVariable(LocalVariable.makeIdentifier(intInstr.asInt(), 0)),
-                            new CS2StructLoad("ip_" + (--intsLeft),CS2Type.INT,new CS2VariableLoad(dump)));
-                }
-                else if (script.getOperations()[readptr] == CS2Instruction.STORE_STRING) {
+                    assignations[write++] = new CS2VariableAssign(
+                            function.getScope().getLocalVariable(LocalVariable.makeIdentifier(intInstr.asInt(), 0)),
+                            new CS2StructLoad("ip_" + (--intsLeft), CS2Type.INT, new CS2VariableLoad(dump)));
+                } else if (script.getOperations()[readptr] == CS2Instruction.STORE_STRING) {
                     if (stringsLeft <= 0)
                         break;
-                    assignations[write++] = new CS2VariableAssign(function.getScope().getLocalVariable(LocalVariable.makeIdentifier(intInstr.asInt(), 1)),
-                            new CS2StructLoad("sp_" + (--stringsLeft),CS2Type.STRING,new CS2VariableLoad(dump)));
-                }
-                else if (script.getOperations()[readptr] == CS2Instruction.STORE_LONG) {
+                    assignations[write++] = new CS2VariableAssign(
+                            function.getScope().getLocalVariable(LocalVariable.makeIdentifier(intInstr.asInt(), 1)),
+                            new CS2StructLoad("sp_" + (--stringsLeft), CS2Type.STRING, new CS2VariableLoad(dump)));
+                } else if (script.getOperations()[readptr] == CS2Instruction.STORE_LONG) {
                     if (longsLeft <= 0)
                         break;
-                    assignations[write++] = new CS2VariableAssign(function.getScope().getLocalVariable(LocalVariable.makeIdentifier(intInstr.asInt(), 2)),
-                            new CS2StructLoad("lp_" + (--longsLeft),CS2Type.LONG,new CS2VariableLoad(dump)));
+                    assignations[write++] = new CS2VariableAssign(
+                            function.getScope().getLocalVariable(LocalVariable.makeIdentifier(intInstr.asInt(), 2)),
+                            new CS2StructLoad("lp_" + (--longsLeft), CS2Type.LONG, new CS2VariableLoad(dump)));
                 }
                 if ((intsLeft + stringsLeft + longsLeft) <= 0)
                     break;
@@ -495,16 +547,15 @@ public class CS2FlowGenerator {
                 for (int i = 0; i < assignations.length; i++)
                     block.write(new CS2Poppable(assignations[i]));
                 return readptr;
-            }
-            else {
+            } else {
                 for (int i = 0; i < expr.getType().intSS(); i++) {
-                    stack.push(new CS2StructLoad("ip_" + i,CS2Type.INT,new CS2VariableLoad(dump)), 0);
+                    stack.push(new CS2StructLoad("ip_" + i, CS2Type.INT, new CS2VariableLoad(dump)), 0);
                 }
                 for (int i = 0; i < expr.getType().stringSS(); i++) {
-                    stack.push(new CS2StructLoad("sp_" + i,CS2Type.STRING,new CS2VariableLoad(dump)), 1);
+                    stack.push(new CS2StructLoad("sp_" + i, CS2Type.STRING, new CS2VariableLoad(dump)), 1);
                 }
                 for (int i = 0; i < expr.getType().longSS(); i++) {
-                    stack.push(new CS2StructLoad("lp_" + i,CS2Type.LONG,new CS2VariableLoad(dump)), 2);
+                    stack.push(new CS2StructLoad("lp_" + i, CS2Type.LONG, new CS2VariableLoad(dump)), 2);
                 }
                 return -1;
             }
@@ -734,7 +785,7 @@ public class CS2FlowGenerator {
                         CS2Script script = CS2Definitions.getScript(iexpr.asInt());
                         n = script.decompile();
                     } else
-                        n = new CS2Function(-1, "none", new CS2Type[0], new String[0], CS2Type.VOID);
+                        n = new CS2Function(-1, "none", new CS2Type[0], new String[0], CS2Type.VOID, script);
                 }
                 catch (DecompilerException ex) {
                 }

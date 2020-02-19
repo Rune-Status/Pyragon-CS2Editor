@@ -10,20 +10,21 @@ import com.cryo.decompiler.ICS2Provider;
 import com.cryo.decompiler.ast.FunctionNode;
 import com.cryo.decompiler.util.*;
 import com.cryo.modules.WebModule;
+import com.cryo.utils.InstructionDBBuilder;
+import com.cryo.utils.ScriptDBBuilder;
 import com.cryo.utils.Utilities;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import spark.Spark;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -37,6 +38,7 @@ public class CS2Editor {
     private static CS2Editor instance;
 
     @Getter
+    @Setter
     private static Gson gson;
 
     @Getter
@@ -56,6 +58,8 @@ public class CS2Editor {
         gson = buildGson();
         loadProperties();
         loadLoaders();
+        InstructionDBBuilder.load();
+        ScriptDBBuilder.load();
         serializer = new UnsafeSerializer();
         reloadDatabases();
         try {
@@ -84,11 +88,6 @@ public class CS2Editor {
                 }
             }
             System.out.println("Server started on " + java.net.InetAddress.getLocalHost() + ":" + Spark.port());
-            CS2Script script = CS2Definitions.getScript(99);
-            if (script == null)
-                System.out.println("Error getting.");
-            else
-                System.out.println(script.decompile().toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,7 +95,7 @@ public class CS2Editor {
 
     public void reloadDatabases() {
         instructionsDB = new InstructionsDatabase(new File("./instructions_db.ini"));
-        configsDB = new ConfigsDatabase(new File("./configs_db.ini"), new File("./bitconfigs_db.ini")); // TODO
+        configsDB = new ConfigsDatabase(new File("./configs_db.ini"), new File("./bitconfigs_db.ini"));
         opcodesDB = new FunctionDatabase(new File("./opcodes_db.ini"));
         scriptsDB = new FunctionDatabase(new File("./scripts_db.ini"));
 

@@ -17,7 +17,6 @@ public final class CS2ParamDefs {
 	public boolean autoDisable = true;
 	public char charVal;
 	public String defaultString;
-	public CS2Type type;
 
 	private static final ConcurrentHashMap<Integer, CS2ParamDefs> maps = new ConcurrentHashMap<Integer, CS2ParamDefs>();
 	
@@ -72,7 +71,7 @@ public final class CS2ParamDefs {
 	private void readValues(InputStream stream, int opcode) {
 		if (opcode == 1) {
 			charVal = Utilities.cp1252ToChar((byte) stream.readByte());
-			type = CS2Type.forJagexDesc(charVal);
+			//type = CS2Type.forJagexDesc(charVal);
 		} else if (opcode == 2) {
 			defaultInt = stream.readInt();
 		} else if (opcode == 4) {

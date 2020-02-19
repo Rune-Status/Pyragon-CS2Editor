@@ -2,11 +2,12 @@ package com.cryo.cs2.nodes;
 
 import com.cryo.decompiler.CS2Type;
 import com.cryo.decompiler.ast.ExpressionNode;
-import com.cryo.decompiler.ast.NotExpressionNode;
 import com.cryo.utils.CodePrinter;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class CS2NotExpression extends CS2Expression {
 
     private CS2Expression expression;
