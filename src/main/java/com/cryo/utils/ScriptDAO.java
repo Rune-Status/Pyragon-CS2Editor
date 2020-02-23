@@ -75,6 +75,29 @@ public class ScriptDAO {
         return new ScriptDAO(id, name, argTypes, argNames, vNames, returnType);
     }
 
+    public String getJoinedArguments() {
+        StringBuilder builder = new StringBuilder();
+        if(argumentTypes == null) return "";
+        for(int i = 0; i < argumentTypes.length; i++) {
+            builder.append(argumentTypes[i].toString());
+            builder.append(" "+argumentNames[i]);
+            if(i != argumentTypes.length-1)
+                builder.append(", ");
+        }
+        return builder.toString();
+    }
+
+    public String getJoinedVariableNames() {
+        StringBuilder builder = new StringBuilder();
+        if(variableNames == null) return "";
+        for (int i = 0; i < variableNames.length; i++) {
+            builder.append(variableNames[i]);
+            if (i != variableNames.length - 1)
+                builder.append(", ");
+        }
+        return builder.toString();
+    }
+
     public static ScriptDAO fromScript(CS2Script script) {
         CS2Function function = script.decompile();
         return new ScriptDAO(script.getId(), script.getName(), function.getArgumentTypes(), function.getArgumentNames(),
