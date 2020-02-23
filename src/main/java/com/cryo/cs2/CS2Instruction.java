@@ -16,7 +16,7 @@ public enum CS2Instruction {
 	GET_VARPBIT_OLD(827, true),
 	GET_VARN_OLD(229, true),
 	GET_VARNBIT_OLD(526, true),
-	RETURN(184, true),
+	RETURN(184),
 	LOAD_VARPBIT(408, true),
 	STORE_VARPBIT(371, true),
 	INT_LE(670, true),
