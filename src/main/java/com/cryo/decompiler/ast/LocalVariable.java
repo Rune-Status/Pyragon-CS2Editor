@@ -72,6 +72,10 @@ public class LocalVariable {
 		needsScopeDeclaration = v;
 	}
 
+    public static int[] getInfo(int identifier) {
+        return new int[] { (identifier & 0xffff), (identifier >> 16) };
+    }
+
 	public static int makeIdentifier(int index,int stackType) {
 		return index | stackType << 16;
 	}

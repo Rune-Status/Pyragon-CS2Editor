@@ -255,6 +255,8 @@ public class CS2Scope extends CS2Node {
         CS2Function function = (CS2Function) getParent();
         CodePrinter printer = new CodePrinter();
         printer.print("//"+function.getName()+"(");
+        printer.print(Integer.toString(function.getId()));
+        printer.print(")(");
         for(int i = 0; i < function.getScript().getArguments().length; i++) {
             CS2Type type = function.getScript().getArguments()[i];
             printer.print(type.toString()+" ");
