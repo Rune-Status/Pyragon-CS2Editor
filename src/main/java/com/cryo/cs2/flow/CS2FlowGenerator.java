@@ -209,13 +209,13 @@ public class CS2FlowGenerator {
                         || operation == GET_PLAYER_PLANE || operation == IF_GETHEIGHT) {
                         CS2Expression expression = stack.pop(0);
                         stack.push(new CS2BasicExpression(expression, operation.name().toLowerCase()), 0);
-                    } else if(operation == instr6801 || operation == instr6152) {
+                    } else if(operation == PARAMWIDTH || operation == PARAMHEIGHT) {
                         CS2Expression[] expressions = new CS2Expression[3];
                         expressions[0] = cast(stack.pop(1), CS2Type.STRING);
                         expressions[1] = cast(stack.pop(0), CS2Type.INT);
                         expressions[2] = cast(stack.pop(0), CS2Type.INT);
                         stack.push(new CS2BasicExpression(expressions, operation.name().toLowerCase()), 0);
-                    } else if(operation == instr6519) {
+                    } else if(operation == REMOVETAGS) {
                         CS2Expression expression = cast(stack.pop(1), CS2Type.STRING);
                         stack.push(new CS2BasicExpression(expression, operation.name().toLowerCase()), 1);
                     } else if(operation == INV_GETITEM || operation == INV_GETNUM || operation == INV_TOTAL
@@ -275,7 +275,7 @@ public class CS2FlowGenerator {
                         || operation == HOOK_MOUSE_ENTER || operation == instr6239 || operation == instr6687
                         || operation == instr6091 || operation == instr6092 || operation == instr6088
                         || operation == instr6224 || operation == instr6499 || operation == instr5957
-                        || operation == instr6246) {
+                        || operation == instr6246 || operation == instr6253) {
                         System.out.println("Testing unknown instruction.");
                         CS2Expression component = null;
                         if(operation == instr6342 || operation == instr6257 || operation == instr6237
@@ -283,7 +283,7 @@ public class CS2FlowGenerator {
                             || operation == IF_SETONMOUSEOVER || operation == IF_SETONMOUSELEAVE
                             || operation == HOOK_MOUSE_EXIT || operation == instr6376 || operation == instr6527
                             || operation == instr6393 || operation == HOOK_MOUSE_ENTER || operation == instr6239
-                            || operation == instr6246)
+                            || operation == instr6246 || operation == instr6253)
                             component = cast(stack.pop(0), CS2Type.INT);
                         CS2PrimitiveExpression paramTypesE = (CS2PrimitiveExpression) stack.pop(1);
                         String paramTypes = (String) paramTypesE.getValue();
@@ -316,17 +316,7 @@ public class CS2FlowGenerator {
                         CS2Expression expression = cast(stack.pop(0), CS2Type.INT);
                         stack.push(new CS2BasicExpression(expression, "test_ex_1"), 0);
                         stack.push(new CS2BasicExpression(expression, "test_ex_2"), 0);
-                    } else if(CS2Script.isBasicInstruction(operation)) {
-                        int size = CS2Script.getArgumentSize(operation);
-                        int stackType = CS2Script.getStackType(operation);
-                        if(size == -1 || stackType == -1)
-                            throw new DecompilerException("Unknown opcode: " + opcode + " " + operation);
-                        CS2Expression[] expressions = new CS2Expression[size];
-                        for(int i = 0; i < size; i++)
-                            expressions[i] = cast(stack.pop(stackType), stackType == 0 ? CS2Type.INT : stackType == 1 ? CS2Type.STRING : CS2Type.LONG);
-                        block.write(new CS2BasicExpression(expressions, operation.name().toLowerCase()));
-                    }
-                    else if (operation == CS2Instruction.RETURN) {
+                    } else if (operation == CS2Instruction.RETURN) {
                         if (stack.getSize() <= 0) {
                             this.function.setReturnType(CS2Type.merge(this.function.getReturnType(), CS2Type.VOID));
                             block.write(new CS2Return());
@@ -350,6 +340,15 @@ public class CS2FlowGenerator {
                             block.write(new CS2Return(new CS2StructExpression(struct, args)));
                         }
                         break;
+                    } else if(CS2Script.isBasicInstruction(operation)) {
+                        int size = CS2Script.getArgumentSize(operation);
+                        int stackType = CS2Script.getStackType(operation);
+                        if(size == -1 || stackType == -1)
+                            throw new DecompilerException("Unknown opcode: " + opcode + " " + operation);
+                        CS2Expression[] expressions = new CS2Expression[size];
+                        for(int i = 0; i < size; i++)
+                            expressions[i] = cast(stack.pop(stackType), stackType == 0 ? CS2Type.INT : stackType == 1 ? CS2Type.STRING : CS2Type.LONG);
+                        block.write(new CS2BasicExpression(expressions, operation.name().toLowerCase()));
                     }
                     else if(operation == CS2Instruction.LOAD_INT || operation == CS2Instruction.LOAD_STRING || operation == CS2Instruction.LOAD_LONG) {
                         int stackType = operation == CS2Instruction.LOAD_INT ? 0 : operation == CS2Instruction.LOAD_STRING ? 1 : 2;

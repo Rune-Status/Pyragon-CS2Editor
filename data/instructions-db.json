@@ -1,18 +1,10 @@
 {
-  "385": {
-    "opcode": 385,
-    "name": "item_name",
-    "popOrder": "i",
-    "argNames": "itemId",
-    "pushType": "s"
-  },
-  "130": {
-    "opcode": 130,
-    "name": "subtract",
-    "popOrder": "i,i",
-    "argNames": "a,b",
-    "pushType": "i",
-    "customPrint": "calc(%0 - %1)"
+  "512": {
+    "opcode": 512,
+    "name": "instr6220",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "v"
   },
   "259": {
     "opcode": 259,
@@ -35,25 +27,11 @@
     "argNames": "component",
     "pushType": "i"
   },
-  "135": {
-    "opcode": 135,
-    "name": "if_getlayer",
-    "popOrder": "ic",
-    "argNames": "hash",
-    "pushType": "i"
-  },
-  "904": {
-    "opcode": 904,
-    "name": "enum_getreverseindex",
-    "popOrder": "i,i,i,i,i",
-    "argNames": "a4,a3,a2,a1,a0",
-    "pushType": "i"
-  },
-  "138": {
-    "opcode": 138,
-    "name": "inv_getnum",
-    "popOrder": "i,i",
-    "argNames": "invId,slot",
+  "520": {
+    "opcode": 520,
+    "name": "friend_getslotfromname",
+    "popOrder": "s",
+    "argNames": "name",
     "pushType": "i"
   },
   "523": {
@@ -63,25 +41,11 @@
     "argNames": "",
     "pushType": "i"
   },
-  "140": {
-    "opcode": 140,
-    "name": "cc_setsize",
-    "popOrder": "i,i,i,i",
-    "argNames": "x,y,a,b",
-    "pushType": "v"
-  },
   "13": {
     "opcode": 13,
     "name": "cc_setitem",
     "popOrder": "i,i",
     "argNames": "itemId,amount",
-    "pushType": "v"
-  },
-  "402": {
-    "opcode": 402,
-    "name": "cc_setfill",
-    "popOrder": "ib",
-    "argNames": "filled",
     "pushType": "v"
   },
   "274": {
@@ -105,12 +69,19 @@
     "argNames": "containerId",
     "pushType": "i"
   },
-  "149": {
-    "opcode": 149,
-    "name": "enum_getreversecount",
-    "popOrder": "i,i,i",
-    "argNames": "a2,a1,a0",
+  "533": {
+    "opcode": 533,
+    "name": "enum_getoutputcount",
+    "popOrder": "i",
+    "argNames": "enumId",
     "pushType": "i"
+  },
+  "789": {
+    "opcode": 789,
+    "name": "chat_getcrownedname",
+    "popOrder": "i",
+    "argNames": "index",
+    "pushType": "s"
   },
   "22": {
     "opcode": 22,
@@ -127,13 +98,6 @@
     "pushType": "i",
     "customPrint": "calc(%0 & 1 << %1)"
   },
-  "406": {
-    "opcode": 406,
-    "name": "cc_settiling",
-    "popOrder": "ib",
-    "argNames": "tiling",
-    "pushType": "v"
-  },
   "279": {
     "opcode": 279,
     "name": "add",
@@ -141,6 +105,13 @@
     "argNames": "a,b",
     "pushType": "i",
     "customPrint": "calc(%1 + %0)"
+  },
+  "792": {
+    "opcode": 792,
+    "name": "chat_getfilter_private",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
   },
   "796": {
     "opcode": 796,
@@ -156,12 +127,12 @@
     "argNames": "s1,s0",
     "pushType": "s"
   },
-  "671": {
-    "opcode": 671,
-    "name": "cc_setop",
-    "popOrder": "s,i",
-    "argNames": "text,index",
-    "pushType": "v"
+  "543": {
+    "opcode": 543,
+    "name": "instr6289",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
   },
   "289": {
     "opcode": 289,
@@ -170,12 +141,26 @@
     "argNames": "componentId,name",
     "pushType": "v"
   },
+  "545": {
+    "opcode": 545,
+    "name": "cc_getwidth",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
+  },
   "546": {
     "opcode": 546,
     "name": "cc_settextalign",
     "popOrder": "i,i,i",
     "argNames": "unknown,verticalAlign,horizontalAlign",
     "pushType": "v"
+  },
+  "292": {
+    "opcode": 292,
+    "name": "chat_playername",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "s"
   },
   "293": {
     "opcode": 293,
@@ -184,11 +169,11 @@
     "argNames": "channel",
     "pushType": "v"
   },
-  "677": {
-    "opcode": 677,
-    "name": "cc_find",
-    "popOrder": "i,ic",
-    "argNames": "a0,hash",
+  "38": {
+    "opcode": 38,
+    "name": "instr6277",
+    "popOrder": "ic",
+    "argNames": "hash",
     "pushType": "i"
   },
   "297": {
@@ -198,19 +183,19 @@
     "argNames": "",
     "pushType": "i"
   },
-  "170": {
-    "opcode": 170,
-    "name": "if_gety",
-    "popOrder": "ic",
-    "argNames": "hash",
+  "810": {
+    "opcode": 810,
+    "name": "compare",
+    "popOrder": "s,s",
+    "argNames": "s0,s1",
     "pushType": "i"
   },
-  "428": {
-    "opcode": 428,
-    "name": "if_getscrolly",
-    "popOrder": "i",
-    "argNames": "hash",
-    "pushType": "i"
+  "556": {
+    "opcode": 556,
+    "name": "lower_string",
+    "popOrder": "s",
+    "argNames": "string",
+    "pushType": "s"
   },
   "301": {
     "opcode": 301,
@@ -222,24 +207,16 @@
   "816": {
     "opcode": 816,
     "name": "if_setcolor",
-    "popOrder": "ico",
-    "argNames": "colour",
+    "popOrder": "ic,ico",
+    "argNames": "hash,color",
     "pushType": "v"
   },
-  "178": {
-    "opcode": 178,
-    "name": "modulo",
-    "popOrder": "i,i",
-    "argNames": "a,b",
-    "pushType": "i",
-    "customPrint": "calc(%0 % %1)"
-  },
-  "180": {
-    "opcode": 180,
-    "name": "inv_getitem",
-    "popOrder": "i,i",
-    "argNames": "invId,slot",
-    "pushType": "i"
+  "49": {
+    "opcode": 49,
+    "name": "escape",
+    "popOrder": "s",
+    "argNames": "string",
+    "pushType": "s"
   },
   "822": {
     "opcode": 822,
@@ -263,6 +240,13 @@
     "argNames": "hash,scrollX,scrollY",
     "pushType": "v"
   },
+  "313": {
+    "opcode": 313,
+    "name": "item_uncert",
+    "popOrder": "i",
+    "argNames": "itemId",
+    "pushType": "i"
+  },
   "317": {
     "opcode": 317,
     "name": "cc_setoutline",
@@ -270,11 +254,11 @@
     "argNames": "unknown0",
     "pushType": "v"
   },
-  "704": {
-    "opcode": 704,
-    "name": "instr6296",
-    "popOrder": "ic",
-    "argNames": "hash",
+  "61": {
+    "opcode": 61,
+    "name": "instr6661",
+    "popOrder": "i,ic",
+    "argNames": "arg1,hash",
     "pushType": "i"
   },
   "578": {
@@ -291,28 +275,6 @@
     "argNames": "unknown,hash",
     "pushType": "v"
   },
-  "199": {
-    "opcode": 199,
-    "name": "bit_and",
-    "popOrder": "i,i",
-    "argNames": "a,b",
-    "pushType": "i",
-    "customPrint": "calc(%0 & %1)"
-  },
-  "972": {
-    "opcode": 972,
-    "name": "cc_settext",
-    "popOrder": "s",
-    "argNames": "text",
-    "pushType": "v"
-  },
-  "204": {
-    "opcode": 204,
-    "name": "cc_getparent",
-    "popOrder": "",
-    "argNames": "",
-    "pushType": "i"
-  },
   "333": {
     "opcode": 333,
     "name": "instr6004",
@@ -327,11 +289,11 @@
     "argNames": "x,y,a,b",
     "pushType": "v"
   },
-  "720": {
-    "opcode": 720,
-    "name": "invother_getnum",
-    "popOrder": "i,i",
-    "argNames": "invId,slot",
+  "335": {
+    "opcode": 335,
+    "name": "chat_quickchatid",
+    "popOrder": "i",
+    "argNames": "index",
     "pushType": "i"
   },
   "336": {
@@ -346,13 +308,6 @@
     "name": "clientclock",
     "popOrder": "",
     "argNames": "",
-    "pushType": "i"
-  },
-  "978": {
-    "opcode": 978,
-    "name": "if_getscrollheight",
-    "popOrder": "i",
-    "argNames": "hash",
     "pushType": "i"
   },
   "340": {
@@ -383,11 +338,18 @@
     "argNames": "fontId",
     "pushType": "v"
   },
-  "224": {
-    "opcode": 224,
-    "name": "if_setclickmask",
-    "popOrder": "i,i",
-    "argNames": "componentId,mask",
+  "96": {
+    "opcode": 96,
+    "name": "instr6279",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "609": {
+    "opcode": 609,
+    "name": "friend_add",
+    "popOrder": "s",
+    "argNames": "name",
     "pushType": "v"
   },
   "612": {
@@ -404,19 +366,12 @@
     "argNames": "shadow",
     "pushType": "v"
   },
-  "748": {
-    "opcode": 748,
-    "name": "if_gettext",
-    "popOrder": "s,i",
-    "argNames": "text,component",
+  "620": {
+    "opcode": 620,
+    "name": "instr6151",
+    "popOrder": "",
+    "argNames": "",
     "pushType": "i"
-  },
-  "751": {
-    "opcode": 751,
-    "name": "cc_setgraphicshadow",
-    "popOrder": "ihsv",
-    "argNames": "hsvHash",
-    "pushType": "v"
   },
   "367": {
     "opcode": 367,
@@ -426,11 +381,39 @@
     "pushType": "i",
     "customPrint": "calc(%0 * %1)"
   },
+  "879": {
+    "opcode": 879,
+    "name": "friend_test",
+    "popOrder": "s",
+    "argNames": "arg0",
+    "pushType": "i"
+  },
+  "112": {
+    "opcode": 112,
+    "name": "cc_sethide",
+    "popOrder": "i",
+    "argNames": "hidden",
+    "pushType": "v"
+  },
+  "880": {
+    "opcode": 880,
+    "name": "friend_platform",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
+  },
   "113": {
     "opcode": 113,
     "name": "cc_create",
     "popOrder": "i,i,ic",
     "argNames": "component, unknown0, slot",
+    "pushType": "v"
+  },
+  "118": {
+    "opcode": 118,
+    "name": "set_chat_type",
+    "popOrder": "i",
+    "argNames": "chatType",
     "pushType": "v"
   },
   "119": {
@@ -447,5 +430,330 @@
     "popOrder": "ic",
     "argNames": "hash",
     "pushType": "i"
+  },
+  "385": {
+    "opcode": 385,
+    "name": "item_name",
+    "popOrder": "i",
+    "argNames": "itemId",
+    "pushType": "s"
+  },
+  "130": {
+    "opcode": 130,
+    "name": "subtract",
+    "popOrder": "i,i",
+    "argNames": "a,b",
+    "pushType": "i",
+    "customPrint": "calc(%0 - %1)"
+  },
+  "135": {
+    "opcode": 135,
+    "name": "if_getlayer",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "904": {
+    "opcode": 904,
+    "name": "enum_getreverseindex",
+    "popOrder": "i,i,i,i,i",
+    "argNames": "a4,a3,a2,a1,a0",
+    "pushType": "i"
+  },
+  "138": {
+    "opcode": 138,
+    "name": "inv_getnum",
+    "popOrder": "i,i",
+    "argNames": "invId,slot",
+    "pushType": "i"
+  },
+  "651": {
+    "opcode": 651,
+    "name": "instr6180",
+    "popOrder": "i",
+    "argNames": "arg0",
+    "pushType": "v"
+  },
+  "140": {
+    "opcode": 140,
+    "name": "cc_setsize",
+    "popOrder": "i,i,i,i",
+    "argNames": "x,y,a,b",
+    "pushType": "v"
+  },
+  "402": {
+    "opcode": 402,
+    "name": "cc_setfill",
+    "popOrder": "ib",
+    "argNames": "filled",
+    "pushType": "v"
+  },
+  "149": {
+    "opcode": 149,
+    "name": "enum_getreversecount",
+    "popOrder": "i,i,i",
+    "argNames": "a2,a1,a0",
+    "pushType": "i"
+  },
+  "406": {
+    "opcode": 406,
+    "name": "cc_settiling",
+    "popOrder": "ib",
+    "argNames": "tiling",
+    "pushType": "v"
+  },
+  "412": {
+    "opcode": 412,
+    "name": "cc_setitem_nonum",
+    "popOrder": "i,i",
+    "argNames": "itemId,arg1",
+    "pushType": "i"
+  },
+  "671": {
+    "opcode": 671,
+    "name": "cc_setop",
+    "popOrder": "s,i",
+    "argNames": "text,index",
+    "pushType": "v"
+  },
+  "677": {
+    "opcode": 677,
+    "name": "cc_find",
+    "popOrder": "i,ic",
+    "argNames": "a0,hash",
+    "pushType": "i"
+  },
+  "681": {
+    "opcode": 681,
+    "name": "chatline_gettype",
+    "popOrder": "i",
+    "argNames": "index",
+    "pushType": "i"
+  },
+  "170": {
+    "opcode": 170,
+    "name": "if_gety",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "427": {
+    "opcode": 427,
+    "name": "world_isquickchat",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
+  },
+  "428": {
+    "opcode": 428,
+    "name": "if_getscrolly",
+    "popOrder": "i",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "177": {
+    "opcode": 177,
+    "name": "ignore_add",
+    "popOrder": "s",
+    "argNames": "name",
+    "pushType": "v"
+  },
+  "689": {
+    "opcode": 689,
+    "name": "if_settextshadow",
+    "popOrder": "ic,i",
+    "argNames": "hash,shadow",
+    "pushType": "v"
+  },
+  "178": {
+    "opcode": 178,
+    "name": "modulo",
+    "popOrder": "i,i",
+    "argNames": "a,b",
+    "pushType": "i",
+    "customPrint": "calc(%0 % %1)"
+  },
+  "180": {
+    "opcode": 180,
+    "name": "inv_getitem",
+    "popOrder": "i,i",
+    "argNames": "invId,slot",
+    "pushType": "i"
+  },
+  "436": {
+    "opcode": 436,
+    "name": "instr6280",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "953": {
+    "opcode": 953,
+    "name": "if_getheight",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "958": {
+    "opcode": 958,
+    "name": "instr6584",
+    "popOrder": "i",
+    "argNames": "arg0",
+    "pushType": "i"
+  },
+  "704": {
+    "opcode": 704,
+    "name": "instr6296",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "710": {
+    "opcode": 710,
+    "name": "if_getx",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "199": {
+    "opcode": 199,
+    "name": "bit_and",
+    "popOrder": "i,i",
+    "argNames": "a,b",
+    "pushType": "i",
+    "customPrint": "calc(%0 & %1)"
+  },
+  "201": {
+    "opcode": 201,
+    "name": "userdetail_quickchat",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
+  },
+  "459": {
+    "opcode": 459,
+    "name": "stringwidth",
+    "popOrder": "i,s",
+    "argNames": "fontId,string",
+    "pushType": "i"
+  },
+  "715": {
+    "opcode": 715,
+    "name": "get_system_update_timer",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
+  },
+  "972": {
+    "opcode": 972,
+    "name": "cc_settext",
+    "popOrder": "s",
+    "argNames": "text",
+    "pushType": "v"
+  },
+  "204": {
+    "opcode": 204,
+    "name": "cc_getparent",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
+  },
+  "461": {
+    "opcode": 461,
+    "name": "instr6292",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "462": {
+    "opcode": 462,
+    "name": "instr6573",
+    "popOrder": "i",
+    "argNames": "index",
+    "pushType": "s"
+  },
+  "720": {
+    "opcode": 720,
+    "name": "invother_getnum",
+    "popOrder": "i,i",
+    "argNames": "invId,slot",
+    "pushType": "i"
+  },
+  "978": {
+    "opcode": 978,
+    "name": "if_getscrollheight",
+    "popOrder": "i",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "471": {
+    "opcode": 471,
+    "name": "send_message",
+    "popOrder": "s",
+    "argNames": "message",
+    "pushType": "v"
+  },
+  "727": {
+    "opcode": 727,
+    "name": "staffmodlevel",
+    "popOrder": "",
+    "argNames": "",
+    "pushType": "i"
+  },
+  "223": {
+    "opcode": 223,
+    "name": "instr6075",
+    "popOrder": "i",
+    "argNames": "arg0",
+    "pushType": "v"
+  },
+  "224": {
+    "opcode": 224,
+    "name": "if_setclickmask",
+    "popOrder": "i,i",
+    "argNames": "componentId,mask",
+    "pushType": "v"
+  },
+  "231": {
+    "opcode": 231,
+    "name": "chat_getmessage",
+    "popOrder": "i",
+    "argNames": "index",
+    "pushType": "s"
+  },
+  "1000": {
+    "opcode": 1000,
+    "name": "if_getnextsubid",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "i"
+  },
+  "748": {
+    "opcode": 748,
+    "name": "if_gettext",
+    "popOrder": "ic",
+    "argNames": "hash",
+    "pushType": "s"
+  },
+  "751": {
+    "opcode": 751,
+    "name": "cc_setgraphicshadow",
+    "popOrder": "ihsv",
+    "argNames": "hsvHash",
+    "pushType": "v"
+  },
+  "764": {
+    "opcode": 764,
+    "name": "instr6443",
+    "popOrder": "i",
+    "argNames": "arg0",
+    "pushType": "v"
+  },
+  "255": {
+    "opcode": 255,
+    "name": "instr6213",
+    "popOrder": "i,ic",
+    "argNames": "arg0,hash",
+    "pushType": "s"
   }
 }
