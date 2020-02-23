@@ -6,6 +6,13 @@
     "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14",
     "returnType": "v"
   },
+  "0": {
+    "id": 0,
+    "name": "script0",
+    "argTypes": "i,i,i",
+    "argNames": "arg0,arg1,arg2",
+    "returnType": "s"
+  },
   "2049": {
     "id": 2049,
     "name": "script2049",
@@ -29,10 +36,10 @@
   },
   "2": {
     "id": 2,
-    "name": "script2",
+    "name": "script_2",
     "argTypes": "i",
     "argNames": "arg0",
-    "returnType": "i"
+    "returnType": "s"
   },
   "2051": {
     "id": 2051,
@@ -46,7 +53,6 @@
     "name": "script3",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "2052": {
@@ -56,11 +62,46 @@
     "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8",
     "returnType": "v"
   },
+  "4": {
+    "id": 4,
+    "name": "script4",
+    "argTypes": "i,i,i,i,i,i,i,i,s",
+    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8",
+    "returnType": "v"
+  },
+  "5": {
+    "id": 5,
+    "name": "script5",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "6": {
+    "id": 6,
+    "name": "script6",
+    "argTypes": "i,i,i,i,i,i,i,i,i,i,i,i,i,i,s,s",
+    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15",
+    "returnType": "v"
+  },
+  "7": {
+    "id": 7,
+    "name": "script7",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
   "8": {
     "id": 8,
     "name": "script8",
     "argTypes": "i",
     "argNames": "arg0",
+    "returnType": "i"
+  },
+  "9": {
+    "id": 9,
+    "name": "script9",
+    "argTypes": "i,i,i",
+    "argNames": "arg0,arg1,arg2",
     "returnType": "v"
   },
   "12": {
@@ -68,7 +109,13 @@
     "name": "script12",
     "argTypes": "i",
     "argNames": "arg0",
-    "vNames": "",
+    "returnType": "i"
+  },
+  "1036": {
+    "id": 1036,
+    "name": "script1036",
+    "argTypes": "",
+    "argNames": "",
     "returnType": "i"
   },
   "13": {
@@ -76,7 +123,6 @@
     "name": "script13",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "14": {
@@ -84,8 +130,36 @@
     "name": "script14",
     "argTypes": "i,i,i",
     "argNames": "arg0,arg1,arg2",
-    "vNames": "",
     "returnType": "i"
+  },
+  "1551": {
+    "id": 1551,
+    "name": "script1551",
+    "argTypes": "i,i,i,s",
+    "argNames": "arg0,arg1,arg2,arg3",
+    "returnType": "i"
+  },
+  "16": {
+    "id": 16,
+    "name": "script16",
+    "argTypes": "i,i,i,i,i,i,i,i,i,i,i,i,i",
+    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12",
+    "returnType": "v"
+  },
+  "17": {
+    "id": 17,
+    "name": "script17",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "18": {
+    "id": 18,
+    "name": "script18",
+    "argTypes": "",
+    "argNames": "",
+    "vNames": "hide",
+    "returnType": "v"
   },
   "19": {
     "id": 19,
@@ -93,6 +167,13 @@
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
     "returnType": "i"
+  },
+  "1555": {
+    "id": 1555,
+    "name": "script1555",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
   },
   "20": {
     "id": 20,
@@ -108,42 +189,124 @@
     "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12",
     "returnType": "v"
   },
-  "1305": {
-    "id": 1305,
-    "name": "script1305",
+  "22": {
+    "id": 22,
+    "name": "script22",
     "argTypes": "",
     "argNames": "",
-    "returnType": "i"
+    "returnType": "v"
   },
-  "3354": {
-    "id": 3354,
-    "name": "script3354",
+  "1558": {
+    "id": 1558,
+    "name": "script1558",
     "argTypes": "i",
     "argNames": "arg0",
+    "returnType": "v"
+  },
+  "23": {
+    "id": 23,
+    "name": "script23",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "1559": {
+    "id": 1559,
+    "name": "script1559",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "24": {
+    "id": 24,
+    "name": "script24",
+    "argTypes": "i,i,i,i,i,s",
+    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5",
     "returnType": "i"
   },
-  "3355": {
-    "id": 3355,
-    "name": "script3355",
-    "argTypes": "i,i",
+  "1560": {
+    "id": 1560,
+    "name": "script1560",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "25": {
+    "id": 25,
+    "name": "script25",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "1561": {
+    "id": 1561,
+    "name": "script1561",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "26": {
+    "id": 26,
+    "name": "script26",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "1050": {
+    "id": 1050,
+    "name": "script1050",
+    "argTypes": "i,s",
     "argNames": "arg0,arg1",
-    "vNames": "",
-    "returnType": "i"
+    "returnType": "v"
   },
-  "2332": {
-    "id": 2332,
-    "name": "script2332",
-    "argTypes": "s,s,s",
+  "27": {
+    "id": 27,
+    "name": "script27",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "1051": {
+    "id": 1051,
+    "name": "script1051",
+    "argTypes": "i,s",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "28": {
+    "id": 28,
+    "name": "script28",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "1052": {
+    "id": 1052,
+    "name": "script1052",
+    "argTypes": "i,i,s",
     "argNames": "arg0,arg1,arg2",
-    "returnType": "s"
+    "returnType": "v"
+  },
+  "29": {
+    "id": 29,
+    "name": "script29",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
   },
   "1566": {
     "id": 1566,
     "name": "script1566",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
+  },
+  "30": {
+    "id": 30,
+    "name": "script30",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
   },
   "31": {
     "id": 31,
@@ -157,19 +320,74 @@
     "name": "script1567",
     "argTypes": "i,i,i",
     "argNames": "arg0,arg1,arg2",
-    "vNames": "",
     "returnType": "i"
   },
-  "1314": {
-    "id": 1314,
-    "name": "script1314",
+  "32": {
+    "id": 32,
+    "name": "script32",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "33": {
+    "id": 33,
+    "name": "script33",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "34": {
+    "id": 34,
+    "name": "script34",
+    "argTypes": "i,i,i",
+    "argNames": "arg0,arg1,arg2",
+    "returnType": "v"
+  },
+  "35": {
+    "id": 35,
+    "name": "script35",
+    "argTypes": "i,i,i,i",
+    "argNames": "arg0,arg1,arg2,arg3",
+    "returnType": "v"
+  },
+  "36": {
+    "id": 36,
+    "name": "script36",
+    "argTypes": "i,i,i",
+    "argNames": "arg0,arg1,arg2",
+    "returnType": "v"
+  },
+  "37": {
+    "id": 37,
+    "name": "script37",
+    "argTypes": "i,i,i,i",
+    "argNames": "arg0,arg1,arg2,arg3",
+    "returnType": "v"
+  },
+  "38": {
+    "id": 38,
+    "name": "script38",
+    "argTypes": "i,i,i,i,s",
+    "argNames": "arg0,arg1,arg2,arg3,arg4",
+    "returnType": "v"
+  },
+  "39": {
+    "id": 39,
+    "name": "script39",
+    "argTypes": "i,i,i,i,s",
+    "argNames": "arg0,arg1,arg2,arg3,arg4",
+    "returnType": "v"
+  },
+  "40": {
+    "id": 40,
+    "name": "script40",
     "argTypes": "i",
     "argNames": "arg0",
     "returnType": "v"
   },
-  "680": {
-    "id": 680,
-    "name": "script680",
+  "1064": {
+    "id": 1064,
+    "name": "script1064",
     "argTypes": "i",
     "argNames": "arg0",
     "returnType": "v"
@@ -179,14 +397,70 @@
     "name": "script6185",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
+    "returnType": "i"
+  },
+  "41": {
+    "id": 41,
+    "name": "script41",
+    "argTypes": "i",
+    "argNames": "arg0",
     "returnType": "v"
   },
-  "686": {
-    "id": 686,
-    "name": "script686",
+  "42": {
+    "id": 42,
+    "name": "script42",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "i"
+  },
+  "6186": {
+    "id": 6186,
+    "name": "script6186",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "1066": {
+    "id": 1066,
+    "name": "script1066",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "43": {
+    "id": 43,
+    "name": "script43",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "44": {
+    "id": 44,
+    "name": "script44",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "1068": {
+    "id": 1068,
+    "name": "script1068",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "45": {
+    "id": 45,
+    "name": "script45",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
     "returnType": "i"
+  },
+  "1069": {
+    "id": 1069,
+    "name": "script1069",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
   },
   "46": {
     "id": 46,
@@ -202,6 +476,615 @@
     "argNames": "arg0",
     "returnType": "s"
   },
+  "1071": {
+    "id": 1071,
+    "name": "script1071",
+    "argTypes": "i,i,i",
+    "argNames": "arg0,arg1,arg2",
+    "returnType": "v"
+  },
+  "48": {
+    "id": 48,
+    "name": "script48",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "49": {
+    "id": 49,
+    "name": "script49",
+    "argTypes": "i,i,i",
+    "argNames": "arg0,arg1,arg2",
+    "returnType": "v"
+  },
+  "50": {
+    "id": 50,
+    "name": "script50",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "51": {
+    "id": 51,
+    "name": "script51",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "52": {
+    "id": 52,
+    "name": "script52",
+    "argTypes": "i,i,i,i,i",
+    "argNames": "arg0,arg1,arg2,arg3,arg4",
+    "returnType": "v"
+  },
+  "53": {
+    "id": 53,
+    "name": "script53",
+    "argTypes": "i,i,i",
+    "argNames": "arg0,arg1,arg2",
+    "returnType": "v"
+  },
+  "54": {
+    "id": 54,
+    "name": "script54",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "55": {
+    "id": 55,
+    "name": "script55",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
+  "56": {
+    "id": 56,
+    "name": "script56",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "569": {
+    "id": 569,
+    "name": "script569",
+    "argTypes": "i,i,i,i,i,s",
+    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5",
+    "returnType": "v"
+  },
+  "57": {
+    "id": 57,
+    "name": "script57",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
+  "58": {
+    "id": 58,
+    "name": "script58",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "59": {
+    "id": 59,
+    "name": "script59",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "60": {
+    "id": 60,
+    "name": "script60",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "61": {
+    "id": 61,
+    "name": "script61",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "62": {
+    "id": 62,
+    "name": "script62",
+    "argTypes": "i,i,i,i",
+    "argNames": "arg0,arg1,arg2,arg3",
+    "returnType": "v"
+  },
+  "63": {
+    "id": 63,
+    "name": "script63",
+    "argTypes": "i,i,i,i,i,i,i,i",
+    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7",
+    "returnType": "v"
+  },
+  "64": {
+    "id": 64,
+    "name": "script64",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "65": {
+    "id": 65,
+    "name": "script65",
+    "argTypes": "i,i,i,i",
+    "argNames": "arg0,arg1,arg2,arg3",
+    "returnType": "v"
+  },
+  "66": {
+    "id": 66,
+    "name": "script66",
+    "argTypes": "i,i,i,i",
+    "argNames": "arg0,arg1,arg2,arg3",
+    "returnType": "v"
+  },
+  "1602": {
+    "id": 1602,
+    "name": "script1602",
+    "argTypes": "s",
+    "argNames": "arg0",
+    "returnType": "s"
+  },
+  "67": {
+    "id": 67,
+    "name": "script67",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "68": {
+    "id": 68,
+    "name": "script68",
+    "argTypes": "i,s",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "69": {
+    "id": 69,
+    "name": "script69",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "71": {
+    "id": 71,
+    "name": "script71",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "72": {
+    "id": 72,
+    "name": "script72",
+    "argTypes": "i,i,i",
+    "argNames": "arg0,arg1,arg2",
+    "returnType": "v"
+  },
+  "73": {
+    "id": 73,
+    "name": "script73",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "75": {
+    "id": 75,
+    "name": "script75",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "76": {
+    "id": 76,
+    "name": "script76",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "79": {
+    "id": 79,
+    "name": "script79",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "s"
+  },
+  "84": {
+    "id": 84,
+    "name": "script84",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "87": {
+    "id": 87,
+    "name": "script87",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "i"
+  },
+  "88": {
+    "id": 88,
+    "name": "script88",
+    "argTypes": "i,i,s",
+    "argNames": "opcode,arg1,name",
+    "returnType": "v"
+  },
+  "89": {
+    "id": 89,
+    "name": "script89",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "90": {
+    "id": 90,
+    "name": "script90",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "i"
+  },
+  "91": {
+    "id": 91,
+    "name": "script91",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "i"
+  },
+  "98": {
+    "id": 98,
+    "name": "script98",
+    "argTypes": "i,i,i,i,i,i,i",
+    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6",
+    "returnType": "v"
+  },
+  "4729": {
+    "id": 4729,
+    "name": "script4729",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
+  "4730": {
+    "id": 4730,
+    "name": "script4730",
+    "argTypes": "i,i,i,i,i,i",
+    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5",
+    "returnType": "v"
+  },
+  "133": {
+    "id": 133,
+    "name": "script133",
+    "argTypes": "i,i,i",
+    "argNames": "arg0,arg1,arg2",
+    "returnType": "i"
+  },
+  "5255": {
+    "id": 5255,
+    "name": "script5255",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
+  "5256": {
+    "id": 5256,
+    "name": "script5256",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
+  "4754": {
+    "id": 4754,
+    "name": "script4754",
+    "argTypes": "i,i,i",
+    "argNames": "arg0,arg1,arg2",
+    "returnType": "i"
+  },
+  "2709": {
+    "id": 2709,
+    "name": "script2709",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
+  "4761": {
+    "id": 4761,
+    "name": "script4761",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "i"
+  },
+  "675": {
+    "id": 675,
+    "name": "script675",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "680": {
+    "id": 680,
+    "name": "script680",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "686": {
+    "id": 686,
+    "name": "script686",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "i"
+  },
+  "178": {
+    "id": 178,
+    "name": "script178",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
+  "181": {
+    "id": 181,
+    "name": "script181",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "i"
+  },
+  "183": {
+    "id": 183,
+    "name": "script183",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "192": {
+    "id": 192,
+    "name": "script192",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "705": {
+    "id": 705,
+    "name": "script705",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "v"
+  },
+  "5335": {
+    "id": 5335,
+    "name": "script5335",
+    "argTypes": "i,i,i,i,i,i,s",
+    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6",
+    "returnType": "v"
+  },
+  "734": {
+    "id": 734,
+    "name": "script734",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "i"
+  },
+  "2787": {
+    "id": 2787,
+    "name": "script2787",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "i"
+  },
+  "2788": {
+    "id": 2788,
+    "name": "script2788",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "i"
+  },
+  "746": {
+    "id": 746,
+    "name": "script746",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "749": {
+    "id": 749,
+    "name": "script749",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "750": {
+    "id": 750,
+    "name": "script750",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "i"
+  },
+  "2296": {
+    "id": 2296,
+    "name": "script2296",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "i"
+  },
+  "2297": {
+    "id": 2297,
+    "name": "script2297",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "2303": {
+    "id": 2303,
+    "name": "script2303",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "1815": {
+    "id": 1815,
+    "name": "script1815",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
+  "1305": {
+    "id": 1305,
+    "name": "script1305",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
+  "3354": {
+    "id": 3354,
+    "name": "script3354",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "i"
+  },
+  "1306": {
+    "id": 1306,
+    "name": "script1306",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "3355": {
+    "id": 3355,
+    "name": "script3355",
+    "argTypes": "i,i",
+    "argNames": "arg0,arg1",
+    "returnType": "i"
+  },
+  "2332": {
+    "id": 2332,
+    "name": "script2332",
+    "argTypes": "s,s,s",
+    "argNames": "arg0,arg1,arg2",
+    "returnType": "s"
+  },
+  "1308": {
+    "id": 1308,
+    "name": "script1308",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "1309": {
+    "id": 1309,
+    "name": "script1309",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "1311": {
+    "id": 1311,
+    "name": "script1311",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "1312": {
+    "id": 1312,
+    "name": "script1312",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "1314": {
+    "id": 1314,
+    "name": "script1314",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "802": {
+    "id": 802,
+    "name": "script802",
+    "argTypes": "i,i,i,i,s",
+    "argNames": "arg0,arg1,arg2,arg3,arg4",
+    "returnType": "i"
+  },
+  "3365": {
+    "id": 3365,
+    "name": "script3365",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "i"
+  },
+  "3366": {
+    "id": 3366,
+    "name": "script3366",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "i"
+  },
+  "4405": {
+    "id": 4405,
+    "name": "script4405",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
+  "3929": {
+    "id": 3929,
+    "name": "script3929",
+    "argTypes": "i,i,i",
+    "argNames": "arg0,arg1,arg2",
+    "returnType": "v"
+  },
+  "1891": {
+    "id": 1891,
+    "name": "script1891",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
+  "1385": {
+    "id": 1385,
+    "name": "script1385",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "5481": {
+    "id": 5481,
+    "name": "script5481",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
+  "1386": {
+    "id": 1386,
+    "name": "script1386",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "v"
+  },
+  "1387": {
+    "id": 1387,
+    "name": "script1387",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
+  "1393": {
+    "id": 1393,
+    "name": "script1393",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "i"
+  },
+  "4467": {
+    "id": 4467,
+    "name": "script4467",
+    "argTypes": "",
+    "argNames": "",
+    "returnType": "i"
+  },
   "2486": {
     "id": 2486,
     "name": "script2486",
@@ -209,11 +1092,25 @@
     "argNames": "",
     "returnType": "v"
   },
+  "4534": {
+    "id": 4534,
+    "name": "script4534",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
+  },
   "2999": {
     "id": 2999,
     "name": "script2999",
     "argTypes": "",
     "argNames": "",
+    "returnType": "v"
+  },
+  "4535": {
+    "id": 4535,
+    "name": "script4535",
+    "argTypes": "i",
+    "argNames": "arg0",
     "returnType": "v"
   },
   "3001": {
@@ -249,7 +1146,6 @@
     "name": "script978",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "979": {
@@ -264,7 +1160,6 @@
     "name": "script980",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "981": {
@@ -279,7 +1174,6 @@
     "name": "script982",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "983": {
@@ -294,7 +1188,6 @@
     "name": "script984",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "985": {
@@ -304,20 +1197,19 @@
     "argNames": "arg0",
     "returnType": "i"
   },
-  "3929": {
-    "id": 3929,
-    "name": "script3929",
-    "argTypes": "i,i,i",
-    "argNames": "arg0,arg1,arg2",
-    "returnType": "v"
-  },
   "986": {
     "id": 986,
     "name": "script986",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
+  },
+  "5082": {
+    "id": 5082,
+    "name": "script5082",
+    "argTypes": "i",
+    "argNames": "arg0",
+    "returnType": "v"
   },
   "987": {
     "id": 987,
@@ -331,7 +1223,6 @@
     "name": "script988",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "989": {
@@ -346,7 +1237,6 @@
     "name": "script990",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "991": {
@@ -361,7 +1251,6 @@
     "name": "script992",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "993": {
@@ -371,19 +1260,11 @@
     "argNames": "arg0",
     "returnType": "i"
   },
-  "98": {
-    "id": 98,
-    "name": "script98",
-    "argTypes": "i,i,i,i,i,i,i",
-    "argNames": "arg0,arg1,arg2,arg3,arg4,arg5,arg6",
-    "returnType": "v"
-  },
   "994": {
     "id": 994,
     "name": "script994",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "995": {
@@ -393,28 +1274,11 @@
     "argNames": "arg0",
     "returnType": "i"
   },
-  "2787": {
-    "id": 2787,
-    "name": "script2787",
-    "argTypes": "i,i",
-    "argNames": "arg0,arg1",
-    "vNames": "",
-    "returnType": "i"
-  },
-  "2788": {
-    "id": 2788,
-    "name": "script2788",
-    "argTypes": "i,i",
-    "argNames": "arg0,arg1",
-    "vNames": "",
-    "returnType": "i"
-  },
   "996": {
     "id": 996,
     "name": "script996",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "997": {
@@ -429,7 +1293,6 @@
     "name": "script998",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "999": {
@@ -444,7 +1307,6 @@
     "name": "script1000",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "1001": {
@@ -459,7 +1321,6 @@
     "name": "script1002",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "1003": {
@@ -474,7 +1335,6 @@
     "name": "script1004",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "1005": {
@@ -484,19 +1344,18 @@
     "argNames": "arg0",
     "returnType": "i"
   },
-  "750": {
-    "id": 750,
-    "name": "script750",
-    "argTypes": "i",
-    "argNames": "arg0",
-    "returnType": "v"
-  },
   "1006": {
     "id": 1006,
     "name": "script1006",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
+    "returnType": "i"
+  },
+  "4590": {
+    "id": 4590,
+    "name": "script4590",
+    "argTypes": "",
+    "argNames": "",
     "returnType": "i"
   },
   "1007": {
@@ -511,7 +1370,6 @@
     "name": "script1008",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "1009": {
@@ -526,7 +1384,6 @@
     "name": "script1010",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "1011": {
@@ -541,7 +1398,6 @@
     "name": "script1012",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "1013": {
@@ -556,7 +1412,6 @@
     "name": "script1014",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "1015": {
@@ -571,15 +1426,7 @@
     "name": "script1016",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
-  },
-  "2297": {
-    "id": 2297,
-    "name": "script2297",
-    "argTypes": "i",
-    "argNames": "arg0",
-    "returnType": "v"
   },
   "1017": {
     "id": 1017,
@@ -593,7 +1440,13 @@
     "name": "script1018",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
+    "returnType": "i"
+  },
+  "506": {
+    "id": 506,
+    "name": "script506",
+    "argTypes": "i",
+    "argNames": "arg0",
     "returnType": "i"
   },
   "1019": {
@@ -608,7 +1461,6 @@
     "name": "script1020",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   },
   "1021": {
@@ -623,7 +1475,6 @@
     "name": "script1022",
     "argTypes": "i,i",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "i"
   }
 }

@@ -5,10 +5,13 @@ block head
     link(rel="stylesheet", href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css")
     script(src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js")
     script(src='script/ace/ace.js')
+    script(src='script/menu-options.js')
     script(src='script/ace/ext-language_tools.js')
     script.
 
         let tabs = [];
+
+        let saved = [];
 
         let unsaved = [];
 
@@ -16,9 +19,16 @@ block head
 
         let lastTabs = [];
 
-        function addTab(scriptName, id, element) {
+        let currentTab = -1;
+
+        let fireChange = true;
+
+        let n;
+
+        function addTab(scriptName, id, element, force=false) {
             //save current contents to tabs
-            if(tabs[id]) {
+            console.log('Adding tab: '+scriptName+' '+id);
+            if(tabs[id] && !force) {
                 let active = $('.script-tab.active');
                 if(active.data('id') == id) return false;
                 $('.script-tab.active').removeClass('active');
@@ -54,25 +64,32 @@ block head
                 tab.data('id', id);
                 $('#script-tabs').append(tab);
                 tabs[id] = data.file;
+                saved[id] = data.file;
                 $('#editor').css('border-top-left-radius', '0px');
                 lastTabs.push(id);
             });
         }
 
-        function closeTab(id, element) {
-            if(unsaved[id]) {
+        function closeNoty(noty) {
+            n = null;
+            noty.close();
+        }
+
+        function closeTab(id, force=false) {
+            if(unsaved[id] && !force) {
                 n = noty({
-                    text: 'Would you like to save first?',
+                    text: 'File is unsaved. Would you like to try saving first?',
                     type: 'confirm',
                     layout: 'center',
                     dismissQueue: false,
                     theme: 'cryogen',
                     buttons: [{
                         addClass: 'btn btn-success', text: 'Save', onClick: function($noty) {
-                            $noty.close();
+                            recompile(id, tabs[id], () => $noty.close());
                         }
                     }, {
                         addClass: 'btn btn-primary', text: 'Close Without Saving', onClick: function($noty) {
+                            closeTab(id, true);
                             $noty.close();
                         }
                     }, {
@@ -88,11 +105,10 @@ block head
             let active = tabE.hasClass('active');
             tabE.remove();
             if(active) {
-                console.log(lastTabs);
                 lastTabs.splice(-1, 1);
-                console.log(lastTabs);
                 if(size(lastTabs) == 0) {
-                    editor.session.setValue('');
+                    setValue('');
+                    currentTab = -1;
                     return false;
                 }
                 let tab = lastTabs[lastTabs.length-1];
@@ -101,7 +117,8 @@ block head
                     addTab(null, tab, element);
                     return false;
                 }
-                editor.session.setValue('');
+                setValue('');
+                currentTab = -1;
             } else {
                 let index;
                 while((index = lastTabs.indexOf(id)) != -1)
@@ -115,7 +132,44 @@ block head
                 $('#title').html('CS2Editor - File has been changed. Ctrl+S to save.');
             else
                 $('#title').html('CS2Editor');
+            setValue(contents);
+            currentTab = id;
+        }
+
+        function setValue(contents) {
+            fireChange = false;
             editor.session.setValue(contents);
+            fireChange = true;
+        }
+
+        function onEditorChange() {
+            if(currentTab == -1 || !fireChange) return;
+            let value = editor.session.getValue();
+            if(tabs[currentTab] === value) return;
+            tabs[currentTab] = value;
+            if(value === saved[currentTab]) {
+                delete unsaved[currentTab];
+                $('#title').html('CS2Editor');
+                return;
+            }
+            unsaved[currentTab] = true;
+            $('#title').html('CS2Editor - File has been changed. Ctrl+S to save.');
+        }
+
+        function recompile(id, contents, callback) {
+            $.post('/ide/recompile', { id, contents }, ret => {
+                let data = JSON.parse(ret);
+                if(data.error) {
+                    sendAlert(data.error);
+                    return false;
+                }
+                delete unsaved[id];
+                saved[id] = contents;
+                $('#title').html('CS2Editor');
+                sendAlert('Successfully compiled. Fingers crossed this works, brotha.');
+                if(callback)
+                    callback();
+            });
         }
 
         $(document).ready(() => {
@@ -123,6 +177,7 @@ block head
             let languageTools = ace.require('ace/ext/language_tools');
             editor = ace.edit('editor');
             editor.session.setMode('ace/mode/java');
+            editor.session.on('change', onEditorChange);
             editor.setTheme('ace/theme/tomorrow');
             editor.setOptions({
                 enableBasicAutocompletion: true,
@@ -134,16 +189,9 @@ block head
                     let contents = editor.session.getValue();
                     let script = $('.script-tab.active');
                     let id = script.data('id');
-                    $.post('/ide/recompile', { id, contents }, ret => {
-                        let data = JSON.parse(ret);
-                        if(data.error) {
-                            sendAlert(data.error);
-                            return false;
-                        }
-                        sendAlert('Successfully compiled. Fingers crossed this works, brotha.');
-                    });
+                    recompile(id, contents);
                 },
-                bindKey: {mac: "cmd-b", win: "ctrl-b"}
+                bindKey: {mac: "cmd-s", win: "ctrl-s"}
             });
             let cs2Completer = {
                 getCompletions: (editor, session, pos, prefix, callback) => {
@@ -175,7 +223,7 @@ block head
         $(document).on('click', '.close-tab', function() {
             let tab = $(this).closest('.script-tab');
             let id = tab.data('id');
-            closeTab(id, tab);
+            closeTab(id);
             return false;
         });
 
@@ -200,6 +248,55 @@ block head
             $('#script-container').scrollTo('.script[data-id="'+id+'"]', 1000);
         }
 
+        $(document).on('click', '#file-option, #edit-option, #about-option', function() {
+            openOptionsMenu($(this));
+        });
+
+        function openOptionsMenu(element) {
+            let menu = $('#options-menu');
+            menu.empty();
+            menu.css({
+                display: 'block',
+                top: element.position().bottom,
+                left: element.position().left
+            });
+            $('.file-button.active').removeClass('active');
+            element.addClass('active');
+            let options;
+            if(element.attr('id').includes('file'))
+                options = FILE_OPTIONS;
+            else if(element.attr('id').includes('edit'))
+                options = EDIT_OPTIONS;
+            else if(element.attr('id').includes('about'))
+                options = ABOUT_OPTIONS;
+            addOptions(menu, options);
+        }
+
+        function addOptions(menu, options) {
+            for(let option of options) {
+                let element = $('<div class="menu-option"></div>');
+                let name = $('<span></span>');
+                name.addClass('option-name');
+                name.html(option.name);
+                element.append(name);
+                if(option.shortcut) {
+                    let shortcut = $('<span></span>');
+                    shortcut.addClass('option-shortcut');
+                    shortcut.html(option.shortcut);
+                    element.append(shortcut);
+                }
+                if(option.onClick)
+                    element.click(option.onClick);
+                menu.append(element);
+                menu.append($('<div style="clear: both;"></div>'));
+            }
+        }
+
+        function closeOptionsMenu() {
+            $('#options-menu').css('display', 'none');
+            $('.file-button.active').removeClass('active');
+        }
+
         function size(array) {
             let results = 0;
             for(let i = 0; i < array.length; i++)
@@ -216,12 +313,34 @@ block head
 
             return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
         }
+
+        $(document).click(function(e) {
+            var target = e.target;
+            let menu = $('#options-menu');
+            if(menu.css('display') == 'none') return;
+            if($(e.target).closest('#options-menu').length || $(e.target).closest('.file-button').length) {
+
+            } else {
+                closeOptionsMenu();
+            }
+            if(n == null)
+                return;
+            var id = n.options.id;
+            if($(e.target).closest('#'+id).length) {
+
+            } else {
+                if(n.options.dismissOnOutsideClick) {
+                    n.close();
+                    n = null;
+                }
+            }
+        });
     
 block main_content
     div#file-buttons
-        p.file-button File
-        p.file-button Edit
-        p.file-button About
+        p.file-button#file-option File
+        p.file-button#edit-option Edit
+        p.file-button#about-option About
     div#script-tabs
     div(style='clear: both;')
     div#script-container
@@ -229,3 +348,4 @@ block main_content
             div.script(data-id=script.get('id'))
                 p.script-title= script.getProperty('name')
     pre#editor
+    div#options-menu

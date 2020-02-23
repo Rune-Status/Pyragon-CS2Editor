@@ -1,8 +1,11 @@
 package com.cryo.cs2;
 
+import com.cryo.CS2Editor;
 import com.cryo.cache.Cache;
 import com.cryo.cache.IndexType;
 import com.cryo.cache.io.InputStream;
+import com.cryo.utils.InstructionDBBuilder;
+import com.cryo.utils.ScriptDBBuilder;
 
 import java.util.HashMap;
 
@@ -55,14 +58,24 @@ public class CS2Definitions {
 		System.out.println("Unidentified: " + (total-identified));
 		System.out.println("Identified: " + identified + " ("+Math.round(((double) identified / (double) total * 100.0))+"%)");
 	}
+
+    public static void main(String[] args) throws Exception {
+        CS2Editor.setGson(CS2Editor.buildGson());
+        ScriptDBBuilder.load();
+        InstructionDBBuilder.load();
+        Cache.init("F:\\workspace\\github\\darkan-server\\data\\cache\\");
+        verify();
+    }
 	
 	public static void verify() {
 		int correct = 0;
 		int scriptCount = 0;
 		for (int i = 0; i < Cache.STORE.getIndex(IndexType.CS2_SCRIPTS).getLastArchiveId(); i++) {
+            byte[] o = Cache.STORE.getIndex(IndexType.CS2_SCRIPTS).getArchive(i).getData();
 			CS2Script script = getScript(i);
-			CS2Script reCoded = new CS2Script(i, new InputStream(script.encode()));
-			if (script.equals(reCoded))
+            byte[] n = script.encode();
+			CS2Script reCoded = new CS2Script(i, new InputStream(n));
+			if (script.equals(reCoded) && n.length == o.length)
 				correct++;
 			scriptCount++;
 		}

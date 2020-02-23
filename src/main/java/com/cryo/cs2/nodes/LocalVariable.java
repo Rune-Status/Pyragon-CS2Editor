@@ -22,9 +22,13 @@ public class LocalVariable {
         this.name = name;
         this.type = type;
         this.isArgument = isArgument;
-}
+    }
 
-    public static int makeIdentifier(int index,int stackType) {
+    public int[] getInfo() {
+        return new int[] { (identifier & 0xffff), (identifier >> 16) };
+    }
+
+    public static int makeIdentifier(int index, int stackType) {
         return index | stackType << 16;
     }
 
