@@ -39,7 +39,6 @@ public class CS2IfElse extends CS2Node {
         if(hasElseScope() && expressions.length == 1 && scopes[0].listChilds().size() == 1 && elseScope.listChilds().size() == 1) {
             CS2Node child1 = scopes[0].listChilds().get(0);
             CS2Node child2 = elseScope.listChilds().get(0);
-            System.out.println("hi "+ child1.getClass().getSimpleName()+" "+child2.getClass().getSimpleName());
             if(child1 instanceof CS2Poppable && child2 instanceof CS2Poppable) {
                 CS2Poppable pop1 = (CS2Poppable) child1;
                 CS2Poppable pop2 = (CS2Poppable) child2;
