@@ -666,6 +666,7 @@ public class CS2Script {
         String nextLine = lines[index].replaceAll("\\t", "").replaceAll(" {4}", "");
         System.out.println("Next Line: "+nextLine);
         if(nextLine.startsWith("else")) {
+            iValues[sizeIndex]++;
             Object[] values = evaluateIfExpression(lines[index++], opCount, iValues, sValues, lValues, intLocals,
                     stringLocals, longLocals, variableNames, variables, lines, index);
             instructions.addAll((ArrayList<CS2Instruction>) values[0]);
