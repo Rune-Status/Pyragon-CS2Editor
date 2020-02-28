@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Properties;
 
 import com.google.gson.internal.LinkedTreeMap;
@@ -25,6 +26,15 @@ public class InstructionDBBuilder {
         if (!instructions.containsKey(opcode))
             return null;
         return instructions.get(opcode);
+    }
+
+    public static InstructionDAO getInstruction(String name) {
+        Optional<InstructionDAO> optional = instructions.values()
+                                            .stream()
+                                            .filter(i -> i.getName().equals(name))
+                                            .findFirst();
+        if(!optional.isPresent()) return null;
+        return optional.get();
     }
 
     public static void saveInstruction(InstructionDAO dao) {

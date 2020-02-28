@@ -1,0 +1,20 @@
+div.noty_message
+    span.noty_text
+    div.widget.register(style='margin-top: 5px')
+        div.report_line
+            label Instruction Name
+            input#name(type='text', value=dao.getName(), maxlength)
+        div(style='clear: both;')
+        div.report_line
+            label Pop Order
+            input#pop-order(type='text', value=dao.getJoinedPopOrder(), maxlength)
+        div(style='clear: both;')
+        div.report_line
+            label Argument Names
+            input#argNames(type='text', value=dao.getJoinedArgumentNames(), maxlength)
+        div(style='clear: both;')
+        div.report_line
+            label Push Type
+            input#push-type(type='text', value=dao.getPushType().toString(), maxlength)
+        div(style='clear: both;')
+div.noty_close

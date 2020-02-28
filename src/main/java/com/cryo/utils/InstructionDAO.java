@@ -32,8 +32,8 @@ public class InstructionDAO {
         LinkedTreeMap<String, Object> map = new LinkedTreeMap<String, Object>();
         map.put("opcode", opcode);
         map.put("name", name);
-        map.put("popOrder", String.join(",", popOrder));
-        map.put("argNames", String.join(",", argumentNames));
+        map.put("popOrder", popOrder == null ? null : String.join(",", popOrder));
+        map.put("argNames", argumentNames == null ? null : String.join(",", argumentNames));
         map.put("pushType", ScriptDAO.rtToString(pushType));
         if(customPrint != null)
             map.put("customPrint", customPrint);
@@ -43,15 +43,23 @@ public class InstructionDAO {
     public static InstructionDAO fromProperties(LinkedTreeMap<String, Object> props) {
         int opcode = (int) ((double) props.get("opcode"));
         String name = (String) props.get("name");
-        String popOrderS = (String) props.get("popOrder");
-        String[] popOrder = popOrderS.equals("") ? new String[] {} : popOrderS.split(",");
-        String argumentNamesS = (String) props.get("argNames");
-        String[] argumentNames = argumentNamesS.equals("") ? new String[] {} : argumentNamesS.split(",");
+        String popOrderS = props.containsKey("popOrder") ? (String) props.get("popOrder") : null;
+        String[] popOrder = popOrderS == null || popOrderS.equals("") ? new String[] {} : popOrderS.split(",");
+        String argumentNamesS = props.containsKey("argNames") ? (String) props.get("argNames") : null;
+        String[] argumentNames = argumentNamesS == null || argumentNamesS.equals("") ? new String[] {} : argumentNamesS.split(",");
         CS2Type pushType = ScriptDAO.getRTFromString((String) props.get("pushType"));
         InstructionDAO dao = new InstructionDAO(opcode, name, popOrder, argumentNames, pushType);
         if(props.containsKey("customPrint"))
             dao.setCustomPrint((String) props.get("customPrint"));
         return dao;
+    }
+
+    public String getJoinedPopOrder() {
+        return String.join(",", popOrder);
+    }
+
+    public String getJoinedArgumentNames() {
+        return String.join(",", argumentNames);
     }
 
 }
