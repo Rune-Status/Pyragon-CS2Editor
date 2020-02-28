@@ -229,7 +229,7 @@ block head
         });
 
         $(document).on('click', '.script-tab', function() {
-            let scriptName = $(this).html();
+            let scriptName = $(this).find('span').html();
             let id = $(this).data('id');
             addTab(scriptName, id, $(this));
             return false;
