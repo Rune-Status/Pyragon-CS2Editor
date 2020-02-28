@@ -23,7 +23,7 @@ const EDIT_OPTIONS = [
                 let data = JSON.parse(ret);
                 if(data == null || data.error) {
                     sendAlert('Error getting script info.');
-                    if(data.error) console.error(data.error);
+                    if(data.error) sendAlert(data.error);
                     return false;
                 }
                 n = noty({
@@ -84,7 +84,7 @@ const EDIT_OPTIONS = [
             $.post('/ide/reload-script-info', {}, ret => {
                 let data = JSON.parse(ret);
                 if(data == null || data.error) {
-                    if(data.error) console.error(data.error);
+                    if(data.error) sendAlert(data.error);
                     return false;
                 }
                 sendAlert('Script information successfully reloaded.');
@@ -97,7 +97,7 @@ const EDIT_OPTIONS = [
             $.post('/ide/reload-instruction-info', {}, ret => {
                 let data = JSON.parse(ret);
                 if (data == null || data.error) {
-                    if (data.error) console.error(data.error);
+                    if (data.error) sendAlert(data.error);
                     return false;
                 }
                 sendAlert('Instruction information successfully reloaded.');
