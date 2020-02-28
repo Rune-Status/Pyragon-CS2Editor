@@ -89,17 +89,17 @@ public class CS2BasicExpression extends CS2Expression {
         printer.print("(");
         if(opcode != -1) {
             if(dao.getPopOrder() != null) {
-            for(int i = dao.getPopOrder().length-1; i >= 0; i--) {
-                String popType = dao.getPopOrder()[i];
-                CS2Expression expression = expressions[i];
-                boolean hasExtra = popType.length() > 1;
-                if(hasExtra && expression instanceof CS2PrimitiveExpression)
-                    printExtra(popType, (CS2PrimitiveExpression) expression, printer);
-                else
-                    expression.print(printer);
-                if (i != 0)
-                    printer.print(", ");
-            }
+                for(int i = dao.getPopOrder().length-1; i >= 0; i--) {
+                    String popType = dao.getPopOrder()[i];
+                    CS2Expression expression = expressions[i];
+                    boolean hasExtra = popType.length() > 1;
+                    if(hasExtra && expression instanceof CS2PrimitiveExpression)
+                        printExtra(popType, (CS2PrimitiveExpression) expression, printer);
+                    else
+                        expression.print(printer);
+                    if (i != 0)
+                        printer.print(", ");
+                }
             }
         } else {
             for(int i = expressions.length-1; i >= 0; i--) {
