@@ -215,6 +215,21 @@ public class CS2FlowGenerator {
                         expressions[1] = cast(stack.pop(0), CS2Type.INT);
                         expressions[2] = cast(stack.pop(0), CS2Type.INT);
                         stack.push(new CS2BasicExpression(expressions, operation.name().toLowerCase()), 0);
+                    } else if(operation == RANDOM_SOUND_PITCH) {
+                        CS2Expression expression1 = stack.pop(0);
+                        CS2Expression expression2 = stack.pop(0);
+                        boolean extra = false;
+                        if(expression1 instanceof CS2PrimitiveExpression) {
+                            int value = ((CS2PrimitiveExpression) expression1).asInt();
+                            extra = value > 700;
+                        }
+                        if (expression2 instanceof CS2PrimitiveExpression) {
+                            int value = ((CS2PrimitiveExpression) expression2).asInt();
+                            extra = value > 700;
+                        }
+                        if(extra)
+                            stack.push(new CS2BasicExpression(new CS2Expression[] { expression1, expression2 }, "rsp_val_ex"), 0);
+                        stack.push(new CS2BasicExpression(new CS2Expression[] { expression1, expression2 }, "rsp_val1"), 0);
                     } else if(operation == REMOVETAGS) {
                         CS2Expression expression = cast(stack.pop(1), CS2Type.STRING);
                         stack.push(new CS2BasicExpression(expression, operation.name().toLowerCase()), 1);
