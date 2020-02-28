@@ -228,15 +228,15 @@ public class IDEModule extends WebModule {
                 }
                 if(contents == null || contents.equals(""))
                     return error("Invalid contents");
-                CS2Script script;
-                try {
-                    script = CS2Definitions.getScript(id);
-                } catch(Exception e) {
-                    e.printStackTrace();
-                    return error("Error getting script.");
-                }
-                if (script == null)
-                    return error("Script is null.");
+                // CS2Script script;
+                // try {
+                //     script = CS2Definitions.getScript(id);
+                // } catch(Exception e) {
+                //     e.printStackTrace();
+                //     return error("Error getting script.");
+                // }
+                // if (script == null)
+                //     return error("Script is null.");
                 try {
                     String result = CS2Script.recompile(contents);
                     if (result != null)
