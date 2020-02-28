@@ -25,6 +25,8 @@ block head
 
         let n;
 
+        let scroll = [];
+
         function addTab(scriptName, id, element, force=false) {
             //save current contents to tabs
             console.log('Adding tab: '+scriptName+' '+id);
@@ -107,7 +109,7 @@ block head
             if(active) {
                 lastTabs.splice(-1, 1);
                 if(size(lastTabs) == 0) {
-                    setValue('');
+                    setValue(-1, '');
                     currentTab = -1;
                     return false;
                 }
@@ -117,7 +119,7 @@ block head
                     addTab(null, tab, element);
                     return false;
                 }
-                setValue('');
+                setValue(-1, '');
                 currentTab = -1;
             } else {
                 let index;
@@ -132,13 +134,18 @@ block head
                 $('#title').html('CS2Editor - File has been changed. Ctrl+S to save.');
             else
                 $('#title').html('CS2Editor');
-            setValue(contents);
+            setValue(id, contents);
             currentTab = id;
         }
 
-        function setValue(contents) {
+        function setValue(id, contents) {
             fireChange = false;
             editor.session.setValue(contents);
+            console.log('setting id '+id+' with: '+contents);
+            if(scroll[id]) { 
+                editor.getSession().setScrollTop(parseInt(scroll[id]));
+                console.log('Setting scroll for id '+id+': '+scroll[id]);
+            } else editor.getSession().setScrollTop(0);
             fireChange = true;
         }
 
@@ -179,6 +186,11 @@ block head
             editor = ace.edit('editor');
             editor.session.setMode('ace/mode/java');
             editor.session.on('change', onEditorChange);
+            editor.getSession().on('changeScrollTop', function(pos) {
+                if(currentTab == -1 || !fireChange) return;
+                scroll[currentTab] = pos;
+                console.log("Setting scroll["+currentTab+"] to "+pos);
+            });
             editor.setTheme('ace/theme/tomorrow');
             editor.setOptions({
                 enableBasicAutocompletion: true,
