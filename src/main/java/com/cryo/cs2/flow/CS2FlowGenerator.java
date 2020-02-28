@@ -257,9 +257,6 @@ public class CS2FlowGenerator {
                             expression = cast(expression, CS2Type.COMPONENT);
                         CS2Expression hidden = cast(stack.pop(0), CS2Type.BOOLEAN);
                         block.write(new CS2HideComponent(expression, hidden));
-                    } else if(operation == TO_STRING) {
-                        CS2Expression expression = cast(stack.pop(0), CS2Type.INT);
-                        stack.push(new CS2ToString(expression), 1);
                     } else if(operation == CC_SETOP || operation == IF_SETTEXT) {
                         CS2Expression op = stack.pop(0);
                         if(operation != IF_SETTEXT || !(op instanceof CS2PrimitiveExpression))
