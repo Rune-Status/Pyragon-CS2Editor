@@ -23,7 +23,7 @@ const EDIT_OPTIONS = [
                 let data = JSON.parse(ret);
                 if(data == null || data.error) {
                     sendAlert('Error getting script info.');
-                    if(data.error) console.error(data.error);
+                    if(data.error) sendAlert(data.error);
                     return false;
                 }
                 n = noty({
@@ -49,7 +49,7 @@ const EDIT_OPTIONS = [
                                 }
                             }
                             if(variables) {
-                                for(let variable of variables.split(', ?')) {
+                                for(let variable of variables.split(/, ?/)) {
                                     if(variable.includes(' ')) {
                                         sendAlert('Invalid variable: '+variable);
                                         return;
@@ -78,13 +78,99 @@ const EDIT_OPTIONS = [
         }
     },
     {
+        name: 'Edit Instruction Info',
+        onClick: () => {
+            closeOptionsMenu();
+            noty({
+                text: 'Enter the instruction opcode or name <input id="instr-id" type="text">',
+                theme: 'cryogen',
+                layout: 'center',
+                type: 'confirm',
+                dismissQueue: false,
+                buttons: [{
+                        addClass: 'btn btn-primary',
+                        text: 'Edit',
+                        onClick: function ($noty) {
+                            let id = $noty.$bar.find('#instr-id').val();
+                            $.post('/ide/edit-instruction-info', { id }, ret => {
+                                let data = JSON.parse(ret);
+                                if(data == null || data.error) {
+                                    if(data.error) sendAlert(data.error);
+                                    return false;
+                                }
+                                if(!data.exists) sendAlert('Instruction does not exist. Creating new one.');
+                                closeNoty($noty);
+                                let exists = data.exists;
+                                n = noty({
+                                    text: 'Edit Instruction Info',
+                                    type: 'confirm',
+                                    layout: 'center',
+                                    dismissQueue: false,
+                                    template: data.html,
+                                    theme: 'cryogen',
+                                    buttons: [{
+                                        addClass: 'btn btn-success',
+                                        text: 'Save',
+                                        onClick: function ($noty) {
+                                            let name = $('#name').val();
+                                            let popOrder = $('#pop-order').val();
+                                            let argNames = $('#argNames').val();
+                                            let pushType = $('#push-type').val();
+                                            if(name.replace(/\s/, '') == '') {
+                                                sendAlert('Name must be defined!');
+                                                return false;
+                                            }
+                                            if(pushType.replace(/\s/, '') == '') {
+                                                sendAlert('Push type must be defined!');
+                                                return false;
+                                            }
+                                            $.post('/ide/save-instruction-info', { id, name, popOrder, argNames, pushType }, ret => {
+                                                let data = JSON.parse(ret);
+                                                if(data == null || data.error) {
+                                                    if(data.error) sendAlert(data.error);
+                                                    return false;
+                                                }
+                                                closeNoty($noty);
+                                                sendAlert('Successfully '+(exists ? 'edited' : 'created')+' instruction '+name);
+                                                sendAlert('Reloading all unsaved scripts.');
+                                                let current = currentTab;
+                                                for(let id in tabs) {
+                                                    if(unsaved[id]) continue;
+                                                    let name = getName(id);
+                                                    closeTab(id, true);
+                                                    addTab(name, id);
+                                                }
+                                                addTab(null, current);
+                                            });
+                                        }
+                                    }, {
+                                        addClass: 'btn btn-danger',
+                                        text: 'Cancel',
+                                        onClick: closeNoty
+                                    }]
+                                });
+                            });
+                        }
+                    },
+                    {
+                        addClass: 'btn btn-danger',
+                        text: 'Cancel',
+                        onClick: function ($noty) {
+                            closeNoty($noty);
+                        }
+                    }
+                ]
+            });
+        }
+    },
+    {
         name: 'Reload Script Info',
         onClick: () => {
             closeOptionsMenu();
             $.post('/ide/reload-script-info', {}, ret => {
                 let data = JSON.parse(ret);
                 if(data == null || data.error) {
-                    if(data.error) console.error(data.error);
+                    if(data.error) sendAlert(data.error);
                     return false;
                 }
                 sendAlert('Script information successfully reloaded.');
@@ -97,7 +183,7 @@ const EDIT_OPTIONS = [
             $.post('/ide/reload-instruction-info', {}, ret => {
                 let data = JSON.parse(ret);
                 if (data == null || data.error) {
-                    if (data.error) console.error(data.error);
+                    if (data.error) sendAlert(data.error);
                     return false;
                 }
                 sendAlert('Instruction information successfully reloaded.');

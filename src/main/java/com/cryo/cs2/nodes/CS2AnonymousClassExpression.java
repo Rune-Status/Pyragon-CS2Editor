@@ -3,6 +3,7 @@ package com.cryo.cs2.nodes;
 import com.cryo.cs2.CS2Definitions;
 import com.cryo.cs2.CS2Instruction;
 import com.cryo.cs2.CS2Script;
+import com.cryo.decompiler.CS2Type;
 import com.cryo.decompiler.DecompilerException;
 import com.cryo.utils.CodePrinter;
 import com.cryo.utils.ScriptDAO;
@@ -46,7 +47,14 @@ public class CS2AnonymousClassExpression extends CS2Node {
         ScriptDAO dao = ScriptDBBuilder.getScript(scriptId);
         printer.beginPrinting(this);
         printer.print(operation.name().toLowerCase());
-        printer.print("(new Function<");
+        printer.print("(");
+        CS2Expression component = (CS2Expression) expressions[3];
+        if(component != null) {
+            CS2Cast cast = (CS2Cast) component;
+            printComponent(cast, printer);
+            printer.print(", ");
+        }
+        printer.print("new Function<");
         if(dao == null) printer.print("None");
         else printer.print(dao.getName());
         printer.print(">(");
@@ -84,19 +92,34 @@ public class CS2AnonymousClassExpression extends CS2Node {
         }
         CS2Expression[] params = (CS2Expression[]) expressions[0];
         if(params != null) {
-            for(int i = 0; i < params.length; i++) {
-                params[i].print(printer);
+            for(int i = 1; i < params.length; i++) {
+                if(dao != null && dao.getArgumentTypes() != null && dao.getArgumentTypes()[i-1] == CS2Type.COMPONENT)
+                    printComponent(params[i], printer);
+                else
+                    params[i].print(printer);
                 if(i != params.length-1)
                     printer.print(", ");
             }
         }
-        CS2Expression component = (CS2Expression) expressions[3];
-        if(component != null) {
-            printer.print(", ");
-            component.print(printer);
-        }
         printer.print(");");
         printer.endPrinting(this);
+    }
+
+    public void printComponent(CS2Expression expression, CodePrinter printer) {
+        if(expression instanceof CS2Cast) {
+            CS2Cast cast = (CS2Cast) expression;
+            if (cast.getExpression() instanceof CS2PrimitiveExpression) {
+                int value = ((CS2PrimitiveExpression) cast.getExpression()).asInt();
+                int[] info = CS2Script.getInterfaceIds(value);
+                printer.print("if_gethash(");
+                printer.print(Integer.toString(info[0]));
+                printer.print(", ");
+                printer.print(Integer.toString(info[1]));
+                printer.print(")");
+                return;
+            }
+        }
+        expression.print(printer);
     }
 
     // @Override

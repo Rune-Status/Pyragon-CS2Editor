@@ -36,6 +36,27 @@ public class CS2IfElse extends CS2Node {
     @Override
     public void print(CodePrinter printer) {
         printer.beginPrinting(this);
+        // if(hasElseScope() && expressions.length == 1 && scopes[0].listChilds().size() == 1 && elseScope.listChilds().size() == 1) {
+        //     CS2Node child1 = scopes[0].listChilds().get(0);
+        //     CS2Node child2 = elseScope.listChilds().get(0);
+        //     if(child1 instanceof CS2Poppable && child2 instanceof CS2Poppable) {
+        //         CS2Poppable pop1 = (CS2Poppable) child1;
+        //         CS2Poppable pop2 = (CS2Poppable) child2;
+        //         if(pop1.getExpression() instanceof CS2VariableAssign && pop2.getExpression() instanceof CS2VariableAssign) {
+        //             CS2VariableAssign a1 = (CS2VariableAssign) pop1.getExpression();
+        //             CS2VariableAssign a2 = (CS2VariableAssign) pop2.getExpression();
+        //             printer.print(a1.getVariable().getName());
+        //             printer.print(" = ");
+        //             expressions[0].print(printer);
+        //             printer.print(" ? ");
+        //             a1.getExpression().print(printer);
+        //             printer.print(" : ");
+        //             a2.getExpression().print(printer);
+        //             printer.print(";");
+        //         }
+        //         return;
+        //     }
+        // }
         for (int i = 0; i < expressions.length; i++) {
             boolean first = i == 0;
             printer.print(first ? "if (" : "\nelse if (");

@@ -26,11 +26,11 @@ public class ScriptDAO {
         LinkedTreeMap<String, Object> map = new LinkedTreeMap<>();
         map.put("id", id);
         map.put("name", name);
-        map.put("argTypes", Stream.of(argumentTypes).map(ScriptDAO::rtToString).collect(Collectors.joining(",")));
+        map.put("argTypes", Stream.of(argumentTypes).map(t -> t.toString()).collect(Collectors.joining(",")));
         map.put("argNames", String.join(",", argumentNames));
         if(variableNames != null)
             map.put("vNames", String.join(",", variableNames));
-        map.put("returnType", rtToString(returnType));
+        map.put("returnType", returnType.toString());
         return map;
     }
 
@@ -65,13 +65,16 @@ public class ScriptDAO {
         else {
             String[] argTypesS = argTypesE.split(",");
             argTypes = new CS2Type[argTypesS.length];
-            for(int i = 0; i < argTypes.length; i++)
-                argTypes[i] = getRTFromString(argTypesS[i]);
+            for(int i = 0; i < argTypes.length; i++) {
+                argTypes[i] = CS2Type.forDesc(argTypesS[i]);
+                if(id == 5372)
+                    System.out.println("Argument type for "+argTypesS[i]+": "+argTypes[i]);
+            }
         }
         String[] argNames = ((String) map.get("argNames")).split(",");
         String vNamesS = map.containsKey("vNames") ? (String) map.get("vNames") : null;
         String[] vNames = (vNamesS == null || vNamesS.equals("")) ? null : vNamesS.split(",");
-        CS2Type returnType = getRTFromString((String) map.get("returnType"));
+        CS2Type returnType = CS2Type.forDesc((String) map.get("returnType"));
         return new ScriptDAO(id, name, argTypes, argNames, vNames, returnType);
     }
 

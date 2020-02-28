@@ -23,6 +23,7 @@ import com.cryo.utils.Utilities;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.lang.reflect.Field;
@@ -137,10 +138,14 @@ public class CS2Script {
         if (switchesCount > 0) {
             switchMaps = new HashMap[switchesCount];
             for (int i = 0; i < switchesCount; i++) {
+                System.out.println("Loading switch block: "+i);
                 int numCases = buffer.readUnsignedShort();
                 switchMaps[i] = new HashMap<Integer, Integer>(numCases);
                 while (numCases-- > 0) {
-                    switchMaps[i].put(buffer.readInt(), buffer.readInt());
+                    int casee = buffer.readInt();
+                    int addr = buffer.readInt();
+                    System.out.println("Case: "+casee+". Addr: "+addr);
+                    switchMaps[i].put(casee, addr);
                 }
             }
         }
@@ -220,7 +225,9 @@ public class CS2Script {
             arguments[write++] = CS2Type.STRING;
         for (int i = 0; i < longArgsCount; i++)
             arguments[write++] = CS2Type.LONG;
-
+        ScriptDAO dao = ScriptDBBuilder.getScript(id);
+        if(dao != null && dao.getArgumentTypes() != null)
+            this.arguments = dao.getArgumentTypes();
     }
 
     public void loadInstructions() {
@@ -313,7 +320,8 @@ public class CS2Script {
             HOOK_MOUSE_EXIT, -1, -1, instr6376, -1, -1, instr6527, -1, -1, instr6393, -1, -1, HOOK_MOUSE_ENTER, -1, -1,
             instr6239, -1, -1, instr6687, -1, -1, instr6091, -1, -1, instr6092, -1, -1, instr6088, -1, -1,
             instr6224, -1, -1, instr6499, -1, -1, instr5957, -1, -1, instr6246, -1, -1, instr6771, -1, -1,
-            RETURN, -1, -1, instr6253, -1, -1
+            RETURN, -1, -1, instr6253, -1, -1, NPC_PARAM, -1, -1, instr6248, -1, -1, instr6556, -1, -1,
+            RANDOM_SOUND_PITCH, -1, -1, instr6898, -1, -1, instr6450, -1, -1
     };
 
     public CS2Function decompile() {
@@ -369,8 +377,11 @@ public class CS2Script {
     private void declareAllVariables(CS2Function function) {
 
         int ic = 0, oc = 0, lc = 0;
+        System.out.println("Checking function: "+function.getName());
+        System.out.println(function.getArgumentTypes().length);
         for (int i = 0; i < function.getArgumentTypes().length; i++) {
             CS2Type atype = function.getArgumentTypes()[i];
+            System.out.println(atype);
             String aname = function.getArgumentNames()[i];
             if (atype.intSS() == 1 && atype.stringSS() == 0 && atype.longSS() == 0) {
                 LocalVariable var = new LocalVariable(aname, atype, true);
@@ -477,6 +488,8 @@ public class CS2Script {
         int longLocals = 0;
         int opCount = 0;
         int scriptId = -1;
+        int switchBlocksCount = 0;
+        HashMap<Integer, HashMap<Integer, Integer>> switchBlocks = new HashMap<>();
         String name = null;
         CS2Type[] arguments = null;
         String[] argumentNames = null;
@@ -518,10 +531,31 @@ public class CS2Script {
                 String returnTypeS = line.substring(line.indexOf("(")+1, line.indexOf(")"));
                 returnType = getCS2Type(returnTypeS);
             } else if(line.contains("return")) {
+                line = line.replaceAll("\t", "").replaceAll(" {4}", "");
+                if (line.contains(" ")) {
+                    String value = line.split(" ")[1];
+                    Object[] values = evaluateParameter(value, opCount, intOpValues, 
+                            stringOpValues, 
+                            longOpValues, intLocals,
+                            stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
+                    instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                    opCount = (int) values[1];
+                    intOpValues = (int[]) values[2];
+                    stringOpValues = (String[]) values[3];
+                    longOpValues = (long[]) values[4];
+                    intLocals = (int) values[5];
+                    stringLocals = (int) values[6];
+                    longLocals = (int) values[7];
+                    if (values[8] != null)
+                        variableNames = (String[]) values[8];
+                    variables = (HashMap<String, LocalVariable>) values[9];
+                    index = (int) values[10];
+                    switchBlocksCount = (int) values[11];
+                    switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+                }
                 instructions.add(CS2Instruction.RETURN);
-            } else if(line.contains("if(") || line.startsWith("if (")) {
-                Object[] values = evaluateIfExpression(line, opCount, intOpValues, stringOpValues, longOpValues,
-                        intLocals, stringLocals, longLocals, variableNames, variables, lines, index);
+            } else if(line.contains("switch(") || line.contains("switch (")) {
+                Object[] values = evaluateSwitchStatement(line, opCount, intOpValues, stringOpValues, longOpValues, intLocals, stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
                 instructions.addAll((ArrayList<CS2Instruction>) values[0]);
                 opCount = (int) values[1];
                 intOpValues = (int[]) values[2];
@@ -534,10 +568,47 @@ public class CS2Script {
                     variableNames = (String[]) values[8];
                 variables = (HashMap<String, LocalVariable>) values[9];
                 index = (int) values[10];
+                switchBlocksCount = (int) values[11];
+                switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+            } else if(line.contains("if(") || line.startsWith("if (")) {
+                Object[] values = evaluateIfExpression(line, opCount, intOpValues, stringOpValues, longOpValues,
+                        intLocals, stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
+                instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                opCount = (int) values[1];
+                intOpValues = (int[]) values[2];
+                stringOpValues = (String[]) values[3];
+                longOpValues = (long[]) values[4];
+                intLocals = (int) values[5];
+                stringLocals = (int) values[6];
+                longLocals = (int) values[7];
+                if (values[8] != null)
+                    variableNames = (String[]) values[8];
+                variables = (HashMap<String, LocalVariable>) values[9];
+                index = (int) values[10];
+                switchBlocksCount = (int) values[11];
+                switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+            } else if(line.contains("while(") || line.contains("while (")) {
+                Object[] values = evaluateWhileLoop(line, opCount, intOpValues, stringOpValues, longOpValues,
+                        intLocals, stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount,
+                        switchBlocks);
+                instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                opCount = (int) values[1];
+                intOpValues = (int[]) values[2];
+                stringOpValues = (String[]) values[3];
+                longOpValues = (long[]) values[4];
+                intLocals = (int) values[5];
+                stringLocals = (int) values[6];
+                longLocals = (int) values[7];
+                if (values[8] != null)
+                    variableNames = (String[]) values[8];
+                variables = (HashMap<String, LocalVariable>) values[9];
+                index = (int) values[10];
+                switchBlocksCount = (int) values[11];
+                switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
             } else {
                 try {
                     //line = line.replaceAll("\\s", "");
-                    Object[] values = evaluateExpression(line, opCount, intOpValues, stringOpValues, longOpValues, intLocals, stringLocals, longLocals, variableNames, variables, lines, index);
+                    Object[] values = evaluateExpression(line, opCount, intOpValues, stringOpValues, longOpValues, intLocals, stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
                     instructions.addAll((ArrayList<CS2Instruction>) values[0]);
                     opCount = (int) values[1];
                     intOpValues = (int[]) values[2];
@@ -550,6 +621,8 @@ public class CS2Script {
                         variableNames = (String[]) values[8];
                     variables = (HashMap<String, LocalVariable>) values[9];
                     index = (int) values[10];
+                    switchBlocksCount = (int) values[11];
+                    switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
                 } catch(Exception e) {
                     e.printStackTrace();
                     return e.getMessage();
@@ -579,6 +652,11 @@ public class CS2Script {
         for(CS2Instruction instruction : instructions)
             copy[index++] = instruction;
         CS2Script script = new CS2Script(scriptId, name, arguments, argumentNames, copy, iCopy, sCopy, lCopy, intLocals, stringLocals, longLocals);
+        script.switchMaps = new HashMap[switchBlocksCount];
+        for(int i = 0; i < switchBlocksCount; i++)
+            script.switchMaps[i] = switchBlocks.get(i);
+
+        System.out.println(Arrays.toString(script.switchMaps));
         try {
             System.out.println("Attempting to save to cache.");
             script.write(Cache.STORE);
@@ -590,23 +668,61 @@ public class CS2Script {
         return null;
     }
 
-    public static Object[] evaluateIfExpression(String expression, int opCount, int[] iValues, String[] sValues, long[] lValues, 
-        int intLocals, int stringLocals, int longLocals, String[] variableNames, HashMap<String, LocalVariable> variables, String[] lines, int index) {
+    public static Object[] evaluateWhileLoop(String expression, int opCount, int[] iValues, String[] sValues, long[] lValues, 
+        int intLocals, int stringLocals, int longLocals, String[] variableNames, HashMap<String, LocalVariable> variables, String[] lines, int index, int switchBlocksCount, HashMap<Integer, HashMap<Integer, Integer>> switchBlocks) {
         ArrayList<CS2Instruction> instructions = new ArrayList<>();
-        boolean hasBlock = expression.endsWith("{");
-        Pattern pattern = Pattern.compile("else( \\{)?");
-        Matcher matcher = pattern.matcher(expression);
-        if(!matcher.matches()) {
-            String ifExpression = expression.substring(expression.indexOf("(") + 1, expression.lastIndexOf(")"));
-            Object[] comparison = getComparison(ifExpression);
-            if (comparison == null)
-                throw new CompilerException("Unable to evaluate if statement: " + ifExpression);
-            CS2Instruction instruction = (CS2Instruction) comparison[1];
-            String[] split = ifExpression.split(" ?" + (String) comparison[0] + " ?");
-            for (String ex : split) {
-                Object[] values = evaluateParameter(ex, opCount, iValues, 
-                        sValues, lValues, intLocals,
-                        stringLocals, longLocals, variableNames, variables, lines, index);
+        boolean hasBlock = expression.contains("{");
+        expression = expression.substring(expression.indexOf("(")+1, expression.indexOf(")"));
+        Object[] comparison = getComparison(expression);
+        if (comparison == null)
+            throw new CompilerException("Unable to evaluate while loop: " + expression);
+        CS2Instruction instruction = (CS2Instruction) comparison[1];
+        String[] split = expression.split(" ?" + (String) comparison[0] + " ?");
+        for (String ex : split) {
+            Object[] values = evaluateParameter(ex, opCount, iValues, sValues, lValues, intLocals, stringLocals,
+                    longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
+            instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+            opCount = (int) values[1];
+            iValues = (int[]) values[2];
+            sValues = (String[]) values[3];
+            lValues = (long[]) values[4];
+            intLocals = (int) values[5];
+            stringLocals = (int) values[6];
+            longLocals = (int) values[7];
+            if (values[8] != null)
+                variableNames = (String[]) values[8];
+            variables = (HashMap<String, LocalVariable>) values[9];
+            index = (int) values[10];
+            switchBlocksCount = (int) values[11];
+            switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+        }
+        instructions.add(instruction);
+        iValues[opCount++] = 1;
+        int sizeIndex = opCount++;
+        instructions.add(CS2Instruction.GOTO);
+        if(!hasBlock) {
+            Object[] values = evaluateExpression(expression, opCount, iValues, sValues, lValues, intLocals,
+                    stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
+            instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+            opCount = (int) values[1];
+            iValues = (int[]) values[2];
+            sValues = (String[]) values[3];
+            lValues = (long[]) values[4];
+            intLocals = (int) values[5];
+            stringLocals = (int) values[6];
+            longLocals = (int) values[7];
+            if (values[8] != null)
+                variableNames = (String[]) values[8];
+            variables = (HashMap<String, LocalVariable>) values[9];
+            index = (int) values[10];
+            switchBlocksCount = (int) values[11];
+            switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+        } else {
+            String line;
+            while(!(line = lines[index++]).contains("}")) {
+                Object[] values = evaluateExpression(line, opCount, iValues, sValues, lValues, intLocals,
+                        stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount,
+                        switchBlocks);
                 instructions.addAll((ArrayList<CS2Instruction>) values[0]);
                 opCount = (int) values[1];
                 iValues = (int[]) values[2];
@@ -619,6 +735,264 @@ public class CS2Script {
                     variableNames = (String[]) values[8];
                 variables = (HashMap<String, LocalVariable>) values[9];
                 index = (int) values[10];
+                switchBlocksCount = (int) values[11];
+                switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+            }
+        }
+        int size = opCount-sizeIndex;
+        iValues[sizeIndex] = size;
+        instructions.add(CS2Instruction.GOTO);
+        iValues[opCount++] = -(size+4);
+        return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
+                variableNames, variables, index, switchBlocksCount, switchBlocks };
+    }
+
+    public static Object[] evaluateSwitchStatement(String expression, int opCount, int[] iValues, String[] sValues, long[] lValues, 
+        int intLocals, int stringLocals, int longLocals, String[] variableNames, HashMap<String, LocalVariable> variables, String[] lines, int index, int switchBlocksCount, HashMap<Integer, HashMap<Integer, Integer>> switchBlocks) {
+        ArrayList<CS2Instruction> instructions = new ArrayList<>();
+        expression = expression.substring(expression.indexOf("(")+1, expression.lastIndexOf(")"));
+        Object[] values = evaluateParameter(
+                expression, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
+                variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
+        instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+        opCount = (int) values[1];
+        iValues = (int[]) values[2];
+        sValues = (String[]) values[3];
+        lValues = (long[]) values[4];
+        intLocals = (int) values[5];
+        stringLocals = (int) values[6];
+        longLocals = (int) values[7];
+        if (values[8] != null)
+            variableNames = (String[]) values[8];
+        variables = (HashMap<String, LocalVariable>) values[9];
+        index = (int) values[10];
+        switchBlocksCount = (int) values[11];
+        switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+        instructions.add(CS2Instruction.SWITCH);
+        iValues[opCount++] = switchBlocksCount++;
+        GotoInstr instr = new GotoInstr(lines, index, 0, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals, variables, variableNames, switchBlocksCount, switchBlocks);
+        instr.decode();
+        instructions.addAll(instr.getAllInstructions());
+        lines = instr.getLines();
+        index = instr.getIndex();
+        opCount = instr.getOpCount();
+        iValues = instr.getIValues();
+        sValues = instr.getSValues();
+        lValues = instr.getLValues();
+        intLocals = instr.getIntLocals();
+        stringLocals = instr.getStringLocals();
+        longLocals = instr.getLongLocals();
+        variables = instr.getVariables();
+        variableNames = instr.getVariableNames();
+        switchBlocksCount = instr.switchBlocksCount;
+        switchBlocks = instr.switchBlocks;
+        return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
+                variableNames, variables, index, switchBlocksCount, switchBlocks };
+    }
+
+    @AllArgsConstructor
+    @Data
+    public static class GotoInstr {
+
+        private ArrayList<CS2Instruction> instructions;
+
+        private String[] lines;
+
+        private int index;
+        private int sOpCount;
+        private int opCount;
+
+        private int[] iValues;
+        private String[] sValues;
+        private long[] lValues;
+
+        private int intLocals;
+        private int stringLocals;
+        private int longLocals;
+
+        private HashMap<String, LocalVariable> variables;
+
+        private String[] variableNames;
+
+        private int switchBlocksCount;
+
+        private HashMap<Integer, HashMap<Integer, Integer>> switchBlocks;
+
+        private GotoInstr child;
+
+        public GotoInstr(String[] lines, int index, int sOpCount, int opCount, int[] iValues, String[] sValues, long[] lValues, int intLocals, int stringLocals, int longLocals, HashMap<String, LocalVariable> variables, String[] variableNames, int switchBlocksCount, HashMap<Integer, HashMap<Integer, Integer>> switchBlocks) {
+            System.out.println("Starting instr with opCount: "+opCount);
+            this.instructions = new ArrayList<>();
+            this.lines = lines;
+            this.index = index;
+            this.sOpCount = sOpCount;
+            this.opCount = opCount;
+            this.iValues = iValues;
+            this.sValues = sValues;
+            this.lValues = lValues;
+            this.intLocals = intLocals;
+            this.stringLocals = stringLocals;
+            this.longLocals = longLocals;
+            this.variables = variables;
+            this.variableNames = variableNames;
+            this.switchBlocksCount = switchBlocksCount;
+            this.switchBlocks = switchBlocks;
+        }
+
+        public int getInstructionCount() {
+            //last child will have everything
+            if(child == null) return instructions.size()-1;
+            int size = instructions.size() + child.getInstructionCount();
+            GotoInstr child = this.child;
+            while((child = child.child) != null) size += child.getInstructionCount()+1;
+            return size;
+        }
+
+        public ArrayList<CS2Instruction> getAllInstructions() {
+            if(child == null) return instructions;
+            ArrayList<CS2Instruction> instructions = this.instructions;
+            instructions.addAll(child.getInstructions());
+            GotoInstr child = this.child;
+            while((child = child.child) != null) instructions.addAll(child.getInstructions());
+            return instructions;
+        }
+
+        public void decode() {
+            instructions.add(CS2Instruction.GOTO);
+            int sizeIndex = opCount++;
+            String line = lines[index++];
+            if (!line.contains("case"))
+                throw new CompilerException("Expected case expression!");
+            line = line.substring(line.indexOf("case")+4);
+            if(line.startsWith(" ")) line = line.substring(1);
+            line = line.substring(0, line.indexOf(":"));
+            int casee;
+            try {
+                casee = Integer.parseInt(line);
+            } catch(Exception e) {
+                throw new CompilerException("Unexpected case value: "+line);
+            }
+            if(!switchBlocks.containsKey(switchBlocksCount-1))
+                switchBlocks.put(switchBlocksCount-1, new HashMap<>());
+            switchBlocks.get(switchBlocksCount-1).put(casee, ++sOpCount);
+            while(!(line = lines[index++]).contains("break") && !line.contains("return")) {
+                Object[] values = CS2Script.evaluateExpression(line, opCount, iValues, sValues, lValues, intLocals,
+                        stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
+                instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                int opCount2 = (int) values[1];
+                int diff = opCount2-opCount;
+                sOpCount += diff;
+                System.out.println("sOpCount from "+(sOpCount-diff)+" to "+sOpCount+". diff: "+diff);
+                opCount = opCount2;
+                iValues = (int[]) values[2];
+                sValues = (String[]) values[3];
+                lValues = (long[]) values[4];
+                intLocals = (int) values[5];
+                stringLocals = (int) values[6];
+                longLocals = (int) values[7];
+                if (values[8] != null)
+                    variableNames = (String[]) values[8];
+                variables = (HashMap<String, LocalVariable>) values[9];
+                index = (int) values[10];
+                switchBlocksCount = (int) values[11];
+                switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+            }
+            if(line.contains("break;")) {
+            } else if(line.contains("return")) {
+                line = line.replaceAll("\t", "").replaceAll(" {4}", "");
+                if(line.contains("return ")) {
+                    Object[] values = evaluateParameter(line, opCount, iValues, sValues, lValues, intLocals, stringLocals,
+                            longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
+                    instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                    int opCount2 = (int) values[1];
+                    int diff = opCount2 - opCount;
+                    sOpCount += diff;
+                    System.out.println("sOpCount from " + (sOpCount - diff) + " to " + sOpCount + ". diff: " + diff);
+                    opCount = opCount2;
+                    iValues = (int[]) values[2];
+                    sValues = (String[]) values[3];
+                    lValues = (long[]) values[4];
+                    intLocals = (int) values[5];
+                    stringLocals = (int) values[6];
+                    longLocals = (int) values[7];
+                    if (values[8] != null)
+                        variableNames = (String[]) values[8];
+                    variables = (HashMap<String, LocalVariable>) values[9];
+                    index = (int) values[10];
+                    switchBlocksCount = (int) values[11];
+                    switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+                }
+                instructions.add(CS2Instruction.RETURN);
+                sOpCount++;
+                iValues[opCount++] = 0;
+                System.out.println("Setting value 0 to " + (opCount-1));
+            }
+            if(lines[index].contains("case")) {
+                child = new GotoInstr(lines, index, sOpCount, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals, 
+                        variables, variableNames, switchBlocksCount, switchBlocks);
+                child.decode();
+                iValues[sizeIndex] = getInstructionCount();
+                System.out.println("Setting value "+ getInstructionCount()+" to "+sizeIndex);
+                lines = child.lines;
+                index = child.index;
+                sOpCount = child.sOpCount;
+                opCount = child.opCount;
+                iValues = child.iValues;
+                sValues = child.sValues;
+                lValues = child.lValues;
+                intLocals = child.intLocals;
+                stringLocals = child.stringLocals;
+                longLocals = child.longLocals;
+                variables = child.variables;
+                variableNames = child.variableNames;
+                switchBlocksCount = child.switchBlocksCount;
+                switchBlocks = child.switchBlocks;
+            } else if(lines[index].contains("}")) {
+                index++; //end of statement
+                iValues[sizeIndex] = getInstructionCount();
+            }
+        }
+
+    }
+
+    public static Object[] evaluateIfExpression(String expression, int opCount, int[] iValues, String[] sValues, long[] lValues, 
+        int intLocals, int stringLocals, int longLocals, String[] variableNames, HashMap<String, LocalVariable> variables, String[] lines, int index, int switchBlocksCount, HashMap<Integer, HashMap<Integer, Integer>> switchBlocks) {
+        ArrayList<CS2Instruction> instructions = new ArrayList<>();
+        boolean hasBlock = expression.endsWith("{");
+        Pattern pattern = Pattern.compile("else(\\{)?");
+        Matcher matcher = pattern.matcher(expression.replaceAll("\\s", ""));
+        System.out.println("Evaluating if: "+expression);
+        int elseIndex = -1;
+        if(expression.contains("else if(") || expression.contains("else if (")) {
+            elseIndex = opCount++;
+            instructions.add(CS2Instruction.GOTO);
+        }
+        if(!matcher.matches()) {
+            System.out.println(expression+" does not match else( \\{)?");
+            String ifExpression = expression.substring(expression.indexOf("(") + 1, expression.lastIndexOf(")"));
+            Object[] comparison = getComparison(ifExpression);
+            if (comparison == null)
+                throw new CompilerException("Unable to evaluate if statement: " + ifExpression);
+            CS2Instruction instruction = (CS2Instruction) comparison[1];
+            String[] split = ifExpression.split(" ?" + (String) comparison[0] + " ?");
+            for (String ex : split) {
+                Object[] values = evaluateParameter(ex, opCount, iValues, 
+                        sValues, lValues, intLocals,
+                        stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
+                instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                opCount = (int) values[1];
+                iValues = (int[]) values[2];
+                sValues = (String[]) values[3];
+                lValues = (long[]) values[4];
+                intLocals = (int) values[5];
+                stringLocals = (int) values[6];
+                longLocals = (int) values[7];
+                if (values[8] != null)
+                    variableNames = (String[]) values[8];
+                variables = (HashMap<String, LocalVariable>) values[9];
+                index = (int) values[10];
+                switchBlocksCount = (int) values[11];
+                switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
             }
             instructions.add(instruction);
             iValues[opCount++] = 1;
@@ -630,7 +1004,7 @@ public class CS2Script {
             Object[] values = evaluateExpression(
                     nextLine, opCount, 
                     iValues, sValues, lValues,
-                    intLocals, stringLocals, longLocals, variableNames, variables, lines, index);
+                    intLocals, stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
             instructions.addAll((ArrayList<CS2Instruction>) values[0]);
             opCount = (int) values[1];
             iValues = (int[]) values[2];
@@ -643,11 +1017,13 @@ public class CS2Script {
                 variableNames = (String[]) values[8];
             variables = (HashMap<String, LocalVariable>) values[9];
             index = (int) values[10];
+            switchBlocksCount = (int) values[11];
+            switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
             iValues[sizeIndex] = opCount - sizeIndex - 1;
         } else {
             while(!(expression = lines[index++]).equals("}")) {
                 Object[] values = evaluateExpression(expression, opCount, iValues, sValues, lValues, intLocals,
-                        stringLocals, longLocals, variableNames, variables, lines, index);
+                        stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
                 instructions.addAll((ArrayList<CS2Instruction>) values[0]);
                 opCount = (int) values[1];
                 iValues = (int[]) values[2];
@@ -660,14 +1036,17 @@ public class CS2Script {
                     variableNames = (String[]) values[8];
                 variables = (HashMap<String, LocalVariable>) values[9];
                 index = (int) values[10];
+                switchBlocksCount = (int) values[11];
+                switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
             }
-            iValues[sizeIndex] = opCount - sizeIndex;
+            iValues[sizeIndex] = opCount - sizeIndex-1;
         }
         String nextLine = lines[index].replaceAll("\\t", "").replaceAll(" {4}", "");
         System.out.println("Next Line: "+nextLine);
         if(nextLine.startsWith("else")) {
+            iValues[sizeIndex]++;
             Object[] values = evaluateIfExpression(lines[index++], opCount, iValues, sValues, lValues, intLocals,
-                    stringLocals, longLocals, variableNames, variables, lines, index);
+                    stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
             instructions.addAll((ArrayList<CS2Instruction>) values[0]);
             opCount = (int) values[1];
             iValues = (int[]) values[2];
@@ -680,9 +1059,15 @@ public class CS2Script {
                 variableNames = (String[]) values[8];
             variables = (HashMap<String, LocalVariable>) values[9];
             index = (int) values[10];
+            switchBlocksCount = (int) values[11];
+            switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+        }
+        if (elseIndex != -1) {
+            iValues[elseIndex] = opCount - elseIndex-1;
+            System.out.println("ElseIndex: "+elseIndex);
         }
         return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
-                variableNames, variables, index };
+                variableNames, variables, index, switchBlocksCount, switchBlocks };
     }
 
     public static CS2Type getCS2Type(String string) {
@@ -707,7 +1092,8 @@ public class CS2Script {
     }
 
     public static Object[] assignVariable(String name, String expression, int opCount, int[] iValues, String[] sValues, long[] lValues, 
-        int intLocals, int stringLocals, int longLocals, String[] variableNames, HashMap<String, LocalVariable> variables, String[] lines, int index) {
+        int intLocals, int stringLocals, int longLocals, String[] variableNames, HashMap<String, LocalVariable> variables, String[] lines, int index,
+            int switchBlocksCount, HashMap<Integer, HashMap<Integer, Integer>> switchBlocks) {
         ArrayList<CS2Instruction> instructions = new ArrayList<>();
         String[] split = expression.split(" ?= ?");
         if (split.length < 2)
@@ -724,6 +1110,8 @@ public class CS2Script {
             System.out.println("Push Int: " + Integer.parseInt(assignation));
         } else if (isString(assignation)) {
             instructions.add(CS2Instruction.PUSH_STRING);
+            if(assignation.startsWith("\"") && assignation.endsWith("\""))
+                assignation = assignation.substring(1, assignation.length()-1);
             sValues[opCount++] = assignation;
         } else if (isLong(assignation)) {
             instructions.add(CS2Instruction.PUSH_LONG);
@@ -735,7 +1123,7 @@ public class CS2Script {
             iValues[opCount++] = variable.getInfo()[0];
         } else {
             Object[] values = evaluateExpression(assignation, opCount, iValues, sValues, lValues, intLocals,
-                    stringLocals, longLocals, variableNames, variables, lines, index);
+                    stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
             instructions.addAll((ArrayList<CS2Instruction>) values[0]);
             opCount = (int) values[1];
             iValues = (int[]) values[2];
@@ -748,19 +1136,26 @@ public class CS2Script {
                 variableNames = (String[]) values[8];
             variables = (HashMap<String, LocalVariable>) values[9];
             index = (int) values[10];
+            switchBlocksCount = (int) values[11];
+            switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
         }
         LocalVariable variable = variables.get(name);
         instructions.add(variable.getType() == CS2Type.STRING ? CS2Instruction.STORE_STRING
                 : variable.getType() == CS2Type.LONG ? CS2Instruction.STORE_LONG : CS2Instruction.STORE_INT);
         iValues[opCount++] = variable.getInfo()[0];
         return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
-                variableNames, variables, index };
+                variableNames, variables, index, switchBlocksCount, switchBlocks };
     }
 
     public static Object[] COMPARISONS = {
         "<", CS2Instruction.INT_LT, ">", CS2Instruction.INT_GT,
         "<=", CS2Instruction.INT_LE, ">=", CS2Instruction.INT_GE,
         "==", CS2Instruction.INT_EQ, "!=", CS2Instruction.INT_NE
+    };
+
+    public static Object[] EQUATIONS = {
+        "+", CS2Instruction.ADD, "-", CS2Instruction.SUBTRACT,
+        "*", CS2Instruction.MULTIPLY, "/", CS2Instruction.DIVIDE
     };
 
     public static Object[] getComparison(String expression) {
@@ -773,9 +1168,20 @@ public class CS2Script {
         return null;
     }
 
+    public static Object[] getEquation(String expression) {
+        int index = 0;
+        while (index < EQUATIONS.length) {
+            String equation = (String) EQUATIONS[index++];
+            CS2Instruction instruction = (CS2Instruction) EQUATIONS[index++];
+            if (expression.contains(equation))
+                return new Object[] { equation, instruction };
+        }
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     public static Object[] evaluateExpression(String expression, int opCount, int[] iValues, String[] sValues, long[] lValues, 
-        int intLocals, int stringLocals, int longLocals, String[] variableNames, HashMap<String, LocalVariable> variables, String[] lines, int index) {
+        int intLocals, int stringLocals, int longLocals, String[] variableNames, HashMap<String, LocalVariable> variables, String[] lines, int index, int switchBlocksCount, HashMap<Integer, HashMap<Integer, Integer>> switchBlocks) {
         ArrayList<CS2Instruction> instructions = new ArrayList<>();
         // if line startsWith variable
         // if line startsWith loop/if
@@ -785,7 +1191,7 @@ public class CS2Script {
         String[] split = expression.split(" ");
         if(expression.startsWith("if(") || expression.startsWith("if (")) {
             Object[] values = evaluateIfExpression(expression, opCount, iValues, sValues, lValues, intLocals,
-                    stringLocals, longLocals, variableNames, variables, lines, index);
+                    stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
             instructions.addAll((ArrayList<CS2Instruction>) values[0]);
             opCount = (int) values[1];
             iValues = (int[]) values[2];
@@ -798,8 +1204,45 @@ public class CS2Script {
                 variableNames = (String[]) values[8];
             variables = (HashMap<String, LocalVariable>) values[9];
             index = (int) values[10];
+            switchBlocksCount = (int) values[11];
+            switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
             return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
-                    variableNames, variables, index };
+                    variableNames, variables, index, switchBlocksCount, switchBlocks };
+        } else if(expression.contains("while(") || expression.contains("while (")) {
+            Object[] values = evaluateWhileLoop(expression, opCount, iValues, sValues, lValues, intLocals,
+                    stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
+            instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+            opCount = (int) values[1];
+            iValues = (int[]) values[2];
+            sValues = (String[]) values[3];
+            lValues = (long[]) values[4];
+            intLocals = (int) values[5];
+            stringLocals = (int) values[6];
+            longLocals = (int) values[7];
+            if (values[8] != null)
+                variableNames = (String[]) values[8];
+            variables = (HashMap<String, LocalVariable>) values[9];
+            index = (int) values[10];
+            switchBlocksCount = (int) values[11];
+            switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+            return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
+                    variableNames, variables, index, switchBlocksCount, switchBlocks };
+        } else if(expression.contains("switch(") || expression.contains("switch (")) {
+            Object[] values = evaluateSwitchStatement(expression, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
+                instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                opCount = (int) values[1];
+                iValues = (int[]) values[2];
+                sValues = (String[]) values[3];
+                lValues = (long[]) values[4];
+                intLocals = (int) values[5];
+                stringLocals = (int) values[6];
+                longLocals = (int) values[7];
+                if (values[8] != null)
+                    variableNames = (String[]) values[8];
+                variables = (HashMap<String, LocalVariable>) values[9];
+                index = (int) values[10];
+                switchBlocksCount = (int) values[11];
+                switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
         } else if(expression.contains("=")) {
             CS2Type type = CS2Script.getCS2TypeOrNull(split[0]);
             String name;
@@ -825,7 +1268,7 @@ public class CS2Script {
             } else
                 name = split[0];
             Object[] values = assignVariable(name, expression, opCount, iValues, sValues, lValues, intLocals, stringLocals,
-                    longLocals, variableNames, variables, lines, index);
+                    longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
             instructions.addAll((ArrayList<CS2Instruction>) values[0]);
             opCount = (int) values[1];
             iValues = (int[]) values[2];
@@ -838,8 +1281,10 @@ public class CS2Script {
                 variableNames = (String[]) values[8];
             variables = (HashMap<String, LocalVariable>) values[9];
             index = (int) values[10];
+            switchBlocksCount = (int) values[11];
+            switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
             return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
-                    variableNames, variables, index };
+                    variableNames, variables, index, switchBlocksCount, switchBlocks };
         } else if(CS2Script.getCS2TypeOrNull(split[0]) != null) { //variable creation (and possible assignation)
             CS2Type type = CS2Script.getCS2TypeOrNull(split[0]);
             String name = split[1].replace(";", "");
@@ -862,7 +1307,61 @@ public class CS2Script {
             variables.put(name, variable);
             System.out.println("Defining "+type.toString()+" "+name+" "+Arrays.toString(variableNames));
             return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
-                    variableNames, variables, index };
+                    variableNames, variables, index, switchBlocksCount, switchBlocks };
+        } else if(expression.startsWith("return")) {
+            if (expression.contains(" ")) {
+                String value = expression.split(" ")[1];
+                Object[] values = evaluateParameter(value, opCount, 
+                        iValues, 
+                        sValues, lValues,
+                        intLocals, stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
+                instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                opCount = (int) values[1];
+                iValues = (int[]) values[2];
+                sValues = (String[]) values[3];
+                lValues = (long[]) values[4];
+                intLocals = (int) values[5];
+                stringLocals = (int) values[6];
+                longLocals = (int) values[7];
+                if (values[8] != null)
+                    variableNames = (String[]) values[8];
+                variables = (HashMap<String, LocalVariable>) values[9];
+                index = (int) values[10];
+                switchBlocksCount = (int) values[11];
+                switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+            }
+            instructions.add(CS2Instruction.RETURN);
+            iValues[opCount++] = 0;
+            return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
+                    variableNames, variables, index, switchBlocksCount, switchBlocks };
+        } else if(expression.startsWith("calc(")) {
+            String calculation = expression.substring(expression.indexOf("(")+1, expression.indexOf(")"));
+            Object[] data = getEquation(calculation);
+            if(data == null) throw new CompilerException("Unsupported calculation!");
+            split = calculation.split(" ?\\"+data[0]+" ?");
+            System.out.println(Arrays.toString(split)+" "+data[0]);
+            for(String s : split) {
+                Object[] values = evaluateParameter(s, opCount, iValues, sValues, lValues, intLocals, stringLocals,
+                        longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
+                instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                opCount = (int) values[1];
+                iValues = (int[]) values[2];
+                sValues = (String[]) values[3];
+                lValues = (long[]) values[4];
+                intLocals = (int) values[5];
+                stringLocals = (int) values[6];
+                longLocals = (int) values[7];
+                if (values[8] != null)
+                    variableNames = (String[]) values[8];
+                variables = (HashMap<String, LocalVariable>) values[9];
+                index = (int) values[10];
+                switchBlocksCount = (int) values[11];
+                switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+            }
+            instructions.add((CS2Instruction) data[1]);
+            iValues[opCount++] = 0;
+            return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
+                    variableNames, variables, index, switchBlocksCount, switchBlocks };
         }
         String instructionName = expression.substring(0, expression.indexOf("("));
         if(instructionName.equals("if_gethash")) {
@@ -872,9 +1371,8 @@ public class CS2Script {
             int componentId = Integer.parseInt(parameters[1]);
             instructions.add(CS2Instruction.PUSH_INT);
             iValues[opCount++] = getHash(interfaceId, componentId);
-            return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals, variableNames, variables, index };
+            return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals, variableNames, variables, index, switchBlocksCount, switchBlocks };
         }
-        expression = expression.replaceAll("\\s", "");
         CS2Instruction instruction = CS2Instruction.getByName(instructionName);
         if(instruction == null) throw new CompilerException("Invalid instruction: "+instructionName);
         String[] parameters = expression.substring(expression.indexOf("(") + 1, expression.lastIndexOf(")")).split(",(?![^()]*\\))");
@@ -882,7 +1380,7 @@ public class CS2Script {
         for(int i = parameters.length-1; i >= 0; i--) {
             String parameter = parameters[i];
             Object[] values = evaluateParameter(parameter, opCount, iValues, sValues, lValues, intLocals,
-                    stringLocals, longLocals, variableNames, variables, lines, index);
+                    stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
             instructions.addAll((ArrayList<CS2Instruction>) values[0]);
             opCount = (int) values[1];
             iValues = (int[]) values[2];
@@ -895,21 +1393,51 @@ public class CS2Script {
                 variableNames = (String[]) values[8];
             variables = (HashMap<String, LocalVariable>) values[9];
             index = (int) values[10];
+            switchBlocksCount = (int) values[11];
+            switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
         }
         instructions.add(instruction);
         iValues[opCount++] = 0;
-        return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals, variableNames, variables, index };
+        return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals, variableNames, variables, index, switchBlocksCount, switchBlocks };
     }
 
     public static Object[] evaluateParameter(String expression, int opCount, int[] iValues, String[] sValues, long[] lValues, 
-        int intLocals, int stringLocals, int longLocals, String[] variableNames, HashMap<String, LocalVariable> variables, String[] lines, int index) {
+        int intLocals, int stringLocals, int longLocals, String[] variableNames, HashMap<String, LocalVariable> variables, String[] lines, int index,
+            int switchBlocksCount, HashMap<Integer, HashMap<Integer, Integer>> switchBlocks) {
         ArrayList<CS2Instruction> instructions = new ArrayList<>();
-        if (isInt(expression)) {
+        Pattern pattern = Pattern.compile("(?<!\\\\)\\+");
+        Matcher matcher = pattern.matcher(expression);
+        if(matcher.results().count() > 0) {
+            String[] split = expression.split(" ?\\+ ?");
+            for(String s : split) {
+                Object[] values = evaluateParameter(s, opCount, iValues, sValues, lValues, intLocals,
+                        stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount,
+                        switchBlocks);
+                instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                opCount = (int) values[1];
+                iValues = (int[]) values[2];
+                sValues = (String[]) values[3];
+                lValues = (long[]) values[4];
+                intLocals = (int) values[5];
+                stringLocals = (int) values[6];
+                longLocals = (int) values[7];
+                if (values[8] != null)
+                    variableNames = (String[]) values[8];
+                variables = (HashMap<String, LocalVariable>) values[9];
+                index = (int) values[10];
+                switchBlocksCount = (int) values[11];
+                switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+            }
+            instructions.add(CS2Instruction.MERGE_STRINGS);
+            iValues[opCount++] = split.length;
+        } else if (isInt(expression)) {
             instructions.add(CS2Instruction.PUSH_INT);
             iValues[opCount++] = Integer.parseInt(expression);
             System.out.println("Push Int: " + Integer.parseInt(expression));
         } else if (isString(expression)) {
             instructions.add(CS2Instruction.PUSH_STRING);
+            if (expression.startsWith("\"") && expression.endsWith("\""))
+                expression = expression.substring(1, expression.length() - 1);
             sValues[opCount++] = expression;
         } else if (isLong(expression)) {
             instructions.add(CS2Instruction.PUSH_LONG);
@@ -923,7 +1451,7 @@ public class CS2Script {
         } else {
             Object[] values = evaluateExpression(
                     expression, opCount, iValues, sValues, lValues, intLocals, stringLocals,
-                    longLocals, variableNames, variables, lines, index);
+                    longLocals, variableNames, variables, lines, index, switchBlocksCount, switchBlocks);
             instructions.addAll((ArrayList<CS2Instruction>) values[0]);
             opCount = (int) values[1];
             iValues = (int[]) values[2];
@@ -936,9 +1464,11 @@ public class CS2Script {
                 variableNames = (String[]) values[8];
             variables = (HashMap<String, LocalVariable>) values[9];
             index = (int) values[10];
+            switchBlocksCount = (int) values[11];
+            switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
         }
         return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
-                variableNames, variables, index };
+                variableNames, variables, index, switchBlocksCount, switchBlocks };
     }
 
     public static boolean isString(String expression) {
@@ -966,18 +1496,7 @@ public class CS2Script {
         Cache.init("F:\\workspace\\github\\darkan-server\\data\\cache\\");
         ScriptDBBuilder.load();
         InstructionDBBuilder.load();
-        byte[] o = Cache.STORE.getIndex(IndexType.CS2_SCRIPTS).getArchive(15).getData();
-        CS2Script script = CS2Definitions.getScript(15);
-        byte[] n = script.encode();
-        System.out.println("id: 15, cache data length: "+o.length+", encoded data length: "+n.length);
-        System.out.println(Arrays.toString(o));
-        System.out.println(Arrays.toString(n));
-
-        OutputStream test = new OutputStream();
-
-        test.writeInt(155);
-
-        System.out.println(Arrays.toString(test.toByteArray()));
+        
     }
 
     public byte[] encode() {
@@ -996,10 +1515,10 @@ public class CS2Script {
             System.out.println("Writing short opcode: "+op.getOpcode()+" result: "+getShortBytes(op.getOpcode()));
             if (op == CS2Instruction.PUSH_STRING) {
                 out.writeString((String) stringOpValues[i]);
-                System.out.println("Writing string opValue: "+stringOpValues[i]+" shouldn't get here.");
+                System.out.println("Writing string opValue: "+stringOpValues[i]);
             } else if (CS2Instruction.PUSH_LONG == op) {
                 out.writeLong(longOpValues[i]);
-                System.out.println("Writing long opValue: " + longOpValues[i] + " shouldn't get here.");
+                System.out.println("Writing long opValue: " + longOpValues[i]);
             } else {
                 if (op.hasIntConstant()) {
                     out.writeInt(intOpValues[i]);

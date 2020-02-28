@@ -4,6 +4,7 @@ import com.cryo.CS2Editor;
 import com.cryo.cache.Cache;
 import com.cryo.cache.IndexType;
 import com.cryo.cs2.CS2Definitions;
+import com.cryo.cs2.CS2Instruction;
 import com.cryo.cs2.CS2Script;
 import com.cryo.decompiler.CS2Type;
 import com.cryo.utils.InstructionDAO;
@@ -29,6 +30,8 @@ public class IDEModule extends WebModule {
                 "POST", "/ide/auto-completion/get-instr",
                 "POST", "/ide/edit-script-info",
                 "POST", "/ide/save-script-info",
+                "POST", "/ide/edit-instruction-info",
+                "POST", "/ide/save-instruction-info",
                 "POST", "/ide/reload-instruction-info",
                 "POST", "/ide/reload-script-info",
                 "POST", "/ide/recompile"
@@ -93,6 +96,58 @@ public class IDEModule extends WebModule {
                 }
                 prop.put("results", results);
                 break;
+            case "/ide/edit-instruction-info":
+                InstructionDAO info;
+                idString = request.queryParams("id");
+                try {
+                    id = Integer.parseInt(idString);
+                    info = InstructionDBBuilder.getInstruction(id);
+                } catch (Exception e) {
+                    info = InstructionDBBuilder.getInstruction(idString);
+                    id = -1;
+                }
+                boolean exists = true;
+                if(info == null) {
+                    exists = false;
+                    CS2Instruction instruction; 
+                    if(id != -1) instruction = CS2Instruction.getByOpcode(id);
+                    else instruction = CS2Instruction.getByName(idString);
+                    if(instruction == null) return error("Unable to find instruction: "+idString);
+                    info = new InstructionDAO(instruction.opcode, instruction.name(), new String[] { }, new String[] { }, CS2Type.VOID);
+                }
+                model.put("dao", info);
+                prop.put("exists", exists);
+                prop.put("html", render("./client/source/edit_instruction_info.jade", model, request, response));
+                break;
+            case "/ide/save-instruction-info":
+                idString = request.queryParams("id");
+                try {
+                    id = Integer.parseInt(idString);
+                    info = InstructionDBBuilder.getInstruction(id);
+                } catch (Exception e) {
+                    info = InstructionDBBuilder.getInstruction(idString);
+                    if (info == null) {
+                        CS2Instruction instr = CS2Instruction.getByName(idString);
+                        if(instr == null) return error("Unable to find instruction: "+idString);
+                        id = instr.getOpcode();
+                    } else
+                        id = info.getOpcode();
+                }
+                String name = request.queryParams("name");
+                String popOrder = request.queryParams("popOrder");
+                String argNames = request.queryParams("argNames");
+                String pushTypeS = request.queryParams("pushType");
+                if(name.replaceAll("\\s", "").equals("")) return error("Name must be defined!");
+                if(pushTypeS.replaceAll("\\s", "").equals("")) return error("Push type must be defined!");
+                for(String typeS : popOrder.split(", ?")) {
+                    CS2Type type = ScriptDAO.getRTFromString(typeS);
+                    if(type == null) return error("Invalid pop type: "+typeS);
+                }
+                CS2Type pushType = CS2Type.forDesc(pushTypeS);
+                if(pushType == null) return error("Invalid push type: "+pushTypeS);
+                InstructionDAO instr = new InstructionDAO(id, name, popOrder.replaceAll("\\s", "").equals("") ? null : popOrder.split(", ?"), argNames.replaceAll("\\s", "").equals("") ? null : argNames.split(", ?"), pushType);
+                InstructionDBBuilder.saveInstruction(instr);
+                break;
             case "/ide/save-script-info":
                 try {
                     idString = request.queryParams("id");
@@ -101,7 +156,7 @@ public class IDEModule extends WebModule {
                     } catch (Exception e) {
                         return error("Error parsing script ID");
                     }
-                    String name = request.queryParams("name");
+                    name = request.queryParams("name");
                     String arguments = request.queryParams("arguments");
                     String variables = request.queryParams("variables");
                     String returnTypeS = request.queryParams("returnType");
@@ -120,21 +175,21 @@ public class IDEModule extends WebModule {
                         for(int i = 0; i < split.length; i++) {
                             String[] tN = split[i].split(" ");
                             if(tN.length != 2) return error("Invalid argument2: "+split[i]);
-                            argumentTypes[i] = CS2Script.getCS2Type(tN[0]);
+                            argumentTypes[i] = CS2Type.forDesc(tN[0]);
                             argumentNames[i] = tN[1];
                         }
                     }
                     if(variables == null || variables.replaceAll("\\s", "").equals(""))
                         variableNames = new String[0];
                     else {
-                        String[] split = arguments.split(", ?");
+                        String[] split = variables.split(", ?");
                         variableNames = new String[split.length];
                         for(int i = 0; i < variableNames.length; i++) {
                             if(split[i].contains(" ")) return error("Invalid variable: "+ split[i]);
                             variableNames[i] = split[i];
                         }
                     }
-                    CS2Type returnType = CS2Script.getCS2Type(returnTypeS);
+                    CS2Type returnType = CS2Type.forDesc(returnTypeS);
                     ScriptDAO dao = new ScriptDAO(id, name, argumentTypes, argumentNames, variableNames, returnType);
                     ScriptDBBuilder.saveScript(dao);
                 } catch(Exception e) {
@@ -173,15 +228,15 @@ public class IDEModule extends WebModule {
                 }
                 if(contents == null || contents.equals(""))
                     return error("Invalid contents");
-                CS2Script script;
-                try {
-                    script = CS2Definitions.getScript(id);
-                } catch(Exception e) {
-                    e.printStackTrace();
-                    return error("Error getting script.");
-                }
-                if (script == null)
-                    return error("Script is null.");
+                // CS2Script script;
+                // try {
+                //     script = CS2Definitions.getScript(id);
+                // } catch(Exception e) {
+                //     e.printStackTrace();
+                //     return error("Error getting script.");
+                // }
+                // if (script == null)
+                //     return error("Script is null.");
                 try {
                     String result = CS2Script.recompile(contents);
                     if (result != null)

@@ -73,25 +73,58 @@ public class CS2FlowGenerator {
         CS2Stack stack = block.getStack().copy();
 
         try {
-            for (;;ptr++) {
+            ptrL: for (;;ptr++) {
                 if (ptr >= script.getInstructions().length) break;
                 Instruction instruction = script.getInstructions()[ptr];
                 CS2Instruction operation = CS2Instruction.getByOpcode(instruction.getOpcode());
                 InstructionDAO dao = InstructionDBBuilder.getInstruction(instruction.getOpcode());
                 int opcode = instruction.getOpcode();
                 if(dao != null) {
-                    System.out.println(dao);
-                    CS2Expression[] expressions = new CS2Expression[dao.getPopOrder().length];
+                    CS2Expression[] expressions = new CS2Expression[dao.getPopOrder() == null ? 0 : dao.getPopOrder().length];
                     System.out.println("Instruction: " + operation + " " + opcode);
-                    for(int i = 0; i < dao.getPopOrder().length; i++) {
-                        System.out.println(operation+" "+i);
-                        String popType = dao.getPopOrder()[i];
-                        int stackType = popType.startsWith("i") ? 0 : popType.startsWith("s") ? 1 : 2;
-                        CS2Type type = popType.startsWith("i") ? CS2Type.INT : popType.startsWith("s") ? CS2Type.STRING : CS2Type.LONG;
-                        if(popType.length() > 1)
-                            expressions[i] = stack.pop(stackType);
-                        else
-                            expressions[i] = cast(stack.pop(stackType), type);
+                    if(dao.getPopOrder() != null) {
+                        for(int i = 0; i < dao.getPopOrder().length; i++) {
+                            String popType = dao.getPopOrder()[i];
+                                if(popType.equals("f")) {
+                                    CS2Expression component = null;
+                                    if(dao.getPopOrder().length > 1)
+                                        component = cast(stack.pop(0), CS2Type.INT);
+                                    CS2PrimitiveExpression paramTypesE = (CS2PrimitiveExpression) stack.pop(1);
+                                    String paramTypes = (String) paramTypesE.getValue();
+                                    CS2Expression[] intArr = null;
+                                    if (paramTypes.length() > 0 && paramTypes.charAt(paramTypes.length() - 1) == 'Y') {
+                                        int size = (int) ((CS2PrimitiveExpression) stack.pop(0)).getValue();
+                                        if (size > 0) {
+                                            intArr = new CS2Expression[size];
+                                            while (size-- > 0)
+                                                intArr[size] = cast(stack.pop(0), CS2Type.INT);
+                                        }
+                                    }
+                                    if (intArr != null)
+                                        paramTypes = paramTypes.substring(0, paramTypes.length() - 1);
+                                    CS2Expression[] params = new CS2Expression[paramTypes.length() + 1];
+                                    for (int p = params.length - 1; p >= 1; --p) {
+                                        if (paramTypes.charAt(p - 1) == 's')
+                                            params[p] = cast(stack.pop(1), CS2Type.STRING);
+                                        else if (paramTypes.charAt(p - 1) == '\u00a7')
+                                            params[p] = cast(stack.pop(2), CS2Type.LONG);
+                                        else
+                                            params[p] = cast(stack.pop(0), CS2Type.INT);
+                                    }
+                                    params[0] = stack.pop(0);
+                                    block.write(new CS2AnonymousClassExpression(
+                                            new Object[] { params, intArr, cast(paramTypesE, CS2Type.STRING), component },
+                                            operation));
+                                    continue ptrL;
+                                }
+                                System.out.println(operation + " " + i+" "+popType);
+                            int stackType = popType.startsWith("i") ? 0 : popType.startsWith("s") ? 1 : 2;
+                            CS2Type type = popType.startsWith("i") ? CS2Type.INT : popType.startsWith("s") ? CS2Type.STRING : CS2Type.LONG;
+                            if(popType.length() > 1)
+                                expressions[i] = stack.pop(stackType);
+                            else
+                                expressions[i] = cast(stack.pop(stackType), type);
+                        }
                     }
                     if(dao.getPushType() != CS2Type.VOID)
                         stack.push(new CS2BasicExpression(opcode, expressions, operation.name().toLowerCase()), dao.getPushType() == CS2Type.STRING ? 1 : dao.getPushType() == CS2Type.LONG ? 2 : 0);
@@ -215,6 +248,21 @@ public class CS2FlowGenerator {
                         expressions[1] = cast(stack.pop(0), CS2Type.INT);
                         expressions[2] = cast(stack.pop(0), CS2Type.INT);
                         stack.push(new CS2BasicExpression(expressions, operation.name().toLowerCase()), 0);
+                    } else if(operation == RANDOM_SOUND_PITCH) {
+                        CS2Expression expression1 = stack.pop(0);
+                        CS2Expression expression2 = stack.pop(0);
+                        boolean extra = false;
+                        if(expression1 instanceof CS2PrimitiveExpression) {
+                            int value = ((CS2PrimitiveExpression) expression1).asInt();
+                            extra = value > 700;
+                        }
+                        if (expression2 instanceof CS2PrimitiveExpression) {
+                            int value = ((CS2PrimitiveExpression) expression2).asInt();
+                            extra = value > 700;
+                        }
+                        if(extra)
+                            stack.push(new CS2BasicExpression(new CS2Expression[] { expression1, expression2 }, "rsp_val_ex"), 0);
+                        stack.push(new CS2BasicExpression(new CS2Expression[] { expression1, expression2 }, "rsp_val1"), 0);
                     } else if(operation == REMOVETAGS) {
                         CS2Expression expression = cast(stack.pop(1), CS2Type.STRING);
                         stack.push(new CS2BasicExpression(expression, operation.name().toLowerCase()), 1);
@@ -242,16 +290,13 @@ public class CS2FlowGenerator {
                             expression = cast(expression, CS2Type.COMPONENT);
                         CS2Expression hidden = cast(stack.pop(0), CS2Type.BOOLEAN);
                         block.write(new CS2HideComponent(expression, hidden));
-                    } else if(operation == TO_STRING) {
-                        CS2Expression expression = cast(stack.pop(0), CS2Type.INT);
-                        stack.push(new CS2ToString(expression), 1);
                     } else if(operation == CC_SETOP || operation == IF_SETTEXT) {
                         CS2Expression op = stack.pop(0);
                         if(operation != IF_SETTEXT || !(op instanceof CS2PrimitiveExpression))
                             op = cast(op, CS2Type.INT);
                         CS2Expression str = cast(stack.pop(1), CS2Type.STRING);
                         block.write(new CS2BasicExpression(new CS2Expression[] { str, op }, operation.name().toLowerCase()));
-                    } else if(operation == STRUCT_PARAM || operation == ITEM_PARAM || operation == instr6771) {
+                    } else if(operation == STRUCT_PARAM || operation == ITEM_PARAM || operation == NPC_PARAM || operation == instr6771) {
                         CS2Expression[] expressions = new CS2Expression[operation == instr6771 ? 1 : 2];
                         CS2PrimitiveExpression expression = (CS2PrimitiveExpression) stack.pop(0);
                         int paramId = (int) expression.getValue();
@@ -275,7 +320,8 @@ public class CS2FlowGenerator {
                         || operation == HOOK_MOUSE_ENTER || operation == instr6239 || operation == instr6687
                         || operation == instr6091 || operation == instr6092 || operation == instr6088
                         || operation == instr6224 || operation == instr6499 || operation == instr5957
-                        || operation == instr6246 || operation == instr6253) {
+                        || operation == instr6246 || operation == instr6253 || operation == instr6248
+                        || operation == instr6556 || operation == instr6898 || operation == instr6450) {
                         System.out.println("Testing unknown instruction.");
                         CS2Expression component = null;
                         if(operation == instr6342 || operation == instr6257 || operation == instr6237
@@ -283,7 +329,8 @@ public class CS2FlowGenerator {
                             || operation == IF_SETONMOUSEOVER || operation == IF_SETONMOUSELEAVE
                             || operation == HOOK_MOUSE_EXIT || operation == instr6376 || operation == instr6527
                             || operation == instr6393 || operation == HOOK_MOUSE_ENTER || operation == instr6239
-                            || operation == instr6246 || operation == instr6253)
+                            || operation == instr6246 || operation == instr6253 || operation == instr6248
+                            || operation == instr6898)
                             component = cast(stack.pop(0), CS2Type.INT);
                         CS2PrimitiveExpression paramTypesE = (CS2PrimitiveExpression) stack.pop(1);
                         String paramTypes = (String) paramTypesE.getValue();
@@ -317,6 +364,32 @@ public class CS2FlowGenerator {
                         stack.push(new CS2BasicExpression(expression, "test_ex_1"), 0);
                         stack.push(new CS2BasicExpression(expression, "test_ex_2"), 0);
                     } else if (operation == CS2Instruction.RETURN) {
+                        // //Get propable return type
+                        // CS2Type returnType = null;
+                        // if(stack.getSize() == 1) {
+                        //     if(stack.getSize(0) == 1) returnType = CS2Type.INT;
+                        //     if(stack.getSize(1) == 1) returnType = CS2Type.STRING;
+                        //     if(stack.getSize(2) == 1) returnType = CS2Type.LONG;
+                        // } else if(stack.getSize() > 1) {
+                        //     StringBuilder builder = new StringBuilder();
+                        //     builder.append("script_"+script.getId()+"_struct(");
+                        //     ArrayList<String> types = new ArrayList<>();
+                        //     for(int i = 0; i < stack.getSize(0); i++)
+                        //         types.add("int");
+                        //     for (int i = 0; i < stack.getSize(1); i++)
+                        //         types.add("string");
+                        //     for (int i = 0; i < stack.getSize(2); i++)
+                        //         types.add("long");
+                        //     for(int i = 0; i < types.size(); i++) {
+                        //         builder.append(types.toString().toLowerCase());
+                        //         if(i != types.size()-1)
+                        //             builder.append(";");
+                        //     }
+                        //     builder.append(")");
+                        //     returnType = CS2Type.forDesc(builder.toString());
+                        // } else returnType = CS2Type.VOID;
+                        // ScriptDBBuilder.writeProbableReturnType(script.getId(), script.getArguments(), script.getArgumentNames(), returnType);
+                        // System.out.println("Guessed CS2Type of script "+script.getId()+" to be: "+returnType);
                         if (stack.getSize() <= 0) {
                             this.function.setReturnType(CS2Type.merge(this.function.getReturnType(), CS2Type.VOID));
                             block.write(new CS2Return());
@@ -362,13 +435,14 @@ public class CS2FlowGenerator {
                         this.dumpStack(block, stack);
                         block.write(new CS2Poppable(new CS2VariableAssign(var,expr)));
                     }
-                    else if(operation == STORE_VARC || operation == STORE_VARC_STRING) {
+                    else if(operation == STORE_VARC || operation == STORE_VARC_STRING || operation == STORE_VARPBIT) {
                         int id = intInstr.asInt();
                         boolean isString = operation == STORE_VARC_STRING;
                         CS2Expression expression = cast(stack.pop(isString ? 1 : 0), isString ? CS2Type.STRING : CS2Type.INT);
                         block.write(new CS2StoreVarc(id, expression));
                     }
-                    else if(operation == LOAD_VARP || operation == LOAD_VARPBIT || operation == LOAD_VARC || operation == LOAD_VARC_STRING) {
+                    else if(operation == LOAD_VARP || operation == LOAD_VARPBIT || operation == LOAD_VARC || operation == LOAD_VARC_STRING
+                        || operation == LOAD_CLAN_SETTING_VARBIT || operation == LOAD_CLAN_VARBIT) {
                         int id = intInstr.asInt();
                         boolean isString = operation == LOAD_VARC_STRING;
                         stack.push(new CS2LoadConfig(id, operation.name().toLowerCase()), isString ? 1 : 0);
