@@ -49,7 +49,7 @@ const EDIT_OPTIONS = [
                                 }
                             }
                             if(variables) {
-                                for(let variable of variables.split(', ?')) {
+                                for(let variable of variables.split(/, ?/)) {
                                     if(variable.includes(' ')) {
                                         sendAlert('Invalid variable: '+variable);
                                         return;
