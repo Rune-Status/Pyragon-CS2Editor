@@ -175,6 +175,7 @@ block head
         $(document).ready(() => {
             $('#title').html('CS2Editor');
             let languageTools = ace.require('ace/ext/language_tools');
+            ace.require('ace/ext/searchbox');
             editor = ace.edit('editor');
             editor.session.setMode('ace/mode/java');
             editor.session.on('change', onEditorChange);
