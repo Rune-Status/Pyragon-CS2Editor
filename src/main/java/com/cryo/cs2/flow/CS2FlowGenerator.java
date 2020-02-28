@@ -377,13 +377,14 @@ public class CS2FlowGenerator {
                         this.dumpStack(block, stack);
                         block.write(new CS2Poppable(new CS2VariableAssign(var,expr)));
                     }
-                    else if(operation == STORE_VARC || operation == STORE_VARC_STRING) {
+                    else if(operation == STORE_VARC || operation == STORE_VARC_STRING || operation == STORE_VARPBIT) {
                         int id = intInstr.asInt();
                         boolean isString = operation == STORE_VARC_STRING;
                         CS2Expression expression = cast(stack.pop(isString ? 1 : 0), isString ? CS2Type.STRING : CS2Type.INT);
                         block.write(new CS2StoreVarc(id, expression));
                     }
-                    else if(operation == LOAD_VARP || operation == LOAD_VARPBIT || operation == LOAD_VARC || operation == LOAD_VARC_STRING) {
+                    else if(operation == LOAD_VARP || operation == LOAD_VARPBIT || operation == LOAD_VARC || operation == LOAD_VARC_STRING
+                        || operation == LOAD_CLAN_SETTING_VARBIT || operation == LOAD_CLAN_VARBIT) {
                         int id = intInstr.asInt();
                         boolean isString = operation == LOAD_VARC_STRING;
                         stack.push(new CS2LoadConfig(id, operation.name().toLowerCase()), isString ? 1 : 0);
