@@ -175,21 +175,21 @@ public class IDEModule extends WebModule {
                         for(int i = 0; i < split.length; i++) {
                             String[] tN = split[i].split(" ");
                             if(tN.length != 2) return error("Invalid argument2: "+split[i]);
-                            argumentTypes[i] = CS2Script.getCS2Type(tN[0]);
+                            argumentTypes[i] = CS2Type.forDesc(tN[0]);
                             argumentNames[i] = tN[1];
                         }
                     }
                     if(variables == null || variables.replaceAll("\\s", "").equals(""))
                         variableNames = new String[0];
                     else {
-                        String[] split = arguments.split(", ?");
+                        String[] split = variables.split(", ?");
                         variableNames = new String[split.length];
                         for(int i = 0; i < variableNames.length; i++) {
                             if(split[i].contains(" ")) return error("Invalid variable: "+ split[i]);
                             variableNames[i] = split[i];
                         }
                     }
-                    CS2Type returnType = CS2Script.getCS2Type(returnTypeS);
+                    CS2Type returnType = CS2Type.forDesc(returnTypeS);
                     ScriptDAO dao = new ScriptDAO(id, name, argumentTypes, argumentNames, variableNames, returnType);
                     ScriptDBBuilder.saveScript(dao);
                 } catch(Exception e) {
