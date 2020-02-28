@@ -332,6 +332,32 @@ public class CS2FlowGenerator {
                         stack.push(new CS2BasicExpression(expression, "test_ex_1"), 0);
                         stack.push(new CS2BasicExpression(expression, "test_ex_2"), 0);
                     } else if (operation == CS2Instruction.RETURN) {
+                        // //Get propable return type
+                        // CS2Type returnType = null;
+                        // if(stack.getSize() == 1) {
+                        //     if(stack.getSize(0) == 1) returnType = CS2Type.INT;
+                        //     if(stack.getSize(1) == 1) returnType = CS2Type.STRING;
+                        //     if(stack.getSize(2) == 1) returnType = CS2Type.LONG;
+                        // } else if(stack.getSize() > 1) {
+                        //     StringBuilder builder = new StringBuilder();
+                        //     builder.append("script_"+script.getId()+"_struct(");
+                        //     ArrayList<String> types = new ArrayList<>();
+                        //     for(int i = 0; i < stack.getSize(0); i++)
+                        //         types.add("int");
+                        //     for (int i = 0; i < stack.getSize(1); i++)
+                        //         types.add("string");
+                        //     for (int i = 0; i < stack.getSize(2); i++)
+                        //         types.add("long");
+                        //     for(int i = 0; i < types.size(); i++) {
+                        //         builder.append(types.toString().toLowerCase());
+                        //         if(i != types.size()-1)
+                        //             builder.append(";");
+                        //     }
+                        //     builder.append(")");
+                        //     returnType = CS2Type.forDesc(builder.toString());
+                        // } else returnType = CS2Type.VOID;
+                        // ScriptDBBuilder.writeProbableReturnType(script.getId(), script.getArguments(), script.getArgumentNames(), returnType);
+                        // System.out.println("Guessed CS2Type of script "+script.getId()+" to be: "+returnType);
                         if (stack.getSize() <= 0) {
                             this.function.setReturnType(CS2Type.merge(this.function.getReturnType(), CS2Type.VOID));
                             block.write(new CS2Return());
