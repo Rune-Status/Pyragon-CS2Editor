@@ -263,7 +263,7 @@ public class CS2FlowGenerator {
                             op = cast(op, CS2Type.INT);
                         CS2Expression str = cast(stack.pop(1), CS2Type.STRING);
                         block.write(new CS2BasicExpression(new CS2Expression[] { str, op }, operation.name().toLowerCase()));
-                    } else if(operation == STRUCT_PARAM || operation == ITEM_PARAM || operation == instr6771) {
+                    } else if(operation == STRUCT_PARAM || operation == ITEM_PARAM || operation == NPC_PARAM || operation == instr6771) {
                         CS2Expression[] expressions = new CS2Expression[operation == instr6771 ? 1 : 2];
                         CS2PrimitiveExpression expression = (CS2PrimitiveExpression) stack.pop(0);
                         int paramId = (int) expression.getValue();
@@ -287,7 +287,8 @@ public class CS2FlowGenerator {
                         || operation == HOOK_MOUSE_ENTER || operation == instr6239 || operation == instr6687
                         || operation == instr6091 || operation == instr6092 || operation == instr6088
                         || operation == instr6224 || operation == instr6499 || operation == instr5957
-                        || operation == instr6246 || operation == instr6253) {
+                        || operation == instr6246 || operation == instr6253 || operation == instr6248
+                        || operation == instr6556 || operation == instr6898 || operation == instr6450) {
                         System.out.println("Testing unknown instruction.");
                         CS2Expression component = null;
                         if(operation == instr6342 || operation == instr6257 || operation == instr6237
@@ -295,7 +296,8 @@ public class CS2FlowGenerator {
                             || operation == IF_SETONMOUSEOVER || operation == IF_SETONMOUSELEAVE
                             || operation == HOOK_MOUSE_EXIT || operation == instr6376 || operation == instr6527
                             || operation == instr6393 || operation == HOOK_MOUSE_ENTER || operation == instr6239
-                            || operation == instr6246 || operation == instr6253)
+                            || operation == instr6246 || operation == instr6253 || operation == instr6248
+                            || operation == instr6898)
                             component = cast(stack.pop(0), CS2Type.INT);
                         CS2PrimitiveExpression paramTypesE = (CS2PrimitiveExpression) stack.pop(1);
                         String paramTypes = (String) paramTypesE.getValue();
