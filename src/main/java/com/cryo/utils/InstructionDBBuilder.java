@@ -31,7 +31,7 @@ public class InstructionDBBuilder {
     public static InstructionDAO getInstruction(String name) {
         Optional<InstructionDAO> optional = instructions.values()
                                             .stream()
-                                            .filter(i -> i.getName().equals(name))
+                                            .filter(i -> i.getName().equalsIgnoreCase(name))
                                             .findFirst();
         if(!optional.isPresent()) return null;
         return optional.get();
