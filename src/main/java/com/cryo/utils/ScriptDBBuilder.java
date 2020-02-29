@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.HashMap;
+import java.util.Optional;
 
 import com.cryo.CS2Editor;
 import com.cryo.cs2.CS2Script;
@@ -21,6 +22,15 @@ public class ScriptDBBuilder {
         if (!scripts.containsKey(id))
             return null;
         return scripts.get(id);
+    }
+
+    public static ScriptDAO getScript(String name) {
+        Optional<ScriptDAO> optional = scripts.values()
+                                    .stream()
+                                    .filter(s -> s.getName().equalsIgnoreCase(name))
+                                    .findFirst();
+        if(!optional.isPresent()) return null;
+        return optional.get();
     }
 
     public static void saveScript(ScriptDAO dao) {
