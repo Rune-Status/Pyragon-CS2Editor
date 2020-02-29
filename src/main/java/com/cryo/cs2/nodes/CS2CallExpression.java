@@ -1,5 +1,6 @@
 package com.cryo.cs2.nodes;
 
+import com.cryo.cs2.CS2Script;
 import com.cryo.decompiler.CS2Type;
 import com.cryo.decompiler.util.FunctionInfo;
 import com.cryo.utils.CodePrinter;
@@ -39,11 +40,31 @@ public class CS2CallExpression extends CS2Expression {
         printer.print(info.getName());
         printer.print('(');
         for (int i = 0; i < expressions.length; i++) {
-            expressions[i].print(printer);
+            if(info.getArgumentTypes()[i] == CS2Type.COMPONENT)
+                printComponent(expressions[i], printer);
+            else
+                expressions[i].print(printer);
             if ((i + 1) < expressions.length)
                 printer.print(", ");
         }
         printer.print(')');
         printer.endPrinting(this);
+    }
+
+    public void printComponent(CS2Expression expression, CodePrinter printer) {
+        if(expression instanceof CS2Cast) {
+            CS2Cast cast = (CS2Cast) expression;
+            if(cast.getExpression() instanceof CS2PrimitiveExpression) {
+                int hash = ((CS2PrimitiveExpression) cast.getExpression()).asInt();
+                int[] info = CS2Script.getInterfaceIds(hash);
+                printer.print("if_gethash(");
+                printer.print(Integer.toString(info[0]));
+                printer.print(", ");
+                printer.print(Integer.toString(info[1]));
+                printer.print(")");
+                return;
+            }
+        }
+        expression.print(printer);
     }
 }
