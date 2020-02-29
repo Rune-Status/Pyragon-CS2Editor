@@ -1,0 +1,27 @@
+CS2Editor TODO:
+    Client:
+        New Script:
+            ☐ Add 'New Script' option to 'File' button
+            ☐ Create skeleton for new script, pass to client
+            ☐ Create temporary id in script list for new script
+            ☐ On recompile, check if saved id = id we created, if not, remove temporary id in list
+            ☐ On close, if not saved, remove temporary id in list
+        Decompile to source:
+            ☐ Add option to decompile all scripts to source, and load source instead of from cache
+        Ace Editor:
+            ☐ Add better auto completion with argument completion as well
+            ☐ Add better searching
+            ☐ Fix issue with cursor not being 'text' cursor when hovering over editor
+            ☐ Add syntax highlighting to words like 'component'
+        References:
+            ☐ Add 'get references' option to context menu in editor to get references of instruction/script
+            ☐ Instructions, loops through all other scripts, if instruction exists, gets line of it?
+            ☐ Script, loops through all other scripts, if call_cs2 with id exists, or anonymous class, gets line of it
+            ☐ Add interface definitions and return references from hooks
+        Component Definitions:
+            ☐ Add separate UI for a basic component definitions editor
+            ☐ Allow editing of hook scripts and their parameters
+        Compiler:
+            ☐ Clean up compiler, moving each statement evaluator to a new class extending CompilerNode
+            ☐ Keep recurrsion throughout, and simply 'merge' the classes together when reaching the end of a block
+            ☐ Once end of script is reached, there should only be one large CompilerNode
