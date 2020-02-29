@@ -525,6 +525,21 @@ public class CS2Script {
                         CS2Type type = getCS2Type(split[0]);
                         arguments[i] = type;
                         argumentNames[i] = split[1];
+                        int localIndex;
+                        int stackType;
+                        if(type == CS2Type.LONG) {
+                            localIndex = longLocals++;
+                            stackType = 2;
+                        } else if(type == CS2Type.STRING) {
+                            localIndex = stringLocals++;
+                            stackType = 1;
+                        } else {
+                            localIndex = intLocals++;
+                            stackType = 0;
+                        }
+                        LocalVariable variable = new LocalVariable(split[1], type);
+                        variable.setIdentifier(LocalVariable.makeIdentifier(localIndex, stackType));
+                        variables.put(split[1], variable);
                     }
                 }
                 line = line.substring(line.indexOf(")")+1);
