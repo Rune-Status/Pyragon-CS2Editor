@@ -130,7 +130,6 @@
     "name": "script_18",
     "argTypes": "",
     "argNames": "",
-    "vNames": "hide,a,testS",
     "returnType": "void"
   },
   "19": {
@@ -32835,13 +32834,12 @@
     "name": "script_5372",
     "argTypes": "component,int",
     "argNames": "arg0,arg1",
-    "vNames": "",
     "returnType": "void"
   },
   "5373": {
     "id": 5373,
     "name": "script_5373",
-    "argTypes": "int,int",
+    "argTypes": "component,int",
     "argNames": "arg0,arg1",
     "returnType": "void"
   },
@@ -40013,6 +40011,21 @@
     "name": "script_6564",
     "argTypes": "",
     "argNames": "",
+    "returnType": "void"
+  },
+  "6565": {
+    "id": 6565,
+    "name": "script_6565",
+    "argTypes": "int",
+    "argNames": "a0",
+    "returnType": "void"
+  },
+  "6566": {
+    "id": 6566,
+    "name": "script_6566",
+    "argTypes": "",
+    "argNames": "",
+    "vNames": "hide,a,testS",
     "returnType": "void"
   }
 }

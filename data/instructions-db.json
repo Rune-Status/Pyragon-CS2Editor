@@ -450,6 +450,13 @@
     "argNames": "hash,borderThickness",
     "pushType": "v"
   },
+  "600": {
+    "opcode": 600,
+    "name": "HOOK_MOUSE_EXIT",
+    "popOrder": "ic,f",
+    "argNames": "hash,func",
+    "pushType": "v"
+  },
   "345": {
     "opcode": 345,
     "name": "instr6073",
@@ -945,6 +952,13 @@
     "pushType": "i",
     "customPrint": "calc(%0 & %1)"
   },
+  "968": {
+    "opcode": 968,
+    "name": "HOOK_MOUSE_ENTER",
+    "popOrder": "ic,f",
+    "argNames": "hash,func",
+    "pushType": "v"
+  },
   "201": {
     "opcode": 201,
     "name": "userdetail_quickchat",
@@ -1028,6 +1042,13 @@
     "popOrder": "",
     "argNames": "",
     "pushType": "s"
+  },
+  "724": {
+    "opcode": 724,
+    "name": "IF_SETTEXT",
+    "popOrder": "s,ic",
+    "argNames": "value,hash",
+    "pushType": "v"
   },
   "471": {
     "opcode": 471,
