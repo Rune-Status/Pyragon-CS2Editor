@@ -46,7 +46,7 @@ public class IDEModule extends WebModule {
             case "/ide":
                 try {
                     ArrayList<Properties> scripts = new ArrayList<>();
-                    for (int i = 0; i < Cache.STORE.getIndex(IndexType.CS2_SCRIPTS).getLastArchiveId(); i++) {
+                    for (int i = 0; i <= Cache.STORE.getIndex(IndexType.CS2_SCRIPTS).getLastArchiveId(); i++) {
                         prop = new Properties();
                         prop.put("id", i);
                         String name = "script"+i;
