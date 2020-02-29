@@ -132,7 +132,7 @@ const EDIT_OPTIONS = [
                                                 }
                                                 closeNoty($noty);
                                                 sendAlert('Successfully '+(exists ? 'edited' : 'created')+' instruction '+name);
-                                                sendAlert('Reloading all unsaved scripts.');
+                                                sendAlert('Reloading all saved scripts.');
                                                 let current = currentTab;
                                                 for(let id in tabs) {
                                                     if(unsaved[id]) continue;
