@@ -1,5 +1,8 @@
 package com.cryo.cs2.nodes;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.cryo.cs2.CS2Definitions;
 import com.cryo.cs2.CS2Instruction;
 import com.cryo.cs2.CS2Script;
@@ -54,33 +57,47 @@ public class CS2AnonymousClassExpression extends CS2Node {
             printComponent(cast, printer);
             printer.print(", ");
         }
-        printer.print("new Function<");
-        if(dao == null) printer.print("None");
-        else printer.print(dao.getName());
-        printer.print(">(");
-        if(dao != null) {
-            for(int i = 0; i < dao.getArgumentTypes().length; i++) {
-                printer.print(dao.getArgumentTypes()[i].toString()+" ");
-                printer.print(dao.getArgumentNames()[i]);
-                if(i != dao.getArgumentTypes().length-1)
-                    printer.print(", ");
+        if(dao == null)
+            printer.print("None, ");
+        else {
+            Pattern pattern = Pattern.compile("script_?\\d{1,4}");
+            Matcher matcher = pattern.matcher(dao.getName());
+            if(matcher.matches()) {
+                printer.print(Integer.toString(dao.getId()));
+                printer.print(", ");
+            } else {
+                printer.print("\"");
+                printer.print(dao.getName());
+                printer.print("\", ");
             }
         }
-        printer.print(") {");
-        printer.tab();
-        if(dao != null) {
-            //script info time
-            CS2Script script = CS2Definitions.getScript(scriptId);
-            if(script == null) throw new DecompilerException("Unable to load script: "+scriptId);
-            script.decompile().getScope().printInner(printer);
-        }
-        printer.untab();
-        printer.newLine();
-        printer.print("}, ");
+        // printer.print("new Function<");
+        // if(dao == null) printer.print("None");
+        // else printer.print(dao.getName());
+        // printer.print(">(");
+        // if(dao != null) {
+        //     for(int i = 0; i < dao.getArgumentTypes().length; i++) {
+        //         printer.print(dao.getArgumentTypes()[i].toString()+" ");
+        //         printer.print(dao.getArgumentNames()[i]);
+        //         if(i != dao.getArgumentTypes().length-1)
+        //             printer.print(", ");
+        //     }
+        // }
+        // printer.print(") {");
+        // printer.tab();
+        // if(dao != null) {
+        //     //script info time
+        //     CS2Script script = CS2Definitions.getScript(scriptId);
+        //     if(script == null) throw new DecompilerException("Unable to load script: "+scriptId);
+        //     script.decompile().getScope().printInner(printer);
+        // }
+        // printer.untab();
+        // printer.newLine();
+        // printer.print("}, ");
         ((CS2Expression) expressions[2]).print(printer);
-        printer.print(", ");
         CS2Expression[] intArr = (CS2Expression[]) expressions[1];
         if(intArr != null && intArr.length > 0) {
+            printer.print(", ");
             printer.print(Integer.toString(intArr.length));
             printer.print(", ");
             for(int i = 0; i < intArr.length; i++) {
@@ -91,7 +108,8 @@ public class CS2AnonymousClassExpression extends CS2Node {
             printer.print(", ");
         }
         CS2Expression[] params = (CS2Expression[]) expressions[0];
-        if(params != null) {
+        if(params != null && params.length > 2) {
+            printer.print(", ");
             for(int i = 1; i < params.length; i++) {
                 if(dao != null && dao.getArgumentTypes() != null && dao.getArgumentTypes()[i-1] == CS2Type.COMPONENT)
                     printComponent(params[i], printer);
