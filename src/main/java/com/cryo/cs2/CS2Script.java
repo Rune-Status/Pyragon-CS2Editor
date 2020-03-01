@@ -16,6 +16,7 @@ import com.cryo.cs2.nodes.LocalVariable;
 import com.cryo.decompiler.util.FunctionInfo;
 import com.cryo.decompiler.CS2Type;
 import com.cryo.utils.CompilerException;
+import com.cryo.utils.InstructionDAO;
 import com.cryo.utils.InstructionDBBuilder;
 import com.cryo.utils.ScriptDAO;
 import com.cryo.utils.ScriptDBBuilder;
@@ -757,7 +758,7 @@ public class CS2Script {
         int size = opCount-sizeIndex;
         iValues[sizeIndex] = size;
         instructions.add(CS2Instruction.GOTO);
-        iValues[opCount++] = -(size+4);
+        iValues[opCount++] = -(size+4); //TODO - this needs to be size+(# of instructions in comparison) (ours are usually 4 cause we don't eval expressions)
         return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals, longLocals,
                 variableNames, variables, index, switchBlocksCount, switchBlocks };
     }
