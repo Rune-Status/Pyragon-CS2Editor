@@ -525,6 +525,21 @@ public class CS2Script {
                         CS2Type type = getCS2Type(split[0]);
                         arguments[i] = type;
                         argumentNames[i] = split[1];
+                        int localIndex;
+                        int stackType;
+                        if(type == CS2Type.LONG) {
+                            localIndex = longLocals++;
+                            stackType = 2;
+                        } else if(type == CS2Type.STRING) {
+                            localIndex = stringLocals++;
+                            stackType = 1;
+                        } else {
+                            localIndex = intLocals++;
+                            stackType = 0;
+                        }
+                        LocalVariable variable = new LocalVariable(split[1], type);
+                        variable.setIdentifier(LocalVariable.makeIdentifier(localIndex, stackType));
+                        variables.put(split[1], variable);
                     }
                 }
                 line = line.substring(line.indexOf(")")+1);
@@ -1375,8 +1390,76 @@ public class CS2Script {
         }
         CS2Instruction instruction = CS2Instruction.getByName(instructionName);
         if(instruction == null) throw new CompilerException("Invalid instruction: "+instructionName);
-        String[] parameters = expression.substring(expression.indexOf("(") + 1, expression.lastIndexOf(")")).split(",(?![^()]*\\))");
-        System.out.println("Params: "+Arrays.toString(parameters));
+        String[] parameters = expression.substring(expression.indexOf("(") + 1, expression.lastIndexOf(")")).split(", ?(?![^()]*\\))");
+        InstructionDAO dao = InstructionDBBuilder.getInstruction(instructionName);
+        if(dao != null) {
+            if(dao.getPopOrder().length > 0) {
+                if(dao.getPopOrder()[0].equals("f") || (dao.getPopOrder().length > 1 && dao.getPopOrder()[1].equals("f"))) {
+                    boolean hasComponent = dao.getPopOrder()[0].equals("ic");
+                    System.out.println("Has: "+hasComponent);
+                    String nameOrId = parameters[hasComponent ? 1 : 0];
+                    boolean isName = nameOrId.startsWith("\"");
+                    int id;
+                    if(!isName) id = Integer.parseInt(nameOrId);
+                    else {
+                        String name = nameOrId.substring(1, nameOrId.length()-1);
+                        ScriptDAO script = ScriptDBBuilder.getScript(name);
+                        if(script == null) throw new CompilerException("Invalid script: "+name);
+                        id = script.getId();
+                    }
+                    instructions.add(CS2Instruction.PUSH_INT);
+                    iValues[opCount++] = id;
+                    String paramTypes = parameters[hasComponent ? 2 : 1];
+                    paramTypes = paramTypes.substring(1, paramTypes.length()-1);
+                    System.out.println(paramTypes);
+                    System.out.println(parameters.length);
+                    for(int i = parameters.length-1; i > parameters.length-1-paramTypes.length(); i--) {
+                        Object[] values = evaluateParameter(parameters[i], opCount, iValues, sValues, lValues, intLocals,
+                                stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount,
+                                switchBlocks);
+                        instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                        opCount = (int) values[1];
+                        iValues = (int[]) values[2];
+                        sValues = (String[]) values[3];
+                        lValues = (long[]) values[4];
+                        intLocals = (int) values[5];
+                        stringLocals = (int) values[6];
+                        longLocals = (int) values[7];
+                        if (values[8] != null)
+                            variableNames = (String[]) values[8];
+                        variables = (HashMap<String, LocalVariable>) values[9];
+                        index = (int) values[10];
+                        switchBlocksCount = (int) values[11];
+                        switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+                    }
+                    instructions.add(CS2Instruction.PUSH_STRING);
+                    sValues[opCount++] = paramTypes;
+                    if(hasComponent) {
+                        Object[] values = evaluateParameter(parameters[0], opCount, iValues, sValues, lValues, intLocals,
+                                stringLocals, longLocals, variableNames, variables, lines, index, switchBlocksCount,
+                                switchBlocks);
+                        instructions.addAll((ArrayList<CS2Instruction>) values[0]);
+                        opCount = (int) values[1];
+                        iValues = (int[]) values[2];
+                        sValues = (String[]) values[3];
+                        lValues = (long[]) values[4];
+                        intLocals = (int) values[5];
+                        stringLocals = (int) values[6];
+                        longLocals = (int) values[7];
+                        if (values[8] != null)
+                            variableNames = (String[]) values[8];
+                        variables = (HashMap<String, LocalVariable>) values[9];
+                        index = (int) values[10];
+                        switchBlocksCount = (int) values[11];
+                        switchBlocks = (HashMap<Integer, HashMap<Integer, Integer>>) values[12];
+                    }
+                    instructions.add(instruction);
+                    iValues[opCount++] = 0;
+                    return new Object[] { instructions, opCount, iValues, sValues, lValues, intLocals, stringLocals,
+                            longLocals, variableNames, variables, index, switchBlocksCount, switchBlocks };
+                }
+            }
+        }
         for(int i = parameters.length-1; i >= 0; i--) {
             String parameter = parameters[i];
             Object[] values = evaluateParameter(parameter, opCount, iValues, sValues, lValues, intLocals,

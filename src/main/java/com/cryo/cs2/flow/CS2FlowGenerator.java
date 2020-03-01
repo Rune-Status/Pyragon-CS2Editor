@@ -460,10 +460,6 @@ public class CS2FlowGenerator {
                         block.write(new CS2Poppable(expr));
                     }
                     else if (operation == CS2Instruction.CALL_CS2) {
-                        FunctionInfo info = CS2Editor.getInstance().getScriptsDB().getInfo(intInstr.asInt());
-                        if (info == null)
-                            throw new DecompilerException("No documentation for:" + instruction);
-                        System.out.println(info);
                         int ret = this.analyzeCall(intInstr.asInt(), block, stack, ptr);
                         if (ret != -1)
                             ptr = ret;
