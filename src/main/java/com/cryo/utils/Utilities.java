@@ -1,5 +1,7 @@
 package com.cryo.utils;
 
+import com.cryo.cache.Cache;
+import com.cryo.cache.IndexType;
 import com.cryo.cs2.CS2Instruction;
 
 import java.io.File;
@@ -196,6 +198,14 @@ public class Utilities {
             return Arrays.toString((String[]) field.get(object));
         }
         return field.get(object);
+    }
+
+    public static final int getInterfaceDefinitionsSize() {
+        return Cache.STORE.getIndex(IndexType.INTERFACES).getLastArchiveId() + 1;
+    }
+
+    public static final int getInterfaceDefinitionsComponentsSize(int interfaceId) {
+        return Cache.STORE.getIndex(IndexType.INTERFACES).getLastFileId(interfaceId) + 1;
     }
 
     public static char cp1252ToChar(byte i) {

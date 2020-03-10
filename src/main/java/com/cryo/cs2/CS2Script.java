@@ -1354,7 +1354,7 @@ public class CS2Script {
             String calculation = expression.substring(expression.indexOf("(")+1, expression.indexOf(")"));
             Object[] data = getEquation(calculation);
             if(data == null) throw new CompilerException("Unsupported calculation!");
-            split = calculation.split(" ?\\"+data[0]+" ?");
+            split = calculation.split(" ?"+Pattern.quote((String) data[0])+" ?");
             System.out.println(Arrays.toString(split)+" "+data[0]);
             for(String s : split) {
                 Object[] values = evaluateParameter(s, opCount, iValues, sValues, lValues, intLocals, stringLocals,
@@ -1491,7 +1491,7 @@ public class CS2Script {
         ArrayList<CS2Instruction> instructions = new ArrayList<>();
         Pattern pattern = Pattern.compile("(?<!\\\\)\\+");
         Matcher matcher = pattern.matcher(expression);
-        if(matcher.results().count() > 0) {
+        if(matcher.groupCount() > 0) {
             String[] split = expression.split(" ?\\+ ?");
             for(String s : split) {
                 Object[] values = evaluateParameter(s, opCount, iValues, sValues, lValues, intLocals,

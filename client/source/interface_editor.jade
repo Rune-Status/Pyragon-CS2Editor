@@ -1,0 +1,308 @@
+extend index
+
+block head
+    link(rel='stylesheet', href='stylesheets/interface_editor.css')
+    script(src='script/interface-editor-menu-options.js')
+    script.
+
+        const renderer = electron.ipcRenderer;
+        let context;
+        let currentInterface = -1;
+        let selectedComponent = -1;
+        let drawCount = 0; //fix for not being able to disable cache for some reason
+
+        let componentTabs = {};
+
+        $(document).on('click', '.interface', function() {
+            let id = $(this).data('id');
+            let that = $(this);
+            $.post('/interface-editor/load-interface/'+id, {}, ret => {
+                let data = JSON.parse(ret);
+                if(data.error) {
+                    sendAlert(data.error);
+                    return false;
+                }
+                currentInterface = id;
+                selectedComponent = -1;
+                $('#component-settings-container').empty();
+                $('.component.selected').removeClass('selected');
+                loadInterface(data.defs);
+                $('.interface.selected').removeClass('selected');
+                that.addClass('selected');
+            });
+        });
+
+        $(document).on('click', '.component', selectComponent);
+
+        $(document).ready(() => {
+            $('#title').html('CS2Editor - Interface Editor');
+            $('.interface[data-id="751"]').click();
+            $('#interface-container').scrollTo('.interface[data-id="751"]', 500);
+        });
+
+        function loadInterface(defs) {
+            //reset all panels
+            $('#component-container').empty();
+            //load components into component container
+            for(let id in defs) {
+                let element = $('<div class="component" data-id="'+id+'"></div>');
+                let title = $('<p class="component-title"></p>');
+                let data = defs[id];
+                if(data.name) title.html(data.name);
+                else title.html(id);
+                element.append(title);
+                $('#component-container').append(element);
+            }
+            //load interface render
+            drawInterface();
+        }
+
+        function drawInterface() {
+            context = setupCanvas($('#canvas')[0]);
+            let image = new Image();
+            image.onload = () => context.drawImage(image, 5, 5);
+            const params = new URLSearchParams({
+                showContainers: false,
+                showHidden: false,
+                showModels: false,
+                panelWidth: context.canvas.width,
+                panelHeight: context.canvas.height,
+                drawCount: drawCount++
+            });
+            if(selectedComponent)
+                params.set('selected', selectedComponent);
+            image.src = `http://localhost:8087/interface-editor/get-render/${currentInterface}?${params.toString()}`
+        }
+
+        function size(obj) {
+            let size = 0, key;
+            for (key in obj) {
+                if (obj.hasOwnProperty(key)) size++;
+            }
+            return size;
+        }
+
+        function selectComponent() {
+            let id = $(this).data('id');
+            if(selectedComponent === id) return false;
+            selectedComponent = id;
+            $('.component.selected').removeClass('selected');
+            $(this).addClass('selected');
+            drawInterface();
+            if(componentTabs[selectedComponent]) {
+                $('#component-settings-container').empty();
+                for(let setting of componentTabs[selectedComponent]) {
+                    let container = $('<div></div>');
+                    container.addClass('component-setting');
+                    container.data({
+                        name: setting.name,
+                        variable: setting.variable,
+                        type: setting.type
+                    });
+                    let title = $('<div></div>');
+                    title.addClass('setting-title');
+                    title.html(setting.name);
+                    container.append(title);
+                    switch(setting.type) {
+                        case 'int':
+                        case 'string':
+                        case 'byte':
+                        case 'string[]':
+                        case 'int[]':
+                        case 'object[]':
+                            container.append($('<input type="text" class="setting-input" value="'+setting.value+'"></input'));
+                            break;
+                        case 'options':
+                            let options = loadOptions(setting.options);
+                            let select = $('<select></select>');
+                            select.addClass('setting-options');
+                            select.data('options', setting.options);
+                            for(let id in options) {
+                                let option = $('<option></option>');
+                                option.attr('value', options[id]);
+                                option.data('id', id);
+                                option.attr('selected', (setting.value == id));
+                                option.html(options[id]);
+                                select.append(option);
+                            }
+                            container.append(select);
+                            break;
+                        case 'boolean':
+                            let lab = $('<label></label>');
+                            lab.addClass('switch');
+                            let input = $('<input type="checkbox"></input>');
+                            //- if(setting.value === true) input.prop('checked', true); 
+                            lab.append(input);
+                            let span = $('<span></span>');
+                            span.addClass('slider round');
+                            lab.append(span);
+                            container.append(lab);
+                            break;
+                    }
+                    $('#component-settings-container').append(container);
+                }
+                return false;
+            }
+            $.post(`/interface-editor/load-component/${currentInterface}/${id}`, {}, ret => {
+                let data = JSON.parse(ret);
+                if(data.error) {
+                    sendAlert(data.error);
+                    return false;
+                }
+                $('#component-settings-container').html(data.html);
+            });
+        }
+
+        function loadOptions(options) {
+            let opts = [];
+            options = options.substring(1, options.length-1).split(/, ?/).map(s => s.split('='));
+            for(let opt of options)
+                opts[opt[0]] = opt[1];
+            return opts;
+        }
+
+        function saveOption(variable, type, value) {
+            $.post(`interface-editor/save-defs/${currentInterface}/${selectedComponent}`, { variable, type, value }, ret => {
+                let data = JSON.parse(ret);
+                if(data.error) {
+                    sendAlert(data.error);
+                    return false;
+                }
+                if(data.nochange) return false;
+                drawInterface();
+            });
+        }
+    
+        $(document).on('change', '.switch input', function() {
+            var el = $(this);
+            var value = el.is(':checked');
+            let variable = el.closest('.component-setting').data('variable');
+            saveOption(variable, 'boolean', value);
+        });
+
+        $(document).on('blur', '.component-setting input', function() {
+            let el = $(this).closest('.component-setting');
+            let variable = el.data('variable');
+            let type = el.data('type');
+            let value = $(this).val();
+            if(type == 'boolean')
+                return;
+            console.log(variable, type, value);
+            saveOption(variable, type, value);
+        });
+
+        $(document).on('keyup', '.component-setting input', function(e) {
+            if(e.which == 13) {
+                let el = $(this).closest('.component-setting');
+                let variable = el.data('variable');
+                let type = el.data('type');
+                let value = $(this).val();
+                if(type == 'boolean')
+                    return;
+                console.log(variable, type, value);
+                saveOption(variable, type, value);
+            }
+        });
+
+        function setupCanvas(canvas) {
+            // Get the device pixel ratio, falling back to 1.
+            var dpr = window.devicePixelRatio || 1;
+            // Get the size of the canvas in CSS pixels.
+            var rect = canvas.getBoundingClientRect();
+            // Give the canvas pixel dimensions of their CSS
+            // size * the device pixel ratio.
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            var ctx = canvas.getContext('2d');
+            // Scale all drawing operations by the dpr, so you
+            // don't have to worry about the difference.
+            ctx.scale(dpr, dpr);
+            return ctx;
+        }
+
+        $(document).on('mouseover', '#file-option, #edit-option, #open-option, #about-option', function() {
+            let element = $('#options-menu');
+            if(element.css('display') == 'block') {
+                openOptionsMenu($(this));
+            }
+        });
+
+        $(document).on('click', '#file-option, #edit-option, #open-option, #about-option', function() {
+            openOptionsMenu($(this));
+        });
+
+        function openOptionsMenu(element) {
+            let menu = $('#options-menu');
+            menu.empty();
+            menu.css({
+                display: 'block',
+                top: element.position().bottom,
+                left: element.position().left
+            });
+            $('.file-button.active').removeClass('active');
+            element.addClass('active');
+            let options;
+            if(element.attr('id').includes('file'))
+                options = FILE_OPTIONS;
+            else if(element.attr('id').includes('edit'))
+                options = EDIT_OPTIONS;
+            else if(element.attr('id').includes('open'))
+                options = OPEN_OPTIONS;
+            else if(element.attr('id').includes('about'))
+                options = ABOUT_OPTIONS;
+            addOptions(menu, options);
+        }
+
+        function addOptions(menu, options) {
+            for(let option of options) {
+                let element = $('<div class="menu-option"></div>');
+                let name = $('<span></span>');
+                name.addClass('option-name');
+                name.html(option.name);
+                element.append(name);
+                if(option.shortcut) {
+                    let shortcut = $('<span></span>');
+                    shortcut.addClass('option-shortcut');
+                    shortcut.html(option.shortcut);
+                    element.append(shortcut);
+                }
+                if(option.onClick)
+                    element.click(option.onClick);
+                menu.append(element);
+                menu.append($('<div style="clear: both;"></div>'));
+            }
+        }
+
+        function closeOptionsMenu() {
+            $('#options-menu').css('display', 'none');
+            $('.file-button.active').removeClass('active');
+        }
+
+        $(document).click(function(e) {
+            var target = e.target;
+            let menu = $('#options-menu');
+            if(menu.css('display') == 'none') return;
+            if($(e.target).closest('#options-menu').length || $(e.target).closest('.file-button').length) {
+
+            } else {
+                closeOptionsMenu();
+            }
+        });
+
+block main_content
+    div#file-buttons
+        p.file-button#file-option File
+        p.file-button#edit-option Edit
+        p.file-button#open-option Open
+        p.file-button#about-option About
+    div#interface-tabs
+    div(style='clear: both;')
+    div#interface-container
+        for inter in interfaces
+            div.interface(data-id=inter)
+                p.interface-title= inter
+    div#component-container
+    div#component-settings-container
+    div#render-container
+        canvas#canvas
+    div#options-menu

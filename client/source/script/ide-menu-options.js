@@ -5,9 +5,16 @@ const FILE_OPTIONS = [
     },
     { 
         name: 'Save and Recompile', 
-        shortcut: 'Ctrl + S' 
+        shortcut: 'Ctrl + S',
+        onClick: () => {
+            closeOptionsMenu();
+            let contents = editor.session.getValue();
+            let script = $('.script-tab.active');
+            let id = script.data('id');
+            recompile(id, contents);
+        }
     }
-]
+];
 
 const EDIT_OPTIONS = [
     {
@@ -188,6 +195,23 @@ const EDIT_OPTIONS = [
                 }
                 sendAlert('Instruction information successfully reloaded.');
             });
+        }
+    }
+];
+
+const OPEN_OPTIONS = [{
+        name: 'Open Interface Editor',
+        onClick: () => {
+            closeOptionsMenu();
+            renderer.send('interface-editor:open');
+        }
+    },
+    {
+        name: 'Open Cache Editor',
+        onClick: () => {
+            closeOptionsMenu();
+            //Check for unedited
+            //open modal asking to confirm
         }
     }
 ];

@@ -2,10 +2,8 @@ extend index
 
 block head
     link(rel='stylesheet', href='stylesheets/ide.css')
-    link(rel="stylesheet", href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css")
-    script(src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js")
     script(src='script/ace/ace.js')
-    script(src='script/menu-options.js')
+    script(src='script/ide-menu-options.js')
     script(src='script/ace/ext-language_tools.js')
     script.
 
@@ -261,11 +259,10 @@ block head
             $('#script-container').scrollTo('.script[data-id="'+id+'"]', 1000);
         }
 
-        $(document).on('click', '#file-option, #edit-option, #about-option', function() {
-            openOptionsMenu($(this));
-        });
+        $(document).on('click', '#file-option, #edit-option, #open-option, #about-option', openOptionsMenu);
 
-        function openOptionsMenu(element) {
+        function openOptionsMenu() {
+            let element = $(this);
             let menu = $('#options-menu');
             menu.empty();
             menu.css({
@@ -280,6 +277,8 @@ block head
                 options = FILE_OPTIONS;
             else if(element.attr('id').includes('edit'))
                 options = EDIT_OPTIONS;
+            else if(element.attr('id').includes('open'))
+                options = OPEN_OPTIONS;
             else if(element.attr('id').includes('about'))
                 options = ABOUT_OPTIONS;
             addOptions(menu, options);

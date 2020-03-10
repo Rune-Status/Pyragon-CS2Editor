@@ -3,7 +3,7 @@ package com.cryo.modules;
 import com.cryo.CS2Editor;
 import com.cryo.cache.Cache;
 import com.cryo.cache.IndexType;
-import com.cryo.cs2.CS2Definitions;
+import com.cryo.cache.loaders.CS2Definitions;
 import com.cryo.cs2.CS2Instruction;
 import com.cryo.cs2.CS2Script;
 import com.cryo.decompiler.CS2Type;

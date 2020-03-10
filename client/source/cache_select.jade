@@ -11,7 +11,7 @@ block head
         renderer.on('cache:set-hard-location', (event, data) => {
             cacheLocation = data;
             $('#cache-location').html('Location: '+cacheLocation);
-            $('#load-scripts-btn').click();
+            $('#load-interfaces-btn').click();
         });
 
         renderer.on('cache:error', (event, error) => {
@@ -30,10 +30,23 @@ block head
                 setError('Cache location must be selected');
                 return false;
             }
-            renderer.send('cache:load');
+            renderer.send('cache:load', { ide: true });
             $(this).attr('disabled', true);
+            $('#load-interfaces-btn').attr('disabled', true);
             $('#browse-cache-btn').attr('disabled', true);
             $('#load-scripts-btn').html('Loading...');
+        });
+
+        $(document).on('click', '#load-interfaces-btn', function() {
+            if(!cacheLocation) {
+                setError('Cache location must be selected');
+                return false;
+            }
+            renderer.send('cache:load', { ide: false });
+            $(this).attr('disabled', true);
+            $('#load-scripts-btn').attr('disabled', true);
+            $('#browse-cache-btn').attr('disabled', true);
+            $('#load-interfaces-btn').html('Loading...');
         });
 
         $(document).on('change', '#cache-location-select', function() {
@@ -57,4 +70,5 @@ block main_content
     p#error
     input#cache-location-select(type='file' webkitdirectory directory multiple)
     button.button#load-scripts-btn Load CS2Scripts
+    button.button#load-interfaces-btn Load Interfaces
     button.button#browse-cache-btn Browse Cache

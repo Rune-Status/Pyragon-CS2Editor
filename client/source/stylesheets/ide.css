@@ -89,20 +89,6 @@
     cursor: pointer;
 }
 
-.file-button {
-    float: left;
-    color: #999;
-    margin: 0px;
-    font-size: 11px;
-    width: 29px;
-    line-height: 17px;
-    text-align: center;
-}
-
-.file-button:hover, .file-button.active {
-    background: #444;
-}
-
 #options-menu {
     position: absolute;
     display: none;
@@ -110,30 +96,6 @@
     height: 200px;
     background: #333;
     z-index: 100;
-}
-
-.menu-option {
-    padding: 5px;
-    color: #999;
-    height: 20px;
-}
-
-.menu-option:hover {
-    background: #444;
-}
-
-.option-name {
-    float: left;
-}
-
-.option-shortcut {
-    float: right;
-}
-
-.hljs-keyword, .hljs-title, .hljs-number, 
-.hljs-params, .hljs-function, .hljs-comment, .hljs-string,
-.hljs-class {
-    cursor: text;
 }
 
 .widget, .mini-sh .content {

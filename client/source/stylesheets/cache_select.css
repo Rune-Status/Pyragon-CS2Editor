@@ -19,6 +19,12 @@
     right: 10px;
 }
 
+#load-interfaces-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 140px;
+}
+
 #browse-cache-btn:disabled, #load-scripts-btn:disabled {
     cursor: not-allowed;
 }

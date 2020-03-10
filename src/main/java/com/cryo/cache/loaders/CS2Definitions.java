@@ -1,9 +1,11 @@
-package com.cryo.cs2;
+package com.cryo.cache.loaders;
 
 import com.cryo.CS2Editor;
 import com.cryo.cache.Cache;
 import com.cryo.cache.IndexType;
 import com.cryo.cache.io.InputStream;
+import com.cryo.cs2.CS2Instruction;
+import com.cryo.cs2.CS2Script;
 import com.cryo.utils.InstructionDBBuilder;
 import com.cryo.utils.ScriptDBBuilder;
 

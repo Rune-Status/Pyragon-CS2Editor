@@ -1,4 +1,4 @@
-package com.cryo.cs2;
+package com.cryo.cache.loaders;
 
 import com.cryo.cache.Cache;
 import com.cryo.cache.FileType;

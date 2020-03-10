@@ -3,7 +3,6 @@ package com.cryo.cs2.nodes;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.cryo.cs2.CS2Definitions;
 import com.cryo.cs2.CS2Instruction;
 import com.cryo.cs2.CS2Script;
 import com.cryo.decompiler.CS2Type;
