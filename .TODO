@@ -19,7 +19,7 @@ CS2Editor TODO:
             ☐ Script, loops through all other scripts, if call_cs2 with id exists, or anonymous class, gets line of it
             ☐ Add interface definitions and return references from hooks
         Component Definitions:
-            ☐ Add separate UI for a basic component definitions editor
+            ✔ Add separate UI for a basic component definitions editor @done (3/1/2020, 10:03:44 PM)
             ☐ Allow editing of hook scripts and their parameters
         Compiler:
             ☐ Clean up compiler, moving each statement evaluator to a new class extending CompilerNode

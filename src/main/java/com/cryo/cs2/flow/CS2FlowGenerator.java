@@ -1,9 +1,9 @@
 package com.cryo.cs2.flow;
 
 import com.cryo.CS2Editor;
-import com.cryo.cs2.CS2Definitions;
+import com.cryo.cache.loaders.CS2Definitions;
 import com.cryo.cs2.CS2Instruction;
-import com.cryo.cs2.CS2ParamDefs;
+import com.cryo.cache.loaders.CS2ParamDefs;
 import com.cryo.cs2.CS2Script;
 import com.cryo.cs2.instructions.*;
 import com.cryo.cs2.nodes.*;

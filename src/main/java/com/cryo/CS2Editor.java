@@ -1,8 +1,7 @@
 package com.cryo;
 
 import com.cryo.cache.Cache;
-import com.cryo.cs2.CS2Definitions;
-import com.cryo.cs2.CS2Script;
+import com.cryo.cache.loaders.interfaces.ComponentSetting;
 import com.cryo.decompiler.CS2;
 import com.cryo.decompiler.CS2Decoder;
 import com.cryo.decompiler.CS2Decompiler;
@@ -46,7 +45,6 @@ public class CS2Editor {
 
     @Getter
     private static HashMap<String, HashMap<Integer, String>> loaders;
-    private UnsafeSerializer serializer;
 
     private InstructionsDatabase instructionsDB;
     private ConfigsDatabase configsDB;
@@ -60,8 +58,8 @@ public class CS2Editor {
         loadLoaders();
         InstructionDBBuilder.load();
         ScriptDBBuilder.load();
-        serializer = new UnsafeSerializer();
         reloadDatabases();
+        ComponentSetting.load();
         try {
             Cache.init("F:\\workspace\\github\\darkan-server\\data\\cache\\");
             port(8087);
@@ -137,7 +135,7 @@ public class CS2Editor {
                 .serializeNulls()
                 .setVersion(1.0)
                 .disableHtmlEscaping()
-                .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+                //.setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
                 .setPrettyPrinting()
                 .create();
     }

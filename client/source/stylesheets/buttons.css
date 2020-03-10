@@ -614,3 +614,36 @@ input[type="reset"].btn-block,
 input[type="button"].btn-block {
     width: 100%;
 }
+
+.file-button {
+    float: left;
+    color: #999;
+    margin: 0px;
+    font-size: 11px;
+    width: 29px;
+    line-height: 17px;
+    text-align: center;
+}
+
+.file-button:hover,
+.file-button.active {
+    background: #444;
+}
+
+.menu-option {
+    padding: 5px;
+    color: #999;
+    height: 20px;
+}
+
+.menu-option:hover {
+    background: #444;
+}
+
+.option-name {
+    float: left;
+}
+
+.option-shortcut {
+    float: right;
+}

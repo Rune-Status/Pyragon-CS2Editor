@@ -1,0 +1,203 @@
+#interface-container {
+    margin: 1px 0px 1px 6px;
+    width: 15%;
+    height: 90%;
+    border: 2px solid #222;
+    border-radius: 5px;
+    background: #444;
+    float: left;
+    overflow-y: auto;
+}
+
+#component-container {
+    margin: 1px 6px 1px 0px;
+    width: 15%;
+    height: 90%;
+    border: 2px solid #222;
+    border-radius: 5px;
+    background: #444;
+    float: right;
+    overflow-y: auto;
+}
+
+#component-settings-container {
+    position: absolute;
+    bottom: 15px;
+    left: 178px;
+    width: calc(70% - 40px);
+    height: 20%;
+    border: 2px solid #222;
+    border-radius: 5px;
+    background: #444;
+    overflow-y: auto;
+}
+
+#render-container {
+    position: absolute;
+    top: 42px;
+    left: 178px;
+    width: calc(70% - 40px);
+    height: 68%;
+    border: 2px solid #222;
+    border-radius: 5px;
+    background: #444;
+    overflow-y: auto;
+}
+
+#interface-tabs {
+    width: 100%;
+    margin-left: calc(15% + 16px);
+}
+
+.interface {
+    height: 20px;
+    cursor: select;
+}
+
+.interface:hover,
+.interface.selected {
+    background: #555;
+}
+
+.interface-title {
+    text-align: center;
+    color: white;
+    font-size: 12px;
+    margin: auto;
+    line-height: 20px;
+}
+
+.component {
+    height: 20px;
+    cursor: select;
+}
+
+.component:hover,
+.component.selected {
+    background: #555;
+}
+
+.component-title {
+    text-align: center;
+    color: white;
+    font-size: 12px;
+    margin: auto;
+    line-height: 20px;
+}
+
+.component-setting {
+    display: inline-block;
+    border: 1px solid #000;
+    border-radius: 5px;
+    margin-top: 5px;
+    margin-left: 5px;
+    width: 150px;
+    background-color: #333;
+}
+
+.setting-title {
+    width: 100%;
+    text-align: center;
+    color: #bbb;
+}
+
+.setting-input {
+    width: 130px;
+    margin-left: 10px;
+    margin-bottom: 5px;
+    background-color: #444;
+    border: 1px solid #000;
+    border-radius: 5px;
+    color: #bbb;
+    text-align: center;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    line-height: 10px;
+}
+
+.setting-options {
+    width: 100px;
+    margin: 1px auto 5px 25px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    color: #bbb;
+    background-color: #444;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 15px;
+    margin: 5px;
+    margin-left: 60px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    cursor: pointer;
+    content: "";
+    top: 2px;
+    height: 11px;
+    width: 11px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: #2196F3;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(11px);
+    -ms-transform: translateX(11px);
+    transform: translateX(11px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+#options-menu {
+    position: absolute;
+    display: none;
+    width: 200px;
+    height: 200px;
+    background: #333;
+    z-index: 100;
+}

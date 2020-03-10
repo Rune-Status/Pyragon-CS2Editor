@@ -1,0 +1,320 @@
+[
+    {
+        "name": "Type",
+        "variable": "type",
+        "type": "options",
+        "options": [
+            "CONTAINER",
+            "TYPE_0",
+            "TYPE_1",
+            "FIGURE",
+            "TEXT",
+            "SPRITE",
+            "MODEL",
+            "TYPE_7",
+            "TYPE_8",
+            "LINE"
+        ]
+    },
+    {
+        "name": "Name",
+        "variable": "name",
+        "type": "String"
+    },
+    {
+        "name": "Content Type",
+        "variable": "contentType",
+        "type": "int"
+    },
+    {
+        "name": "Base X Pos",
+        "variable": "basePositionX",
+        "type": "int"
+    },
+    {
+        "name": "Base Y Pos",
+        "variable": "basePositionY",
+        "type": "int"
+    },
+    {
+        "name": "Base Width",
+        "variable": "baseWidth",
+        "type": "int"
+    },
+    {
+        "name": "Base Height",
+        "variable": "baseHeight",
+        "type": "int"
+    },
+    {
+        "name": "Aspect Width Type",
+        "variable": "aspectWidthType",
+        "type": "byte"
+    },
+    {
+        "name": "Aspect Height Type",
+        "variable": "aspectHeightType",
+        "type": "byte"
+    },
+    {
+        "name": "Aspect X Type",
+        "variable": "aspectXType",
+        "type": "byte"
+    }, {
+        "name": "Aspect Y Type",
+        "variable": "aspectYType",
+        "type": "byte"
+    },
+    {
+        "name": "Parent ID",
+        "variable": "parent",
+        "type": "int"
+    },
+    {
+        "name": "Hidden",
+        "variable": "hidden",
+        "type": "boolean"
+    },
+    {
+        "name": "No Click Through",
+        "variable": "noClickThrough",
+        "type": "boolean"
+    },
+    {
+        "name": "Scroll Width",
+        "variable": "scrollWidth",
+        "type": "int"
+    },
+    {
+        "name": "Scroll Height",
+        "variable": "scrollHeight",
+        "type": "int"
+    },
+    {
+        "name": "Sprite ID",
+        "variable": "spriteId",
+        "type": "int"
+    },
+    {
+        "name": "Angle 2D",
+        "variable": "angle2d",
+        "type": "int"
+    }, 
+    {
+        "name": "Tiling",
+        "variable": "tiling",
+        "type": "boolean"
+    }, 
+    {
+        "name": "Alpha",
+        "variable": "alpha",
+        "type": "boolean"
+    }, 
+    {
+        "name": "Transparency",
+        "variable": "transparency",
+        "type": "int"
+    }, 
+    {
+        "name": "Border Thickness",
+        "variable": "borderThickness",
+        "type": "int"
+    }, 
+    {
+        "name": "Vertical Flip",
+        "variable": "vFlip",
+        "type": "boolean"
+    }, 
+    {
+        "name": "Horizontal Flip",
+        "variable": "hFlip",
+        "type": "boolean"
+    }, 
+    {
+        "name": "Horizontal Flip",
+        "variable": "hFlip",
+        "type": "boolean"
+    }, 
+    {
+        "name": "Click Mask",
+        "variable": "clickMask",
+        "type": "boolean"
+    }, 
+    {
+        "name": "Model Type",
+        "variable": "modelType",
+        "type": "options",
+        "options": [
+            "NONE",
+            "RAW_MODEL",
+            "NPC_HEAD",
+            "PLAYER_HEAD",
+            "ITEM",
+            "PLAYER_MODEL",
+            "NPC_MODEL",
+            "PLAYER_HEAD_IGNOREWARN",
+            "ITEM_CONTAINER_MALE",
+            "ITEM_CONTAINER_FEMALE"
+        ]
+    }, 
+    {
+        "name": "Model ID",
+        "variable": "modelId",
+        "type": "int"
+    }, 
+    {
+        "name": "Has Origin",
+        "variable": "hasOrigin",
+        "type": "boolean"
+    }, 
+    {
+        "name": "Uses Orthogonal",
+        "variable": "usesOrthogonal",
+        "type": "boolean"
+    }, 
+    {
+        "name": "Origin X",
+        "variable": "originX",
+        "type": "int"
+    }, 
+    {
+        "name": "Origin Y",
+        "variable": "originY",
+        "type": "int"
+    }, 
+    {
+        "name": "Sprite Pitch",
+        "variable": "spritePitch",
+        "type": "int"
+    }, 
+    {
+        "name": "Sprite Roll",
+        "variable": "spriteRoll",
+        "type": "int"
+    }, 
+    {
+        "name": "Sprite Yaw",
+        "variable": "spriteYaw",
+        "type": "int"
+    }, 
+    {
+        "name": "Sprite Scale",
+        "variable": "spriteScale",
+        "type": "int"
+    }, 
+    {
+        "name": "Animation",
+        "variable": "animation",
+        "type": "int"
+    }, 
+    {
+        "name": "Font ID",
+        "variable": "fontId",
+        "type": "int"
+    }, 
+    {
+        "name": "Monospaced",
+        "variable": "monospaced",
+        "type": "boolean"
+    }, 
+    {
+        "name": "Text",
+        "variable": "text",
+        "type": "string"
+    }, 
+    {
+        "name": "Text Horizontal Align",
+        "variable": "textHorizontalAli",
+        "type": "int"
+    }, 
+    {
+        "name": "Text Vertical Align",
+        "variable": "textVerticalAli",
+        "type": "int"
+    }, 
+    {
+        "name": "Shadow",
+        "variable": "shadow",
+        "type": "boolean"
+    }, 
+    {
+        "name": "Color",
+        "variable": "color",
+        "type": "int"
+    }, 
+    {
+        "name": "Transparency",
+        "variable": "transparency",
+        "type": "int"
+    }, 
+    {
+        "name": "Multi Line",
+        "variable": "multiline",
+        "type": "int"
+    }, 
+    {
+        "name": "Filled",
+        "variable": "multiline",
+        "type": "int"
+    }, 
+    {
+        "name": "Line Width",
+        "variable": "multiline",
+        "type": "int"
+    }, 
+    {
+        "name": "Line Direction",
+        "variable": "multiline",
+        "type": "int"
+    }, 
+    {
+        "name": "Use On Name",
+        "variable": "useOnName",
+        "type": "String"
+    }, 
+    {
+        "name": "Option Names",
+        "variable": "optionNames",
+        "type": "String[]"
+    }, 
+    {
+        "name": "Option Cursors",
+        "variable": "opCursors",
+        "type": "int[]"
+    }, 
+    {
+        "name": "Option Name",
+        "variable": "opName",
+        "type": "String"
+    }, 
+    {
+        "name": "Target Over Cursor",
+        "variable": "targetOverCursor",
+        "type": "int"
+    }, 
+    {
+        "name": "Target Leave Cursor",
+        "variable": "targetLeaveCursor",
+        "type": "int"
+    },
+    {
+        "name": "On Load Script",
+        "variable": "onLoadScript",
+        "type": "object[]"
+    },
+    {
+        "name": "Mouse Hover Script",
+        "variable": "onMouseHoverScript",
+        "type": "object[]"
+    },
+    {
+        "name": "Mouse Leave Script",
+        "variable": "onMouseLeaveScript",
+        "type": "object[]"
+    },
+    {
+        "name": "Popup Script",
+        "variable": "popupScript",
+        "type": "object[]"
+    }
+]

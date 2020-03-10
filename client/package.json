@@ -4,7 +4,7 @@
   "description": "AIO CS2 Decompiler, Editor, and Compiler",
   "main": "src/Main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron . --disable-http-cache"
   },
   "repository": {
     "type": "git",

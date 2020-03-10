@@ -1,0 +1,13 @@
+for setting in settings
+    div.component-setting(data-name=setting.getName(), data-variable=setting.getVariable(), data-type=setting.getType().toLowerCase())
+        div.setting-title= setting.getName()
+        if setting.getType().toLowerCase().contains('string') || setting.getType().contains('int') || setting.getType().contains('byte') || setting.getType().contains('object')
+            input.setting-input(type='text', value=setting.getValue())
+        else if setting.getType() == 'boolean'
+            label.switch
+                input(type='checkbox', checked=setting.getValue())
+                span.slider.round
+        else if setting.getType() == 'options'
+            select.setting-options(data-options=setting.getOptions())
+                for id in setting.getOptions().keySet()
+                    option(value=setting.getOptions().get(id), data-id=id, selected=(id==setting.getValue()))= setting.getOptions().get(id)

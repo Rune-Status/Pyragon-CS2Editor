@@ -11,6 +11,7 @@ require('electron-debug')({
 let store = new Store();
 let cacheSelectWindow;
 let ideWindow;
+let interfaceEditorWindow;
 let cacheLocation;
 let checkCacheLoadedTimer;
 
@@ -24,13 +25,21 @@ function start() {
     ipcMain.on('cache:set-location', (event, data) => {
         cacheLocation = data;
     });
-    ipcMain.on('cache:load', () => {
+    ipcMain.on('cache:load', (event, data) => {
         request.post('http://localhost:8087/cache/load', { form: { path: cacheLocation }});
-        setTimeout(checkCacheLoaded, 200);
+        setTimeout(() => checkCacheLoaded(data.ide), 200);
+    });
+    ipcMain.on('ide:open', (event, data) => {
+        if(ideWindow) return false;
+        createIDEWindow();
+    });
+    ipcMain.on('interface-editor:open', (event, data) => {
+        if(interfaceEditorWindow) return false;
+        createInterfaceEditorWindow();
     });
 }
 
-function checkCacheLoaded() {
+function checkCacheLoaded(ide) {
     request.get('http://localhost:8087/cache/loaded', {}, function(
       err,
       response,
@@ -51,11 +60,41 @@ function checkCacheLoaded() {
         else if (loaded === true) {
             if(cacheSelectWindow) {
                 store.set('cacheLocation', cacheLocation);
-                createIDEWindow();
+                if(ide) createIDEWindow();
+                else createInterfaceEditorWindow();
                 cacheSelectWindow.close();
                 cacheSelectWindow = null;
             }
-        } else setTimeout(checkCacheLoaded, 200);
+        } else setTimeout(() => checkCacheLoaded(ide), 200);
+    });
+}
+
+function createInterfaceEditorWindow() {
+    let interEditorWindowState = windowState({
+        defaultHeight: 615,
+        defaultWidth: 1067
+    })
+    interfaceEditorWindow = new BrowserWindow({
+        width: 1067,
+        height: 615,
+        resizable: false,
+        x: interEditorWindowState.x,
+        y: interEditorWindowState.y,
+        frame: false,
+        backgroundThrottling: false,
+        thickFrame: true,
+        transparent: true,
+        webPreferences: {
+            nodeIntegration: true
+        }
+    });
+
+    interEditorWindowState.manage(interfaceEditorWindow);
+
+    interfaceEditorWindow.loadURL('http://localhost:8087/interface-editor');
+
+    interfaceEditorWindow.on('closed', () => {
+        interfaceEditorWindow = null;
     });
 }
 
@@ -84,10 +123,6 @@ function createIDEWindow() {
 
     ideWindow.on('closed', () => {
       ideWindow = null;
-    });
-
-    app.on('activate', () => {
-        if (ideWindow === null) createIDEWindow();
     });
 }
 
@@ -123,6 +158,10 @@ function createCacheSelectWindow() {
 
     app.on('activate', () => {
         if (cacheSelectWindow === null) createCacheSelectWindow();
+    });
+
+    cacheSelectWindow.on('closed', () => {
+        cacheSelectWindow = null;
     });
 }
 
