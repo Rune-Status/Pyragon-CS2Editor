@@ -259,10 +259,18 @@ block head
             $('#script-container').scrollTo('.script[data-id="'+id+'"]', 1000);
         }
 
-        $(document).on('click', '#file-option, #edit-option, #open-option, #about-option', openOptionsMenu);
+        $(document).on('mouseover', '#file-option, #edit-option, #open-option, #about-option', function() {
+            let element = $('#options-menu');
+            if(element.css('display') == 'block') {
+                openOptionsMenu($(this));
+            }
+        });
 
-        function openOptionsMenu() {
-            let element = $(this);
+        $(document).on('click', '#file-option, #edit-option, #open-option, #about-option', function() {
+            openOptionsMenu($(this));
+        });
+
+        function openOptionsMenu(element) {
             let menu = $('#options-menu');
             menu.empty();
             menu.css({
