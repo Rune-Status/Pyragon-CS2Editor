@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 import com.cryo.cs2.CS2Script;
 import com.cryo.cs2.nodes.CS2Function;
-import com.cryo.decompiler.CS2Type;
+import com.cryo.cs2.CS2Type;
 import com.google.gson.internal.LinkedTreeMap;
 
 import lombok.AllArgsConstructor;

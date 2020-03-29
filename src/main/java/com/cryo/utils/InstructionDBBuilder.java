@@ -15,7 +15,7 @@ import lombok.Getter;
 import com.cryo.CS2Editor;
 import com.cryo.cs2.CS2Instruction;
 import static com.cryo.cs2.CS2Instruction.*;
-import com.cryo.decompiler.CS2Type;
+import com.cryo.cs2.CS2Type;
 
 public class InstructionDBBuilder {
 

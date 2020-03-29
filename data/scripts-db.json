@@ -127,9 +127,10 @@
   },
   "18": {
     "id": 18,
-    "name": "script_18",
-    "argTypes": "",
-    "argNames": "",
+    "name": "script18",
+    "argTypes": "int",
+    "argNames": "arg0",
+    "vNames": "",
     "returnType": "void"
   },
   "19": {

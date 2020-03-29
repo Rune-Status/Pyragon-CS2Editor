@@ -14,7 +14,7 @@
 */
 
 
-package com.cryo.decompiler.util;
+package com.cryo.utils;
 
 public class GenericsUtils {
 

@@ -5,8 +5,8 @@ import java.util.regex.Pattern;
 
 import com.cryo.cs2.CS2Instruction;
 import com.cryo.cs2.CS2Script;
-import com.cryo.decompiler.CS2Type;
-import com.cryo.decompiler.DecompilerException;
+import com.cryo.cs2.CS2Type;
+import com.cryo.utils.DecompilerException;
 import com.cryo.utils.CodePrinter;
 import com.cryo.utils.ScriptDAO;
 import com.cryo.utils.ScriptDBBuilder;

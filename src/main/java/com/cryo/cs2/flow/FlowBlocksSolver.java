@@ -1,7 +1,7 @@
 package com.cryo.cs2.flow;
 
 import com.cryo.cs2.nodes.*;
-import com.cryo.decompiler.CS2Type;
+import com.cryo.cs2.CS2Type;
 import com.cryo.utils.DecompilerException;
 import com.cryo.utils.DecompilerUtils;
 

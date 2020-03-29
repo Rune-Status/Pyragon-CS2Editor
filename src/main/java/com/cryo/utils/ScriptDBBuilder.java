@@ -10,7 +10,7 @@ import java.util.Optional;
 import com.cryo.CS2Editor;
 import com.cryo.cs2.CS2Script;
 import com.cryo.cs2.nodes.CS2Function;
-import com.cryo.decompiler.CS2Type;
+import com.cryo.cs2.CS2Type;
 import com.google.gson.internal.LinkedTreeMap;
 
 public class ScriptDBBuilder {

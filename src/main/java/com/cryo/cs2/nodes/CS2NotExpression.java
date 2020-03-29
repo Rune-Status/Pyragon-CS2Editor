@@ -1,7 +1,6 @@
 package com.cryo.cs2.nodes;
 
-import com.cryo.decompiler.CS2Type;
-import com.cryo.decompiler.ast.ExpressionNode;
+import com.cryo.cs2.CS2Type;
 import com.cryo.utils.CodePrinter;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,7 +19,7 @@ public class CS2NotExpression extends CS2Expression {
 
     @Override
     public int getPriority() {
-        return ExpressionNode.PRIORITY_UNARYLOGICALNOT;
+        return CS2Expression.PRIORITY_UNARYLOGICALNOT;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.cryo.cs2.instructions;
 
-import com.cryo.decompiler.CS2Type;
+import com.cryo.cs2.CS2Type;
 import lombok.Data;
 
 @Data

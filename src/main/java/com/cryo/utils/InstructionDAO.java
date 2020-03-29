@@ -2,7 +2,7 @@ package com.cryo.utils;
 
 import java.util.Properties;
 
-import com.cryo.decompiler.CS2Type;
+import com.cryo.cs2.CS2Type;
 import com.google.gson.internal.LinkedTreeMap;
 
 import lombok.AllArgsConstructor;
@@ -26,6 +26,14 @@ public class InstructionDAO {
         for(int i = 0; i < popOrder.length; i++)
             argumentTypes[i] = ScriptDAO.getRTFromString(popOrder[i]);
         return argumentTypes;
+    }
+
+    public static String[] getPopOrder(CS2Type[] types) {
+        String[] str = new String[types.length];
+        for(int i = 0; i < types.length; i++) {
+            str[i] = types[i].toString();
+        }
+        return str;
     }
 
     public LinkedTreeMap<String, Object> toProperties() {

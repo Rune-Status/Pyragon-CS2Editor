@@ -13,10 +13,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+package com.cryo.cs2;
 
-package com.cryo.decompiler;
-
-import com.cryo.decompiler.util.TextUtils;
+import com.cryo.utils.TextUtils;
 import lombok.Data;
 
 import java.util.Arrays;
@@ -25,7 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static com.cryo.decompiler.util.GenericsUtils.*;
+import static com.cryo.utils.GenericsUtils.*;
 
 @Data
 public class CS2Type {
@@ -353,53 +352,6 @@ public class CS2Type {
 		
 		return _string1 = builder.toString();
 	}
-
-	
-	
-	public void printConstant(CodePrinter printer, Object constant) {
-		if (array || structure)
-			throw new RuntimeException();
-		
-		String fmt = null;
-		if (format != null && (fmt = format.apply(constant)) != null) {
-			printer.print(fmt);
-			return;
-		}
-		
-		printer.print(name);
-		printer.print('(');
-		printer.print(constant == null ? "null" : constant.toString());
-		printer.print(')');
-	}
-	
-	
-	public void printBasic(CodePrinter printer) {
-		printer.print(name);
-	}
-	
-	public void printPretty(CodePrinter printer) {
-		if (!structure || array) {
-			printer.print(toString());
-			return;
-		}
-		
-		
-		printer.tab();
-		printer.print(name);
-		printer.print(" {\n");
-		for (int i = 0; i < fields(); i++) {
-			fieldType(i).printPretty(printer);
-			printer.print(' ');
-			printer.print(fieldName(i));
-			printer.print(';');
-		}
-		printer.untab();
-		printer.print("\n}");
-	}
-	
-	
-	
-	
 	
 	public static CS2Type forDesc(String desc) {
 		CS2Type cached = CACHE.get(desc);

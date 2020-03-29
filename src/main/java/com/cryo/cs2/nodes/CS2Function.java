@@ -1,7 +1,7 @@
 package com.cryo.cs2.nodes;
 
 import com.cryo.cs2.CS2Script;
-import com.cryo.decompiler.CS2Type;
+import com.cryo.cs2.CS2Type;
 import com.cryo.utils.CodePrinter;
 import lombok.Data;
 

@@ -1,18 +1,14 @@
 package com.cryo;
 
 import com.cryo.cache.Cache;
+import com.cryo.cache.loaders.CS2Definitions;
 import com.cryo.cache.loaders.interfaces.ComponentSetting;
-import com.cryo.decompiler.CS2;
-import com.cryo.decompiler.CS2Decoder;
-import com.cryo.decompiler.CS2Decompiler;
-import com.cryo.decompiler.ICS2Provider;
-import com.cryo.decompiler.ast.FunctionNode;
-import com.cryo.decompiler.util.*;
+import com.cryo.cs2.CS2Script;
 import com.cryo.modules.WebModule;
 import com.cryo.utils.InstructionDBBuilder;
+import com.cryo.utils.ScriptDAO;
 import com.cryo.utils.ScriptDBBuilder;
 import com.cryo.utils.Utilities;
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Data;
@@ -46,19 +42,12 @@ public class CS2Editor {
     @Getter
     private static HashMap<String, HashMap<Integer, String>> loaders;
 
-    private InstructionsDatabase instructionsDB;
-    private ConfigsDatabase configsDB;
-    private FunctionDatabase opcodesDB;
-    private FunctionDatabase scriptsDB;
-    private CS2Decompiler decompiler;
-
     public void start() {
         gson = buildGson();
         loadProperties();
         loadLoaders();
         InstructionDBBuilder.load();
         ScriptDBBuilder.load();
-        reloadDatabases();
         ComponentSetting.load();
         try {
             Cache.init("F:\\workspace\\github\\darkan-server\\data\\cache\\");
@@ -88,45 +77,6 @@ public class CS2Editor {
             System.out.println("Server started on " + java.net.InetAddress.getLocalHost() + ":" + Spark.port());
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public void reloadDatabases() {
-        instructionsDB = new InstructionsDatabase(new File("./instructions_db.ini"));
-        configsDB = new ConfigsDatabase(new File("./configs_db.ini"), new File("./bitconfigs_db.ini"));
-        opcodesDB = new FunctionDatabase(new File("./opcodes_db.ini"));
-        scriptsDB = new FunctionDatabase(new File("./scripts_db.ini"));
-
-        decompiler = new CS2Decompiler(instructionsDB, configsDB, opcodesDB, scriptsDB, new ICS2Provider() {
-            @Override
-            public CS2 getCS2(InstructionsDatabase idb, ConfigsDatabase cdb, FunctionDatabase sdb, FunctionDatabase odb, int id) {
-                try {
-                    return CS2Decoder.readScript(idb, cdb, id);
-                }
-                catch (Throwable t) {
-                    t.printStackTrace();
-                    return null;
-                }
-            }
-        });
-        printUnder150();
-    }
-
-    public void printUnder150() {
-        for(int i = 0; i < 150; i++) {
-            InstructionInfo info = instructionsDB.getByUnscrampled(i);
-            if(info != null)
-                System.out.println(i+" - "+info.getName());
-        }
-    }
-
-    public FunctionNode loadScript(int scriptID) {
-        try {
-            return decompiler.decompile(scriptID);
-        }
-        catch (Throwable t) {
-            t.printStackTrace();
-            return null;
         }
     }
 
@@ -178,6 +128,5 @@ public class CS2Editor {
     public static void main(String[] args) {
         instance = new CS2Editor();
         instance.start();
-
     }
 }

@@ -13,8 +13,7 @@ import com.cryo.cs2.nodes.CS2Comment;
 import com.cryo.cs2.nodes.CS2Expression;
 import com.cryo.cs2.nodes.CS2Function;
 import com.cryo.cs2.nodes.LocalVariable;
-import com.cryo.decompiler.util.FunctionInfo;
-import com.cryo.decompiler.CS2Type;
+import com.cryo.cs2.CS2Type;
 import com.cryo.utils.CompilerException;
 import com.cryo.utils.InstructionDAO;
 import com.cryo.utils.InstructionDBBuilder;
@@ -332,9 +331,7 @@ public class CS2Script {
 
         ScriptDAO dao = ScriptDBBuilder.getScript(id);
 
-        FunctionInfo info = CS2Editor.getInstance().getScriptsDB().getInfo(id);
-
-        CS2Type returnType = info.getReturnType();
+        CS2Type returnType = CS2Type.VOID;
 
         if(dao != null) {
             argumentNames = dao.getArgumentNames();

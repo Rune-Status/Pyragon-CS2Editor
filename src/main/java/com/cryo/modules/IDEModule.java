@@ -6,7 +6,7 @@ import com.cryo.cache.IndexType;
 import com.cryo.cache.loaders.CS2Definitions;
 import com.cryo.cs2.CS2Instruction;
 import com.cryo.cs2.CS2Script;
-import com.cryo.decompiler.CS2Type;
+import com.cryo.cs2.CS2Type;
 import com.cryo.utils.InstructionDAO;
 import com.cryo.utils.InstructionDBBuilder;
 import com.cryo.utils.ScriptDAO;
